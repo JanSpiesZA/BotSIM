@@ -16,7 +16,7 @@ int occupiedFlag = 0;            //Indicates if a grid in the occupied map must 
 boolean makingProgress = true;    //Indicates if progress towards the goal is being made
 boolean wallDetect = false;
 
-int maxParticles = 00;
+int maxParticles = 10;
 Robot[] particle = new Robot[maxParticles];
 
 float moveSpeed = 0;
@@ -75,9 +75,9 @@ int stateVal = 0;      //Values used to indicate which state the robot is curren
 void setup()
 {
   //All measurement values are in cm
-  myrobot = new Robot();  
+  myrobot = new Robot("ROBOT");  
    
-  myrobot.diameter = diameter;
+  myrobot.robotDiameter = diameter;
   robotX = screenSizeX / 2;
   robotY = screenSizeY / 2;  
   
@@ -89,7 +89,7 @@ void setup()
 
   for (int i = 0; i < maxParticles; i++)
   {
-    particle[i] = new Robot();    
+    particle[i] = new Robot("PARTICLE");    
   }  
   
   applyScale();
@@ -166,7 +166,7 @@ void updateParticles()
   
 void applyScale()
 {
-  myrobot.diameter *= scaleFactor;
+  myrobot.robotDiameter *= scaleFactor;
   //myrobot.maxSpeed *= scaleFactor;      //I do not know why this must not be scaled???
   minDetectDistance *= scaleFactor;        //Closer than this value and the sensors do not return valid data
   maxDetectDistance *= scaleFactor;

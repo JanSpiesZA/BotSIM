@@ -2,15 +2,18 @@ class Robot{
   float x = random (0, screenSizeX);  //x-pos of robot
   float y = random (0, screenSizeY);  //y-pos of robot
   float heading = random (0, 2*PI);
-  float diameter = 45 * scaleFactor;  //diameter of chassis
+  float robotDiameter = 45 * scaleFactor;  //diameter of chassis
   float noseLength = diameter/2;
   float maxSpeed = 1 * scaleFactor;
   float maxTurnRate = 5 * scaleFactor;
   float [] state = {x, y, heading};
   boolean collisionFlag = false;
+  String nodeType = "";    //ROBOT or PARTICLE
+  float prob = 1.0;
   
-  Robot ()
+  Robot (String _nodeType)
   {   
+    nodeType = _nodeType;
   }
   
   void set(float tempX, float tempY, float tempHeading)
@@ -27,16 +30,39 @@ class Robot{
   void display()
   {    
     //Displays the heading of the robot as a line from the centerpoint of the robot into the same direction as the heading of the robot
-    if (collisionFlag)
-    {
-      stroke (255,0,0);
-    } 
-    else
-    {
-      stroke (0);
-    }
+    //if (collisionFlag)
+    //{
+    //  stroke (255,0,0);
+    //} 
+    //else
+    //{
+    //  stroke (0);
+    //}
     
-    ellipse(x,y,diameter,diameter);
+    switch (nodeType)
+    {
+      case "ROBOT":
+        stroke(0);
+        fill(0,255,0);    
+        ellipse(x, y, robotDiameter, robotDiameter);         
+        textAlign(CENTER, CENTER);
+        textSize(10);
+        fill(0);
+        //text(dist, xPos, yPos-10);        
+        break;
+      
+      case "PARTICLE":
+        stroke(255,0,0);
+        fill(255,0,0);
+        ellipse(x, y, prob*10, prob*10);
+        //ellipse(xPos, yPos, 5, 5);
+        textAlign(CENTER, CENTER);
+        fill(0);
+        //text(prob, xPos,yPos-10);
+        //print(prob+",");
+        break;
+    } 
+    stroke(0);    
     float noseX = x + noseLength * cos(heading);
     float noseY = y + noseLength * sin(heading);
     line (x, y, noseX, noseY);    
