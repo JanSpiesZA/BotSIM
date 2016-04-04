@@ -137,13 +137,8 @@ void draw()
   background(img);                                  //Make the background the orginal map image
   drawTarget();
   PlotRobot();
-  
-  for (int i=0; i < maxParticles; i++)
-  {
-    particle[i].display();
-  }
-  updateParticles();
-  
+    
+  updateParticles(); 
   
   calcProgressPoint();
   detectObstacle();
@@ -160,12 +155,17 @@ void draw()
 /////////////////////////////////////////////////////////////////////////////////////////////////
 void updateParticles()
 {
+  //Update particle movement
   for (int i = 0; i < maxParticles; i++)
   {
     particle[i].move(moveAngle, moveSpeed);    
   }
   
-  
+  //Display updated particles
+  for (int i=0; i < maxParticles; i++)
+  {
+    particle[i].display();
+  }
 }
   
 void applyScale()
