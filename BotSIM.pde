@@ -541,33 +541,6 @@ void transRot (float x_frame, float y_frame, float phi_frame, float x_point, flo
 }
 //==========================================================================
 //
-
-void keyPressed()
-{
-  switch (key)
-  {
-    case 'q':
-      scaleFactor -= 0.1;
-      applyScale();
-      break;
-      
-    case 'a':
-      scaleFactor += 0.1;      
-      applyScale();
-      break;
-  }
-}
-
-
-void mouseWheel(MouseEvent event) 
-{
-  float e = event.getCount();
-  if (e == -1) scaleFactor = 0.9;
-  if (e == 1) scaleFactor = 1.1;
-  applyScale();
-  println(e);
-}
-
 void mousePressed()
 {
   if (mousePressed && (mouseButton == LEFT)) changeGoal();
