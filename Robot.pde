@@ -48,7 +48,18 @@ class Robot{
         textAlign(CENTER, CENTER);
         textSize(10);
         fill(0);
-        //text(dist, xPos, yPos-10);        
+        //text(dist, xPos, yPos-10);   
+        
+        //Displays position of sensors on robot chassis
+        //Sensor data is translated into global coords an then plotted as global coords
+        float x_glob = 0.0;
+        float y_glob = 0.0;    
+        for (int i=0; i < numSensors; i++)
+        {
+          transRot(x, y, heading, sensorX[i], sensorY[i]);    //Takes the sensor's x,y and plot it in the global frame
+          ellipse(x_temp, y_temp,3,3);
+        }
+        
         break;
       
       case "PARTICLE":
@@ -65,18 +76,7 @@ class Robot{
     stroke(0);    
     float noseX = x + noseLength * cos(heading);
     float noseY = y + noseLength * sin(heading);
-    line (x, y, noseX, noseY);    
-    
-    //Displays position of sensors on robot chassis
-    //Sensor data is translated into global coords an then plotted as global coords
-    float x_glob = 0.0;
-    float y_glob = 0.0;    
-    for (int i=0; i < numSensors; i++)
-    {
-      transRot(x, y, heading, sensorX[i], sensorY[i]);    //Takes the sensor's x,y and plot it in the global frame
-      ellipse(x_temp, y_temp,3,3);
-    }
-    stroke(0);
+    line (x, y, noseX, noseY);
   }
   
 
