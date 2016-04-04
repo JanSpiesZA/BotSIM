@@ -58,9 +58,6 @@ float[] sensorObstacleDist = new float[numSensors];
 float minDetectDistance = 0.0;        //Closer than this value and the sensors do not return valid data
 float maxDetectDistance = 0.0;
 
-
-
-
 float x_temp = 0.0;        //Placeholder for temporary data from transRot function
 float y_temp = 0.0;        //Placeholder for temporary data from transRot function
 
@@ -84,6 +81,8 @@ void setup()
   myrobot = new Robot("ROBOT");  
   
   myrobot.addSensor();
+  myrobot.sensors.get(0).sensorXPos = diameter/2;
+  myrobot.sensors.get(0).sensorYPos = 0.0;
   
   println(myrobot.sensors.size());
    
@@ -144,11 +143,14 @@ void draw()
   background(img);                                  //Make the background the orginal map image
   drawTarget();
   PlotRobot();
-    
+  
   updateParticles(); 
   
   calcProgressPoint();
   detectObstacle();
+  
+  myrobot.sensors.get(0).sense(myrobot.x, myrobot.y, myrobot.heading);  //Sense obstacles for sensor 0
+  
   calcVecAO();       //Calculates the avoid obstacle vector;
   calcVecGTG();
   calcVecAO_GTG();    //Calculates vector after blending Go-To-Goal and Avoid_Obstacle;

@@ -78,6 +78,13 @@ class Robot{
           ellipse(x_temp, y_temp,3,3);
         }
         
+        //Displays sensor from ArrayList
+        for (int k = 0; k < sensors.size(); k++)
+        {
+          fill(255,0,0);
+          sensors.get(k).display(x,y,heading);          
+        }
+        
         break;
       
       case "PARTICLE":
