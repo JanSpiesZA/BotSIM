@@ -47,17 +47,16 @@ class Robot{
         ellipse(x, y, robotDiameter, robotDiameter);         
         textAlign(CENTER, CENTER);
         textSize(10);
-        fill(0);
-        //text(dist, xPos, yPos-10);   
         
         //Displays position of sensors on robot chassis
         //Sensor data is translated into global coords an then plotted as global coords
         float x_glob = 0.0;
-        float y_glob = 0.0;    
+        float y_glob = 0.0;
+        fill(255);
         for (int i=0; i < numSensors; i++)
         {
           transRot(x, y, heading, sensorX[i], sensorY[i]);    //Takes the sensor's x,y and plot it in the global frame
-          ellipse(x_temp, y_temp,3,3);
+          ellipse(x_temp, y_temp,2,2);
         }
         
         break;
