@@ -1,0 +1,74 @@
+class Robot{
+  float x = random (0, screenSizeX);  //x-pos of robot
+  float y = random (0, screenSizeY);  //y-pos of robot
+  float heading = random (0, 2*PI);
+  float diameter = 45 * scaleFactor;  //diameter of chassis
+  float noseLength = diameter/2;
+  float maxSpeed = 1 * scaleFactor;
+  float maxTurnRate = 5 * scaleFactor;
+  float [] state = {x, y, heading};
+  boolean collisionFlag = false;
+  
+  Robot ()
+  {   
+  }
+  
+  void set(float tempX, float tempY, float tempHeading)
+  {
+    x = tempX;
+    y = tempY;
+    heading = tempHeading;
+    state[0] = x;
+    state[1] = y;
+    state[2] = heading;
+  }
+  
+//Draws the robot() and plots the sensors positions
+  void display()
+  {    
+    //Displays the heading of the robot as a line from the centerpoint of the robot into the same direction as the heading of the robot
+    if (collisionFlag)
+    {
+      stroke (255,0,0);
+    } 
+    else
+    {
+      stroke (0);
+    }
+    
+    ellipse(x,y,diameter,diameter);
+    float noseX = x + noseLength * cos(heading);
+    float noseY = y + noseLength * sin(heading);
+    line (x, y, noseX, noseY);    
+    
+    //Displays position of sensors on robot chassis
+    //Sensor data is translated into global coords an then plotted as global coords
+    float x_glob = 0.0;
+    float y_glob = 0.0;    
+    for (int i=0; i < numSensors; i++)
+    {
+      transRot(x, y, heading, sensorX[i], sensorY[i]);    //Takes the sensor's x,y and plot it in the global frame
+      ellipse(x_temp, y_temp,3,3);
+    }
+    stroke(0);
+  }
+  
+
+//Moves the robot  
+  void move(float turnAngle, float distance)
+  { 
+    heading += turnAngle;  //Add the turnAngle value to the current heading
+    if (heading >= (2*PI)) heading -= (2*PI);
+    if (heading <= (-2*PI)) heading += (2*PI);    
+    
+    float newX = x + distance * cos(heading);
+    float newY = y + distance * sin(heading);
+    x = newX;
+    y = newY;
+    
+    state[0] = x;
+    state[1] = y;
+    state[2] = heading;    
+  }
+  
+}
