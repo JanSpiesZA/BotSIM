@@ -10,6 +10,9 @@ class Robot{
   boolean collisionFlag = false;
   String nodeType = "";    //ROBOT or PARTICLE
   float prob = 1.0;
+  float noiseForward = 0.0;
+  float noiseTurn = 0.0;
+  float noiseSense = 5.0;
   
   Robot (String _nodeType)
   {   
@@ -24,6 +27,15 @@ class Robot{
     state[0] = x;
     state[1] = y;
     state[2] = heading;
+  }
+  
+  
+  //Sets movement, sensor and turn noise to robot model
+  void setNoise(float _noiseForward, float _noiseTurn, float _noiseSense)
+  {
+    noiseForward = _noiseForward;
+    noiseTurn = _noiseTurn;
+    noiseSense = _noiseSense;
   }
   
 //Draws the robot() and plots the sensors positions
@@ -82,7 +94,7 @@ class Robot{
 //Moves the robot  
   void move(float turnAngle, float distance)
   { 
-    heading += turnAngle;  //Add the turnAngle value to the current heading
+    heading += turnAngle + randomGaussian() * noiseTurn;  //Add the turnAngle value to the current heading
     if (heading >= (2*PI)) heading -= (2*PI);
     if (heading <= (-2*PI)) heading += (2*PI);    
     

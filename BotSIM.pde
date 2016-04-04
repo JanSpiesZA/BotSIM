@@ -18,6 +18,9 @@ boolean wallDetect = false;
 
 int maxParticles = 10;
 Robot[] particle = new Robot[maxParticles];
+float noiseForward = 1.0;
+float noiseTurn = 0.1;
+float noiseSense = 5.0;
 
 float moveSpeed = 0;
 float moveAngle = 0;
@@ -90,6 +93,7 @@ void setup()
   for (int i = 0; i < maxParticles; i++)
   {
     particle[i] = new Robot("PARTICLE");    
+    particle[i].setNoise(noiseForward, noiseTurn, noiseSense);    //Add noise to newly created particle
   }  
   
   applyScale();
