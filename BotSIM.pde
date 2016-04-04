@@ -493,14 +493,16 @@ float calcGoalAngle(float vectX, float vectY)
 /////////////////////////////////////////////////////////////////////////////////////////////////
 void drawTarget()
 {
-  stroke(0);    //Draw in black
-  strokeWeight(2);
-  ellipse (goalX,goalY, safeZone*3,safeZone*3);
-  ellipse (goalX,goalY, safeZone*2,safeZone*2);
-  stroke(255,0,0);
-  ellipse (goalX,goalY, safeZone,safeZone);
-  stroke(0);    //Draw in black
+  stroke(0);
+  fill(255,0,0);
   strokeWeight(1);
+  ellipse (goalX,goalY, safeZone*3,safeZone*3);  
+  stroke(0);
+  fill(255);
+  ellipse (goalX,goalY, safeZone*2,safeZone*2);
+  stroke(0);
+  fill(0);
+  ellipse (goalX,goalY, safeZone,safeZone);  
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
