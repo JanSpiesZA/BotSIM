@@ -58,6 +58,9 @@ float[] sensorObstacleDist = new float[numSensors];
 float minDetectDistance = 0.0;        //Closer than this value and the sensors do not return valid data
 float maxDetectDistance = 0.0;
 
+
+
+
 float x_temp = 0.0;        //Placeholder for temporary data from transRot function
 float y_temp = 0.0;        //Placeholder for temporary data from transRot function
 
@@ -79,6 +82,10 @@ void setup()
 {
   //All measurement values are in cm
   myrobot = new Robot("ROBOT");  
+  
+  myrobot.addSensor();
+  
+  println(myrobot.sensors.size());
    
   myrobot.robotDiameter = diameter;
   robotX = screenSizeX / 2;
@@ -403,6 +410,8 @@ void detectObstacle()
  float obstacleX = 0.0;
  float obstacleY = 0.0; 
  
+ fill(255);
+ stroke(1);
  for (int i = 0; i < numSensors; i++)
  {
    sensorObstacleDist[i] = 2; //myrobot.diameter/2 + 1;    //Set starting point of collision detect to 1 pixel wider than the radius of the robot    

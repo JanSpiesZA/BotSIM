@@ -12,11 +12,18 @@ class Robot{
   float prob = 1.0;
   float noiseForward = 0.0;
   float noiseTurn = 0.0;
-  float noiseSense = 5.0;
+  float noiseSense = 5.0;  
+ 
+  ArrayList<Sensor> sensors = new ArrayList<Sensor>();
   
   Robot (String _nodeType)
   {   
-    nodeType = _nodeType;
+    nodeType = _nodeType;   
+  }
+  
+  void addSensor()
+  {
+    sensors.add(new Sensor());
   }
   
   void set(float tempX, float tempY, float tempHeading)
