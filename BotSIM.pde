@@ -167,6 +167,7 @@ void updateParticles()
 void applyScale()
 {
   myrobot.robotDiameter *= scaleFactor;
+  myrobot.noseLength *= scaleFactor;
   //myrobot.maxSpeed *= scaleFactor;      //I do not know why this must not be scaled???
   minDetectDistance *= scaleFactor;        //Closer than this value and the sensors do not return valid data
   maxDetectDistance *= scaleFactor;

@@ -56,7 +56,7 @@ class Robot{
         for (int i=0; i < numSensors; i++)
         {
           transRot(x, y, heading, sensorX[i], sensorY[i]);    //Takes the sensor's x,y and plot it in the global frame
-          ellipse(x_temp, y_temp,2,2);
+          ellipse(x_temp, y_temp,3,3);
         }
         
         break;
