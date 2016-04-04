@@ -539,42 +539,6 @@ void transRot (float x_frame, float y_frame, float phi_frame, float x_point, flo
   x_temp = cos(phi_frame) * x_point - sin(phi_frame)*y_point + x_frame; //Uses transformation and rotation to plot sensor gloablly 
   y_temp = sin(phi_frame) * x_point + cos(phi_frame)*y_point + y_frame;
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
-void convertToOG()
-{
-   //Draw the vertical and horisontal occupacy grid lines
-  for (int cntrh = 0; cntrh < worldMapScaleX; cntrh += ogXResolution)
-    line (0+cntrh,0,0+cntrh,worldMapScaleY);
-  for (int cntrv = 0; cntrv < worldMapScaleY; cntrv += ogYResolution)
-    line (0,0+cntrv,worldMapScaleX,0+cntrv);
-  
-  
-  for (int cntrh = 0; cntrh < worldMapScaleX; cntrh += ogXResolution)
-  {
-    for (int cntrv = 0; cntrv < worldMapScaleX; cntrv += ogYResolution)
-    {
-      PImage imgOG = img.get(cntrh,cntrv, int(ogXResolution), int(ogYResolution));
-      imgOG.loadPixels();
-      
-      for (int i = 0; i < (imgOG.width*imgOG.height); i++)
-      {
-        color c = imgOG.pixels[i];
-        //float redval = red(c);
-        
-        if (red(c) == 0)
-        {
-          occupiedFlag = 1;          
-        }        
-      }
-      if (occupiedFlag == 1)
-      {
-        fill(128);
-        rect(cntrh,cntrv,ogXResolution,ogYResolution);
-        occupiedFlag = 0;
-      }
-    }
-  } 
-}
 //==========================================================================
 //
 
