@@ -9,8 +9,11 @@ class Sensor
   float sensorMaxDetect = 200.0;
   float sensorMinDetect = 2.0;
   
-  Sensor()
+  Sensor(float _sensorXPos, float _sensorYPos, float _sensorHAngle)
   {
+    sensorXPos = _sensorXPos;
+    sensorYPos = _sensorYPos;
+    sensorHAngle = _sensorHAngle;
   }
   
   //Displays a sensor based on the reference X, Y and heading values

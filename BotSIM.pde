@@ -80,9 +80,7 @@ void setup()
   //All measurement values are in cm
   myrobot = new Robot("ROBOT");  
   
-  myrobot.addSensor();
-  myrobot.sensors.get(0).sensorXPos = diameter/2;
-  myrobot.sensors.get(0).sensorYPos = 0.0;
+  myrobot.addSensor(diameter/2, 0.0, 0.0);  
   
   println(myrobot.sensors.size());
    

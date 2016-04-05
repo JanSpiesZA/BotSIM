@@ -22,9 +22,9 @@ class Robot{
     nodeType = _nodeType;   
   }
   
-  void addSensor()
+  void addSensor(float _sensorXPos, float _sensorYPos, float _sensorHAngle)
   {
-    sensors.add(new Sensor());
+    sensors.add(new Sensor(_sensorXPos, _sensorYPos, _sensorHAngle));
   }
   
   void set(float tempX, float tempY, float tempHeading)
