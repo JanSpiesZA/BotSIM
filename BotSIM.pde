@@ -80,7 +80,11 @@ void setup()
   //All measurement values are in cm
   myrobot = new Robot("ROBOT");  
   
-  myrobot.addSensor(diameter/2, 0.0, 0.0);  
+  //myrobot.addSensor(diameter/2, 0.0, 0.0); 
+  for (int k=0; k<9; k++)
+  {
+    myrobot.addSensor(0.0, 0.0, -PI/2 + PI/10*k);
+  }
   
   println(myrobot.sensors.size());
    
@@ -148,7 +152,7 @@ void draw()
   detectObstacle();  
   
   myrobot.sense();
-  println(myrobot.sensors.get(0).sensorObstacleDist);
+  //println(myrobot.sensors.get(0).sensorObstacleDist);
   
   calcVecAO();       //Calculates the avoid obstacle vector;
   calcVecGTG();
