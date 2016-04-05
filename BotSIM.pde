@@ -147,9 +147,10 @@ void draw()
   updateParticles(); 
   
   calcProgressPoint();
-  detectObstacle();
+  detectObstacle();  
   
-  myrobot.sensors.get(0).sense(myrobot.x, myrobot.y, myrobot.heading);  //Sense obstacles for sensor 0
+  myrobot.sense();
+  println(myrobot.sensors.get(0).sensorObstacleDist);
   
   calcVecAO();       //Calculates the avoid obstacle vector;
   calcVecGTG();
@@ -197,6 +198,16 @@ void applyScale()
     sensorX[i] *= scaleFactor;
     sensorY[i] *= scaleFactor;    
   }
+  
+  //Applies scale factor to sensors on the robot
+  //---should probably be moved to the robot or sensor display function
+  for (int k = 0; k < myrobot.sensors.size(); k++)
+  {
+    myrobot.sensors.get(k).sensorXPos *= scaleFactor;
+    myrobot.sensors.get(k).sensorYPos *= scaleFactor;
+    //myrobot.sensors.get(k).sensorMaxDetect *= scaleFactor;
+  }
+  
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
 void PlotRobot()

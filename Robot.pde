@@ -16,6 +16,7 @@ class Robot{
  
   ArrayList<Sensor> sensors = new ArrayList<Sensor>();
   
+  //Instantiates robot as either a ROBOT or a PARTICLE - rules applly differently to the two
   Robot (String _nodeType)
   {   
     nodeType = _nodeType;   
@@ -105,7 +106,7 @@ class Robot{
   }
   
 
-//Moves the robot  
+  //Moves the robot  
   void move(float turnAngle, float distance)
   { 
     heading += turnAngle + randomGaussian() * noiseTurn;  //Add the turnAngle value to the current heading
@@ -121,5 +122,13 @@ class Robot{
     state[1] = y;
     state[2] = heading;    
   }
+  
+  void sense()
+  {
+    for (int k = 0; k < sensors.size(); k++)
+    {
+      sensors.get(k).sense(x,y,heading);
+    }
+  }  
   
 }
