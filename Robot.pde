@@ -2,7 +2,7 @@ class Robot{
   float x = random (0, screenSizeX);  //x-pos of robot
   float y = random (0, screenSizeY);  //y-pos of robot
   float heading = random (0, 2*PI);
-  float robotDiameter = 45 * scaleFactor;  //diameter of chassis
+  float robotDiameter = 0; //diameter; * scaleFactor;  //diameter of chassis
   float noseLength = diameter/2;
   float maxSpeed = 1 * scaleFactor;
   float maxTurnRate = 5 * scaleFactor;
@@ -17,9 +17,16 @@ class Robot{
   ArrayList<Sensor> sensors = new ArrayList<Sensor>();
   
   //Instantiates robot as either a ROBOT or a PARTICLE - rules applly differently to the two
-  Robot (String _nodeType)
+  //Supplies a diameter of the robot in cm's for visualization  
+  Robot (String _nodeType, float _diameter)
   {   
     nodeType = _nodeType;   
+    robotDiameter = _diameter;
+  }
+  
+  Robot (String _nodeType)
+  {   
+    nodeType = _nodeType;
   }
   
   void addSensor(float _sensorXPos, float _sensorYPos, float _sensorHAngle)

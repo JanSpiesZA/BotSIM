@@ -34,9 +34,9 @@ float moveGain = 0.01;
 float blendGain = 0.5;      //Gain used when blending the AO and GTG vectors;
 float normaliseGain = 100.0;
 
-float safeZone = 0.0;          //Safe area around target assumed the robot reached its goal;
-float safeDistance = 0.0;      //Closer than this value and the robot is too close to an obstacle
-float distanceFromWall = 0.0;    //Distance that must be maintained when following the wall
+float safeZone = 20.0;          //Safe area around target assumed the robot reached its goal;
+float safeDistance = 20.0;      //Closer than this value and the robot is too close to an obstacle
+float distanceFromWall = 50.0;    //Distance that must be maintained when following the wall
 
 float diameter = 45.0; 
 
@@ -55,8 +55,8 @@ float[] vectorFollowWall = {0.0, 0.0};    //Vector pointing in the direction the
 
 int numSensors = sensorX.length;    //Determines the amount of sensor elements present
 float[] sensorObstacleDist = new float[numSensors];
-float minDetectDistance = 0.0;        //Closer than this value and the sensors do not return valid data
-float maxDetectDistance = 0.0;
+float minDetectDistance = 10.0;        //Closer than this value and the sensors do not return valid data
+float maxDetectDistance = 200.0;
 
 float x_temp = 0.0;        //Placeholder for temporary data from transRot function
 float y_temp = 0.0;        //Placeholder for temporary data from transRot function
@@ -78,25 +78,16 @@ int stateVal = 0;      //Values used to indicate which state the robot is curren
 void setup()
 {
   
-  myRobot = new Robot("ROBOT");        //Create a new robot object  
+  myRobot = new Robot("ROBOT", diameter);        //Create a new robot object
+  myRobot.set(screenSizeX/2, screenSizeY/2, 0.0);
   
-  //Add sensors to the robot objects 
+  //Add sensors to the robot object 
   for (int k=0; k<9; k++)
   {
     myRobot.addSensor(0.0, 0.0, -PI/2 + PI/10*k);
   }
   
   println(myRobot.sensors.size());
-   
-  myRobot.robotDiameter = diameter;
-  robotX = screenSizeX / 2;
-  robotY = screenSizeY / 2;  
-  
-  minDetectDistance = 10.0;        //Closer than this value and the sensors do not return valid data
-  maxDetectDistance = 200.0;
-  safeZone = 20.0;
-  safeDistance = 20.0;    
-  distanceFromWall = 50.0; 
 
   for (int i = 0; i < maxParticles; i++)
   {
@@ -104,14 +95,16 @@ void setup()
     particle[i].setNoise(noiseForward, noiseTurn, noiseSense);    //Add noise to newly created particle
   }  
   
-  applyScale();
+  applyScale();    //Applies the scale to all physical quantities
   
-  img = loadImage("kamer2.png");
+  
+  
+  img = loadImage("kamer2.png");                        //Loads the selected image as background
   img.resize((int)worldMapScaleX, (int)worldMapScaleY);
-  img.filter(THRESHOLD);                              //Convert image to black and white
+  img.filter(THRESHOLD);                                //Convert image to black and white
   img.resize(int(screenSizeX), int(screenSizeY));
   
-  //size(int(screenSizeX), int(screenSizeY));  
+  
   size(500,500);
   
   println (img.width);
@@ -120,9 +113,8 @@ void setup()
   println (numSensors);
   
   tint(255,127);
-  image(img,0,0); 
+  image(img,0,0);
   
-  myRobot.set(robotX, robotY, robotTheta);  
   
   //Change particle x and y values to prevent them from being inside walls
   for (int i=0; i < maxParticles; i++)
