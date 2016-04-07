@@ -16,11 +16,11 @@ int occupiedFlag = 0;            //Indicates if a grid in the occupied map must 
 boolean makingProgress = true;    //Indicates if progress towards the goal is being made
 boolean wallDetect = false;
 
-int maxParticles = 1;
+int maxParticles = 100;
 Robot[] particles = new Robot[maxParticles];
-float noiseForward = 0.0;
-float noiseTurn = 0.0;
-float noiseSense = 1.0;
+float noiseForward = 1.0;
+float noiseTurn = 0.1;
+float noiseSense = 5.0;
 
 float moveSpeed = 0;
 float moveAngle = 0;
@@ -76,6 +76,7 @@ float[] closest2 = {0.0, 0.0};
 int stateVal = 0;      //Values used to indicate which state the robot is currently in
 
 boolean showVal = false;
+boolean step = false;
 
 void setup()
 {
@@ -93,10 +94,10 @@ void setup()
   for (int i = 0; i < maxParticles; i++)
   {
     particles[i] = new Robot("PARTICLE");  
-    particles[i].set(screenSizeX/2, screenSizeY/2 + 5, -PI/2);
-    //particle[i].setNoise(noiseForward, noiseTurn, noiseSense);    //Add noise to newly created particle
+    //particles[i].set(screenSizeX/2, screenSizeY/2, -PI/2);
+    particles[i].setNoise(noiseForward, noiseTurn, noiseSense);    //Add noise to newly created particle
     
-    for (int k=0; k<numSensors; k++)
+    for (int k = 0; k < numSensors; k++)
     {
       particles[i].addSensor(0.0, 0.0, -PI/2 + PI/(numSensors-1)*k);
     }    
@@ -108,7 +109,7 @@ void setup()
   
   
   
-  img = loadImage("blank.png");                        //Loads the selected image as background
+  img = loadImage("kamer3.png");                        //Loads the selected image as background
   img.resize((int)worldMapScaleX, (int)worldMapScaleY);
   img.filter(THRESHOLD);                                //Convert image to black and white
   img.resize(int(screenSizeX), int(screenSizeY));
@@ -143,43 +144,51 @@ void setup()
 
 void draw()
 {
-  background(img);                                  //Make the background the orginal map image
-  drawTarget();
-  PlotRobot();
-  
-  updateParticles(); 
-  
-  calcProgressPoint();
-  detectObstacle();        //Detects distance to obstacle not using the sensor class  
-  
-  myRobot.sense();          //Makes use of sensor class to detect obstacles
-  
-  for (int k = 0; k < maxParticles; k++)
-  {
-    particles[k].sense();
-    particles[k].measureProb();
-  }
-  
-  
   
   if (showVal)
   {
-    for (int k=0; k<numSensors; k++) print(int(myRobot.sensors.get(k).sensorObstacleDist)+"  ");
+    for (int k=0; k<numSensors; k++) print(int(myRobot.sensors.get(k).sensorObstacleDist)+"\t");
     println();
     
     for (int k = 0; k< maxParticles; k++) 
     {
       for (int i = 0; i < numSensors; i++)
       {        
-        //print (int(particle[0].sensors.get(0).sensorObstacleDist)+"  ");       
+        print (int(particles[k].sensors.get(i).sensorObstacleDist)+"\t");       
       }
-      print ("PROB: "+int(particles[k].prob));
-      println();
+      print ("PROB: "+ particles[k].prob);
+      println();      
     }
+    println();
     showVal = false;
   }
   
-  resample();
+  if (step)
+  {
+    background(img);                                  //Make the background the orginal map image
+    drawTarget();
+    PlotRobot();
+  
+    detectObstacle();        //Detects distance to obstacle not using the sensor class  
+    
+    myRobot.sense();          //Makes use of sensor class to detect obstacles
+    
+    for (int k = 0; k < maxParticles; k++)
+    {    
+      particles[k].sense();
+      particles[k].measureProb();
+    }
+    
+    updateParticles(); 
+    
+    calcProgressPoint();
+    
+    resample();
+    
+    step = true; //false;
+  }
+  
+  
   
   
   
@@ -620,4 +629,6 @@ void changeGoal()
 void keyPressed()
 {
   if (key == ' ') showVal = true;
+  
+  if (key =='s') step = true;
 }

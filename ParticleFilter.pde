@@ -28,9 +28,18 @@ void resample()
    {      
     beta -= particles[index].prob;
     index = (index + 1) % maxParticles;
-   }   
+   }  
+   
    tempParticles[i].set(particles[index].x, particles[index].y, particles[index].heading);
    tempParticles[i].setNoise(noiseForward, noiseTurn, noiseSense);
+   
+   for (int k = 0; k < particles[index].sensors.size(); k++)
+   {
+     //Recreate sensor from particles array into tempParticles array
+     tempParticles[i].addSensor(particles[index].sensors.get(k).sensorXPos, particles[index].sensors.get(k).sensorYPos, particles[index].sensors.get(k).sensorHAngle);
+     //Copy sensor dist value over to tempParticles' dist value
+     tempParticles[i].sensors.get(k).sensorObstacleDist = particles[index].sensors.get(k).sensorObstacleDist;
+   }
   }
   
   ////Normalise the prob by dividing prob by the sum of all probs (W) and saving the value to alpha

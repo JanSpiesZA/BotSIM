@@ -12,7 +12,7 @@ class Robot{
   float prob = 1.0;
   float noiseForward = 0.0;
   float noiseTurn = 0.0;
-  float noiseSense = 15.0;  
+  float noiseSense = 1.0;  
  
   ArrayList<Sensor> sensors = new ArrayList<Sensor>();
   
@@ -169,6 +169,7 @@ class Robot{
 
       prob *= exp(- (pow(mu - x, 2) / pow(sigma,2)/2.0) / sqrt(2*PI * pow(sigma,2)));      
     }    
+    //println(prob);
   }
   
 }

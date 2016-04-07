@@ -17,6 +17,13 @@ class Sensor
     sensorHAngle = _sensorHAngle;
   }
   
+  Sensor(float _sensorXPos, float _sensorYPos, float _sensorHAngle, float _sensorNoise)
+  {
+    sensorXPos = _sensorXPos;
+    sensorYPos = _sensorYPos;
+    sensorHAngle = _sensorHAngle;
+  }
+  
   //Displays a sensor based on the reference X, Y and heading values
   void display(float _refXPos, float _refYPos, float _refHeading)
   {        
@@ -57,7 +64,7 @@ class Sensor
         
     transRot(sensorXPos, sensorYPos, sensorHAngle, sensorObstacleDist, 0);    //Converts distance to sensor frame
     transRot(_refXPos, _refYPos, _refHeading, x_temp, y_temp);
-    ellipse (x_temp, y_temp, 10*scaleFactor,10*scaleFactor);
+    //ellipse (x_temp, y_temp, 10*scaleFactor,10*scaleFactor);
     
     if (sensorObstacleDist <= safeDistance) myRobot.collisionFlag = true;      //Set collision flag when any sensor is too close to obstacle
   }
