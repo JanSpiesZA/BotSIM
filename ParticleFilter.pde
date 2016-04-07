@@ -15,21 +15,21 @@ void resample()
   //Determines the biggest importance weight (prob)  
   for (int k = 0; k < maxParticles; k++)
   {      
-    if (particle[k].prob > wm) 
+    if (particles[k].prob > wm) 
     {
-      wm = particle[k].prob;      
+      wm = particles[k].prob;      
     }
   }  
    
   for (int i = 0; i < maxParticles; i++)
   {
    beta += random(0, 2*wm);   
-   while (beta > particle[index].prob)
+   while (beta > particles[index].prob)
    {      
-    beta -= particle[index].prob;
+    beta -= particles[index].prob;
     index = (index + 1) % maxParticles;
    }   
-   tempParticles[i].set(particle[index].x, particle[index].y, particle[index].heading);
+   tempParticles[i].set(particles[index].x, particles[index].y, particles[index].heading);
    tempParticles[i].setNoise(noiseForward, noiseTurn, noiseSense);
   }
   
@@ -44,7 +44,7 @@ void resample()
   //  particles[k].prob = particles[k].prob / W;
   //}
   
-  particle = tempParticles;
+  particles = tempParticles;
   
   //arrayCopy(tempParticles, particles);
   

@@ -114,12 +114,13 @@ class Robot{
   
 
   //Moves the robot  
-  void move(float turnAngle, float distance)
+  void move(float turnAngle, float _forward)
   { 
     heading += turnAngle + randomGaussian() * noiseTurn;  //Add the turnAngle value to the current heading
     if (heading >= (2*PI)) heading -= (2*PI);
     if (heading <= (-2*PI)) heading += (2*PI);    
     
+    float distance = _forward + randomGaussian() * noiseForward;
     float newX = x + distance * cos(heading);
     float newY = y + distance * sin(heading);
     x = newX;
@@ -127,7 +128,17 @@ class Robot{
     
     state[0] = x;
     state[1] = y;
-    state[2] = heading;    
+    state[2] = heading;   
+    
+    
+    //Allows PARTICLES to live in a continuous world
+    if (nodeType == "PARTICLE")
+    {
+      if (x > screenSizeX) x =- screenSizeX;
+      if (x < 0) x += screenSizeX;
+      if (y > screenSizeY) y =- screenSizeY;
+      if (y < 0) y += screenSizeY;
+    }
   }
   
   //Calcualtes distances to obstacles for each sensor in the sensor array   
