@@ -5,9 +5,10 @@ class Sensor
   float sensorHAngle = 0.0;    //Angle of sensor in horizontal plane relative to robot chassis. IE rotated left or right
   float sensorVAngle = 0.0;    //Angle of sensor in vertical plane relative to robot chassis. IE tilted up or down
   float sensorGain = 1.0;      //Gains used to indicate importance of sensor
-  float sensorObstacleDist = 0.0;
+  float sensorObstacleDist = 0.0;  //Distance from THIS sensor to obstacle
   float sensorMaxDetect = 200.0;
   float sensorMinDetect = 2.0;
+  float sensorNoise = 1.0;
   
   Sensor(float _sensorXPos, float _sensorYPos, float _sensorHAngle)
   {
@@ -38,15 +39,32 @@ class Sensor
      
     while ((obstacleFlag == false) && (sensorObstacleDist < sensorMaxDetect))
     {
-      transRot(_refXPos, _refYPos, _refHeading, sensorXPos, sensorYPos);  //translates sensordata to global frame
-      obstacleX = x_temp + sensorObstacleDist * cos(_refHeading + sensorHAngle);
-      obstacleY = y_temp + sensorObstacleDist * sin(_refHeading + sensorHAngle);   
-      color col = img.get (int(obstacleX), int(obstacleY));    //Test pixel colour to determine if there is an obstacle
+      //translates and rotates sensor position and heading onto robot frame
+      transRot(sensorXPos, sensorYPos, sensorHAngle, sensorObstacleDist, 0);    //Converts distance to sensor frame
+      transRot(_refXPos, _refYPos, _refHeading, x_temp, y_temp);
+      
+      obstacleX = x_temp;
+      obstacleY = y_temp;
+      
+      //transRot(_refXPos, _refYPos, _refHeading, sensorXPos, sensorYPos);  //translates sensordata to global frame
+      //obstacleX = x_temp + sensorObstacleDist * cos(_refHeading + sensorHAngle);
+      //obstacleY = y_temp + sensorObstacleDist * sin(_refHeading + sensorHAngle);   
+      color col = img.get (int(x_temp), int(y_temp));    //Test pixel colour to determine if there is an obstacle
       if (red(col) == 0)
         obstacleFlag = true;
       sensorObstacleDist += 1;      
     }
+    sensorObstacleDist += randomGaussian() * sensorNoise;
+    
     if (sensorObstacleDist <= safeDistance) myRobot.collisionFlag = true;      //Set collision flag when any sensor is too close to obstacle
-    ellipse (obstacleX, obstacleY, 10*scaleFactor,10*scaleFactor);    
+    
+    //ellipse (obstacleX, obstacleY, 10*scaleFactor,10*scaleFactor);
+    
+    
+    //Add noise to the sensor distance
+    sensorObstacleDist += randomGaussian() * sensorNoise;    
+    transRot(sensorXPos, sensorYPos, sensorHAngle, sensorObstacleDist, 0);    //Converts distance to sensor frame
+    transRot(_refXPos, _refYPos, _refHeading, x_temp, y_temp);
+    ellipse (x_temp, y_temp, 10*scaleFactor,10*scaleFactor); 
   }
 }
