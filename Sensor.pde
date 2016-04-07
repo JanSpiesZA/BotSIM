@@ -46,7 +46,7 @@ class Sensor
         obstacleFlag = true;
       sensorObstacleDist += 1;      
     }
-    if (sensorObstacleDist <= safeDistance) myrobot.collisionFlag = true;      //Set collision flag when any sensor is too close to obstacle
+    if (sensorObstacleDist <= safeDistance) myRobot.collisionFlag = true;      //Set collision flag when any sensor is too close to obstacle
     ellipse (obstacleX, obstacleY, 10*scaleFactor,10*scaleFactor);    
   }
 }
