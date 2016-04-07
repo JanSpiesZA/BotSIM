@@ -8,7 +8,7 @@ class Sensor
   float sensorObstacleDist = 0.0;  //Distance from THIS sensor to obstacle
   float sensorMaxDetect = 200.0;
   float sensorMinDetect = 2.0;
-  float sensorNoise = 1.0;
+  float sensorNoise = 5.0;
   
   Sensor(float _sensorXPos, float _sensorYPos, float _sensorHAngle)
   {

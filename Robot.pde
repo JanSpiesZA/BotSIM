@@ -12,7 +12,7 @@ class Robot{
   float prob = 1.0;
   float noiseForward = 0.0;
   float noiseTurn = 0.0;
-  float noiseSense = 5.0;  
+  float noiseSense = 15.0;  
  
   ArrayList<Sensor> sensors = new ArrayList<Sensor>();
   
@@ -80,16 +80,19 @@ class Robot{
         float x_glob = 0.0;
         float y_glob = 0.0;
         fill(255);
+        
+        //Plots the sensors position on the robot avatar
         for (int i=0; i < numSensors; i++)
         {
+          fill(255,0,0);
           transRot(x, y, heading, sensorX[i], sensorY[i]);    //Takes the sensor's x,y and plot it in the global frame
           ellipse(x_temp, y_temp,3,3);
         }
         
-        //Displays sensor from ArrayList
+        //Displays sensor from ArrayList on robot avatar
         for (int k = 0; k < sensors.size(); k++)
         {
-          fill(255,0,0);
+          fill(255,0,0);          
           sensors.get(k).display(x,y,heading);          
         }
         
@@ -98,12 +101,9 @@ class Robot{
       case "PARTICLE":
         stroke(255,0,0);
         fill(255,0,0);
-        ellipse(x, y, prob*10, prob*10);
-        //ellipse(xPos, yPos, 5, 5);
+        ellipse(x, y, max(1,prob*10), max(1,prob*10));  //Shows a small red dot where the head of the particle is else proportionate to the probability        
         textAlign(CENTER, CENTER);
-        fill(0);
-        //text(prob, xPos,yPos-10);
-        //print(prob+",");
+        fill(0);        
         break;
     } 
     stroke(0);    
@@ -130,6 +130,7 @@ class Robot{
     state[2] = heading;    
   }
   
+  //Calcualtes distances to obstacles for each sensor in the sensor array   
   void sense()
   {
     for (int k = 0; k < sensors.size(); k++)
@@ -137,5 +138,26 @@ class Robot{
       sensors.get(k).sense(x,y,heading);
     }
   }  
+  
+  //Calculates the probability of how closely a particle's measurements to an obstacle coresponds with that of the robot.
+  //A prob value is calculated for each sensors distance which is multiplied to all other probabilities of the specific particle
+  //Uses a gausian with:
+  //  mu     - Particle's measured distance to a obstacle
+  //  sigma  - Particle's measurement noise
+  //  x      - Robot's distance measurement of the same sensor  
+  void measureProb()
+  {        
+    prob = 1.0;        //Set probability to maximum value
+    float probActual =1.0;
+    
+    for (int k = 0; k < sensors.size(); k++)
+    { 
+      float mu = sensors.get(k).sensorObstacleDist;
+      float sigma = sensors.get(k).sensorNoise;
+      float x = myRobot.sensors.get(k).sensorObstacleDist;      
+
+      prob *= exp(- (pow(mu - x, 2) / pow(sigma,2)/2.0) / sqrt(2*PI * pow(sigma,2)));      
+    }    
+  }
   
 }
