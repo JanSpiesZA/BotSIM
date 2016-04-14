@@ -12,7 +12,7 @@ float ogXResolution = 100 * scaleFactor;          ///The resolution of a the gri
 float ogYResolution = 100 * scaleFactor;
 
 int occupiedFlag = 0;            //Indicates if a grid in the occupied map must be completely covered
-//boolean collisionFlag = false;
+boolean collisionFlag = false;
 boolean makingProgress = true;    //Indicates if progress towards the goal is being made
 boolean wallDetect = false;
 
@@ -183,12 +183,13 @@ void draw()
   
   if (step)
   {
-    //background(img);                                  //Make the background the orginal map image
-    background(255);
+    //background(img);                                  //Make the background the orginal map image    
+    //background(255);
+    drawTiles();
     drawTarget();
     PlotRobot();
   
-    detectObstacle();        //Detects distance to obstacle not using the sensor class  
+    //detectObstacle();        //Detects distance to obstacle not using the sensor class  
     
     myRobot.sense();          //Makes use of sensor class to detect obstacles
     
@@ -198,11 +199,13 @@ void draw()
       particles[k].measureProb();
     }
     
-    updateParticles(); 
+    // updateParticles(); 
     
-    calcProgressPoint();
+    // calcProgressPoint();
     
-    resample();
+    // resample();
+    
+    
     
     step = true;
   }
@@ -211,10 +214,10 @@ void draw()
   
   
   
-  calcVecAO();       //Calculates the avoid obstacle vector;
-  calcVecGTG();
-  calcVecAO_GTG();    //Calculates vector after blending Go-To-Goal and Avoid_Obstacle;
-  estimateWall();    //Estimates the distance to the wall using closest sesnors to the wall  
+  // calcVecAO();       //Calculates the avoid obstacle vector;
+   calcVecGTG();
+  // calcVecAO_GTG();    //Calculates vector after blending Go-To-Goal and Avoid_Obstacle;
+  // estimateWall();    //Estimates the distance to the wall using closest sesnors to the wall  
   //dispVectors();      //Displays different vectors, ie: Go-To-Goal, Avoid Obstacle, etc
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -222,6 +225,21 @@ void draw()
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
+void drawTiles()
+{
+  for (int x = 0; x < maxTilesX; x++)
+  {
+    for (int y = 0; y < maxTilesY; y++)
+    {
+      stroke(0);        //Lines between tiles are black
+      strokeWeight(1);  //Stroke weight makes the lines very light
+      fill(tile[x][y].gravityCol);
+      rect(x*tileSize,y*tileSize, tileSize,tileSize);  //Draws a rectangle to indicate the tile
+    }
+  }
+}
+
+//###############################################################################################
 void updateParticles()
 {
   //Update particle movement
@@ -236,7 +254,8 @@ void updateParticles()
     particles[i].display();
   }
 }
-  
+
+//###############################################################################################
 void applyScale()
 {
   myRobot.robotDiameter *= scaleFactor;
@@ -268,7 +287,7 @@ void applyScale()
   }
   
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
+//###############################################################################################
 void PlotRobot()
 {
   float difference = 0.0;
@@ -301,16 +320,24 @@ void PlotRobot()
       //calcErrorAngle(phi_GTG);
       
       if (distanceToTarget <= safeZone)   //Robot is close enough to goal, stop robot
+      {
         stateVal = 0;
+      }
         
       if (myRobot.collisionFlag)
+      {
         stateVal = 2;      
+      }
       
       if (!myRobot.collisionFlag) 
+      {
         calcErrorAngle(phi_GTG);
+      }
         
       if ((!makingProgress) && (myRobot.collisionFlag))
+      {
         stateVal = 3;
+      }
     break;
     
     case 2:    //Avoid obstacle state
@@ -345,7 +372,7 @@ void PlotRobot()
   moveSpeed = min (myRobot.maxSpeed ,(moveGain * (distanceToTarget))); 
   myRobot.move(moveAngle,moveSpeed);  
   myRobot.display();
-  
+  println("State: "+stateVal);
   
   //moveSpeed = 1;
   

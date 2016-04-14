@@ -49,7 +49,7 @@ class Sensor
       transRot(_refXPos, _refYPos, _refHeading, x_temp, y_temp);
       
       color col = get (int(x_temp), int(y_temp));    //Test pixel colour to determine if there is an obstacle
-      if (red(col) == 0)
+      if (col == 0)
         obstacleFlag = true;
       sensorObstacleDist += 1;      
     }
