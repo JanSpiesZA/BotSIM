@@ -677,4 +677,11 @@ void keyPressed()
   if (key == ' ') showVal = true;
   
   if (key =='s') step = true;
+  
+  //Use this key to enable or diable obstacle
+  if (key == 'o')
+  {
+    tile[int(mouseX/tileSize)][int(mouseY/tileSize)].gravity *= -1;    
+    tile[int(mouseX/tileSize)][int(mouseY/tileSize)].update();        
+  }
 }
