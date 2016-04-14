@@ -1,22 +1,19 @@
 PImage img;
 
+//Actual distance of measured on ground, measured in cm's
 float worldMapScaleX = 1000; //3737;      //To be used as the actual distance of the world map x axis, measured in cm
 float worldMapScaleY = 1000; //1137;
 
-float screenSizeX = 500;
+float screenSizeX = 1000;
 float screenSizeY = screenSizeX * (worldMapScaleY/worldMapScaleX);  //Scale the y size according to ratio between worldMapScaleX an Y
 
 float scaleFactor = screenSizeX / worldMapScaleX;
 
-float ogXResolution = 100 * scaleFactor;          ///The resolution of a the grid of the occupancy map, measured in cm
-float ogYResolution = 100 * scaleFactor;
-
-int occupiedFlag = 0;            //Indicates if a grid in the occupied map must be completely covered
-//boolean collisionFlag = false;
+boolean collisionFlag = false;
 boolean makingProgress = true;    //Indicates if progress towards the goal is being made
 boolean wallDetect = false;
 
-int maxParticles = 100;
+int maxParticles = 0;
 Robot[] particles = new Robot[maxParticles];
 float noiseForward = 1.0;
 float noiseTurn = 0.1;
@@ -79,6 +76,12 @@ int stateVal = 0;      //Values used to indicate which state the robot is curren
 boolean showVal = false;
 boolean step = false;
 
+//Measurement of tiles to be used for occupancy grid in cm's scaled to represented size in real world
+int tileSize = int(50 * scaleFactor);                            
+int maxTilesX = int(screenSizeX/tileSize);
+int maxTilesY = int(screenSizeY/tileSize);
+Tile tile[][] = new Tile[maxTilesX][maxTilesY];
+
 void setup()
 {
   
@@ -95,6 +98,14 @@ void setup()
     //myRobot.addSensor(0.0, 0.0, radians(-30 + 60/(numSensors2-1)*k));
   }  
   
+  //Sets up a 2D array which will hold the world Tiles
+  for (int x = 0; x < maxTilesX; x++)
+  {
+    for (int y = 0; y < maxTilesY; y++)
+    {
+      tile[x][y] = new Tile();
+    }
+  }  
 
   for (int i = 0; i < maxParticles; i++)
   {
@@ -114,37 +125,38 @@ void setup()
   
   
   
-  img = loadImage("kamer3.png");                        //Loads the selected image as background
-  img.resize((int)worldMapScaleX, (int)worldMapScaleY);
-  img.filter(THRESHOLD);                                //Convert image to black and white
-  img.resize(int(screenSizeX), int(screenSizeY));
+  //img = loadImage("kamer3.png");                        //Loads the selected image as background
+  //img.resize((int)worldMapScaleX, (int)worldMapScaleY);
+  //img.filter(THRESHOLD);                                //Convert image to black and white
+  //img.resize(int(screenSizeX), int(screenSizeY));
   
   
-  size(500,500,P2D);
+  surface.setResizable(true);
+  surface.setSize(int(screenSizeX),int(screenSizeY));
   
-  println (img.width);
-  println (img.height);  
+  //println (img.width);
+  //println (img.height);  
   
   println (numSensors);
   
-  tint(255,127);
-  image(img,0,0);
+  //tint(255,127);
+  //image(img,0,0);
   
   
   //Change particle x and y values to prevent them from being inside walls
-  for (int i=0; i < maxParticles; i++)
-  {  
-    color col = img.get (int(particles[i].x) ,int(particles[i].y));    //Test pixel colour to determine if there is an obstacle
-    if (red(col) == 0)
-    {
-      while(red(col) == 0)    
-      {
-        particles[i].x = random (0, screenSizeX);
-        particles[i].y = random (0, screenSizeY);
-        col = img.get (int(particles[i].x) ,int(particles[i].y));    //Test pixel colour to determine if there is an obstacle
-      }
-    }      
-  }
+  //for (int i=0; i < maxParticles; i++)
+  //{  
+  //  color col = img.get (int(particles[i].x) ,int(particles[i].y));    //Test pixel colour to determine if there is an obstacle
+  //  if (red(col) == 0)
+  //  {
+  //    while(red(col) == 0)    
+  //    {
+  //      particles[i].x = random (0, screenSizeX);
+  //      particles[i].y = random (0, screenSizeY);
+  //      col = img.get (int(particles[i].x) ,int(particles[i].y));    //Test pixel colour to determine if there is an obstacle
+  //    }
+  //  }      
+  //}
 }
 
 void draw()
@@ -170,11 +182,13 @@ void draw()
   
   if (step)
   {
-    background(img);                                  //Make the background the orginal map image
+    //background(img);                                  //Make the background the orginal map image    
+    //background(255);
+    drawTiles();
     drawTarget();
     PlotRobot();
   
-    detectObstacle();        //Detects distance to obstacle not using the sensor class  
+    //detectObstacle();        //Detects distance to obstacle not using the sensor class  
     
     myRobot.sense();          //Makes use of sensor class to detect obstacles
     
@@ -184,11 +198,13 @@ void draw()
       particles[k].measureProb();
     }
     
-    updateParticles(); 
+    // updateParticles(); 
     
-    calcProgressPoint();
+    // calcProgressPoint();
     
-    resample();
+    // resample();
+    
+    
     
     step = true;
   }
@@ -197,10 +213,10 @@ void draw()
   
   
   
-  calcVecAO();       //Calculates the avoid obstacle vector;
-  calcVecGTG();
-  calcVecAO_GTG();    //Calculates vector after blending Go-To-Goal and Avoid_Obstacle;
-  estimateWall();    //Estimates the distance to the wall using closest sesnors to the wall  
+  // calcVecAO();       //Calculates the avoid obstacle vector;
+   calcVecGTG();
+  // calcVecAO_GTG();    //Calculates vector after blending Go-To-Goal and Avoid_Obstacle;
+  // estimateWall();    //Estimates the distance to the wall using closest sesnors to the wall  
   //dispVectors();      //Displays different vectors, ie: Go-To-Goal, Avoid Obstacle, etc
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -208,6 +224,21 @@ void draw()
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
+void drawTiles()
+{
+  for (int x = 0; x < maxTilesX; x++)
+  {
+    for (int y = 0; y < maxTilesY; y++)
+    {
+      stroke(0);        //Lines between tiles are black
+      strokeWeight(1);  //Stroke weight makes the lines very light
+      fill(tile[x][y].gravityCol);
+      rect(x*tileSize,y*tileSize, tileSize,tileSize);  //Draws a rectangle to indicate the tile
+    }
+  }
+}
+
+//###############################################################################################
 void updateParticles()
 {
   //Update particle movement
@@ -222,7 +253,8 @@ void updateParticles()
     particles[i].display();
   }
 }
-  
+
+//###############################################################################################
 void applyScale()
 {
   myRobot.robotDiameter *= scaleFactor;
@@ -254,7 +286,7 @@ void applyScale()
   }
   
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
+//###############################################################################################
 void PlotRobot()
 {
   float difference = 0.0;
@@ -287,16 +319,24 @@ void PlotRobot()
       //calcErrorAngle(phi_GTG);
       
       if (distanceToTarget <= safeZone)   //Robot is close enough to goal, stop robot
+      {
         stateVal = 0;
+      }
         
       if (myRobot.collisionFlag)
+      {
         stateVal = 2;      
+      }
       
       if (!myRobot.collisionFlag) 
+      {
         calcErrorAngle(phi_GTG);
+      }
         
       if ((!makingProgress) && (myRobot.collisionFlag))
+      {
         stateVal = 3;
+      }
     break;
     
     case 2:    //Avoid obstacle state
@@ -331,7 +371,7 @@ void PlotRobot()
   moveSpeed = min (myRobot.maxSpeed ,(moveGain * (distanceToTarget))); 
   myRobot.move(moveAngle,moveSpeed);  
   myRobot.display();
-  
+  println("State: "+stateVal);
   
   //moveSpeed = 1;
   
@@ -480,8 +520,8 @@ void detectObstacle()
      transRot(myRobot.x, myRobot.y, myRobot.heading, sensorX[i], sensorY[i]);  //translates sensordata to global frame
      obstacleX = x_temp + sensorObstacleDist[i] * cos(myRobot.heading + sensorPhi[i]);
      obstacleY = y_temp + sensorObstacleDist[i] * sin(myRobot.heading + sensorPhi[i]);   
-     color col = img.get (int(obstacleX), int(obstacleY));    //Test pixel colour to determine if there is an obstacle
-     if (red(col) == 0)
+     color col = get (int(obstacleX), int(obstacleY));    //Test pixel colour to determine if there is an obstacle
+     if (col == 0)                //Test to see if pixel is black
        obstacleFlag = true;
      sensorObstacleDist[i] += 1;      
    }
@@ -636,4 +676,11 @@ void keyPressed()
   if (key == ' ') showVal = true;
   
   if (key =='s') step = true;
+  
+  //Use this key to enable or diable obstacle
+  if (key == 'o')
+  {
+    tile[int(mouseX/tileSize)][int(mouseY/tileSize)].gravity *= -1;    
+    tile[int(mouseX/tileSize)][int(mouseY/tileSize)].update();        
+  }
 }
