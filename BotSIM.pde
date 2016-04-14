@@ -188,7 +188,7 @@ void draw()
     drawTarget();
     PlotRobot();
   
-    //detectObstacle();        //Detects distance to obstacle not using the sensor class  
+    detectObstacle();        //Detects distance to obstacle not using the sensor class  
     
     myRobot.sense();          //Makes use of sensor class to detect obstacles
     
@@ -521,7 +521,7 @@ void detectObstacle()
      obstacleX = x_temp + sensorObstacleDist[i] * cos(myRobot.heading + sensorPhi[i]);
      obstacleY = y_temp + sensorObstacleDist[i] * sin(myRobot.heading + sensorPhi[i]);   
      color col = get (int(obstacleX), int(obstacleY));    //Test pixel colour to determine if there is an obstacle
-     if (col == 0)                //Test to see if pixel is black
+     if (col == color(200,150,150))                //Test to see if tile is an obstacle
        obstacleFlag = true;
      sensorObstacleDist[i] += 1;      
    }
