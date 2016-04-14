@@ -82,6 +82,7 @@ boolean step = false;
 int tileSize = 80;                            //Measurement of tiles to be used for occupancy grid in cm's
 int maxTilesX = int(screenSizeX/tileSize);
 int maxTilesY = int(screenSizeY/tileSize);
+Tile tile[][] = new Tile[maxTilesX][maxTilesY];
 
 void setup()
 {
@@ -99,6 +100,14 @@ void setup()
     //myRobot.addSensor(0.0, 0.0, radians(-30 + 60/(numSensors2-1)*k));
   }  
   
+  //Sets up a 2D array which will hold the world Tiles
+  for (int x = 0; x < maxTilesX; x++)
+  {
+    for (int y = 0; y < maxTilesY; y++)
+    {
+      tile[x][y] = new Tile();
+    }
+  }  
 
   for (int i = 0; i < maxParticles; i++)
   {
