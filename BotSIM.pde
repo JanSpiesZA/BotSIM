@@ -56,9 +56,6 @@ float[] sensorObstacleDist = new float[numSensors];
 float minDetectDistance = 10.0;        //Closer than this value and the sensors do not return valid data
 float maxDetectDistance = 200.0;
 
-float x_temp = 0.0;        //Placeholder for temporary data from transRot function
-float y_temp = 0.0;        //Placeholder for temporary data from transRot function
-
 float goalX = screenSizeX / 2;            //Goal's X and Y coordinates, set up by clicking with the mouse on the screen
 float goalY = screenSizeY / 2;
 float startX = 0;          //Starting point for straight line to goal used by Bug algorithm families
@@ -449,15 +446,15 @@ void estimateWall()
   //  Create a wall vector and normalise it
   if ((c1 >= 0) & (c2 >= 0))
   { 
-    transRot (sensorX[c1], sensorY[c1], sensorPhi[c1], sensorObstacleDist[c1], 0);    //translates obstacle distance to robot frame
-    transRot (myRobot.x, myRobot.y, myRobot.heading, x_temp, y_temp);  //translates sensordata in robot frame to global frame
-    closest1[0] = x_temp;
-    closest1[1] = y_temp;
+    PVector returnVal = transRot (sensorX[c1], sensorY[c1], sensorPhi[c1], sensorObstacleDist[c1], 0);    //translates obstacle distance to robot frame
+    returnVal = transRot (myRobot.x, myRobot.y, myRobot.heading, returnVal.x, returnVal.y);  //translates sensordata in robot frame to global frame
+    closest1[0] = returnVal.x;
+    closest1[1] = returnVal.y;
     
-    transRot (sensorX[c2], sensorY[c2], sensorPhi[c2], sensorObstacleDist[c2], 0);    //translates obstacle distance to robot frame
-    transRot (myRobot.x, myRobot.y, myRobot.heading, x_temp, y_temp);  //translates sensordata in robot frame to global frame
-    closest2[0] = x_temp;
-    closest2[1] = y_temp;
+    returnVal = transRot (sensorX[c2], sensorY[c2], sensorPhi[c2], sensorObstacleDist[c2], 0);    //translates obstacle distance to robot frame
+    returnVal = transRot (myRobot.x, myRobot.y, myRobot.heading, returnVal.x, returnVal.y);  //translates sensordata in robot frame to global frame
+    closest2[0] = returnVal.x;
+    closest2[1] = returnVal.y;
          
     ellipse (closest1[0], closest1[1], 20,20);
     ellipse (closest2[0], closest2[1], 20,20);
@@ -520,9 +517,9 @@ void detectObstacle()
    
    while ((obstacleFlag == false) && (sensorObstacleDist[i] < maxDetectDistance))
    {
-     transRot(myRobot.x, myRobot.y, myRobot.heading, sensorX[i], sensorY[i]);  //translates sensordata to global frame
-     obstacleX = x_temp + sensorObstacleDist[i] * cos(myRobot.heading + sensorPhi[i]);
-     obstacleY = y_temp + sensorObstacleDist[i] * sin(myRobot.heading + sensorPhi[i]);   
+     PVector returnVal = transRot(myRobot.x, myRobot.y, myRobot.heading, sensorX[i], sensorY[i]);  //translates sensordata to global frame
+     obstacleX = returnVal.x + sensorObstacleDist[i] * cos(myRobot.heading + sensorPhi[i]);
+     obstacleY = returnVal.y + sensorObstacleDist[i] * sin(myRobot.heading + sensorPhi[i]);   
      color col = get (int(obstacleX), int(obstacleY));    //Test pixel colour to determine if there is an obstacle
      if (col == color(200,150,150))                //Test to see if tile is an obstacle
        obstacleFlag = true;
@@ -546,14 +543,14 @@ void calcVecAO()
   
   for (int i=0; i < numSensors; i++)
   {
-    transRot(myRobot.x, myRobot.y, myRobot.heading, sensorX[i], sensorY[i]);  //translates sensordata to global frame
-    x1_vector = x_temp;
-    y1_vector = y_temp;
+    PVector returnVal = transRot(myRobot.x, myRobot.y, myRobot.heading, sensorX[i], sensorY[i]);  //translates sensordata to global frame
+    x1_vector = returnVal.x; //x_temp;
+    y1_vector = returnVal.y; //y_temp;
     
-    transRot (sensorX[i], sensorY[i], sensorPhi[i], sensorObstacleDist[i], 0);    //translates obstacle distance to robot frame
-    transRot (myRobot.x, myRobot.y, myRobot.heading, x_temp, y_temp);  //translates sensordata in robot frame to global frame
-    x_vector = x_temp - x1_vector;
-    y_vector = y_temp - y1_vector;
+    returnVal = transRot (sensorX[i], sensorY[i], sensorPhi[i], sensorObstacleDist[i], 0);    //translates obstacle distance to robot frame
+    returnVal = transRot (myRobot.x, myRobot.y, myRobot.heading, returnVal.x, returnVal.y);  //translates sensordata in robot frame to global frame
+    x_vector = returnVal.x - x1_vector;
+    y_vector = returnVal.y - y1_vector;
     
     //Add all the vectors together and multiply with vector gains
     vectorAO[0] += (x_vector * sensorGains[i]);
@@ -644,10 +641,12 @@ void dispVectors()
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //Rotates and translates an X and Y coordinate onto a local frame using the local frame's X,Y and HEADING
 //Returns x_temp and y_temp which must be allocated to other relevant variables in order to prevent overwriting of their values
-void transRot (float x_frame, float y_frame, float phi_frame, float x_point, float y_point)
+PVector transRot (float x_frame, float y_frame, float phi_frame, float x_point, float y_point)
 {
-  x_temp = cos(phi_frame) * x_point - sin(phi_frame)*y_point + x_frame; //Uses transformation and rotation to plot sensor gloablly 
-  y_temp = sin(phi_frame) * x_point + cos(phi_frame)*y_point + y_frame;
+  float x_temp = cos(phi_frame) * x_point - sin(phi_frame)*y_point + x_frame; //Uses transformation and rotation to plot sensor gloablly 
+  float y_temp = sin(phi_frame) * x_point + cos(phi_frame)*y_point + y_frame;
+  PVector result = new PVector(x_temp, y_temp);
+  return result;
 }
 //==========================================================================
 //
