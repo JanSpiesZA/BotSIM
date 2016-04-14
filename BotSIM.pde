@@ -16,7 +16,7 @@ int occupiedFlag = 0;            //Indicates if a grid in the occupied map must 
 boolean makingProgress = true;    //Indicates if progress towards the goal is being made
 boolean wallDetect = false;
 
-int maxParticles = 100;
+int maxParticles = 0;
 Robot[] particles = new Robot[maxParticles];
 float noiseForward = 1.0;
 float noiseTurn = 0.1;
@@ -127,37 +127,37 @@ void setup()
   
   
   
-  img = loadImage("kamer3.png");                        //Loads the selected image as background
-  img.resize((int)worldMapScaleX, (int)worldMapScaleY);
-  img.filter(THRESHOLD);                                //Convert image to black and white
-  img.resize(int(screenSizeX), int(screenSizeY));
+  //img = loadImage("kamer3.png");                        //Loads the selected image as background
+  //img.resize((int)worldMapScaleX, (int)worldMapScaleY);
+  //img.filter(THRESHOLD);                                //Convert image to black and white
+  //img.resize(int(screenSizeX), int(screenSizeY));
   
   
   size(500,500,P2D);
   
-  println (img.width);
-  println (img.height);  
+  //println (img.width);
+  //println (img.height);  
   
   println (numSensors);
   
-  tint(255,127);
-  image(img,0,0);
+  //tint(255,127);
+  //image(img,0,0);
   
   
   //Change particle x and y values to prevent them from being inside walls
-  for (int i=0; i < maxParticles; i++)
-  {  
-    color col = img.get (int(particles[i].x) ,int(particles[i].y));    //Test pixel colour to determine if there is an obstacle
-    if (red(col) == 0)
-    {
-      while(red(col) == 0)    
-      {
-        particles[i].x = random (0, screenSizeX);
-        particles[i].y = random (0, screenSizeY);
-        col = img.get (int(particles[i].x) ,int(particles[i].y));    //Test pixel colour to determine if there is an obstacle
-      }
-    }      
-  }
+  //for (int i=0; i < maxParticles; i++)
+  //{  
+  //  color col = img.get (int(particles[i].x) ,int(particles[i].y));    //Test pixel colour to determine if there is an obstacle
+  //  if (red(col) == 0)
+  //  {
+  //    while(red(col) == 0)    
+  //    {
+  //      particles[i].x = random (0, screenSizeX);
+  //      particles[i].y = random (0, screenSizeY);
+  //      col = img.get (int(particles[i].x) ,int(particles[i].y));    //Test pixel colour to determine if there is an obstacle
+  //    }
+  //  }      
+  //}
 }
 
 void draw()
@@ -183,7 +183,8 @@ void draw()
   
   if (step)
   {
-    background(img);                                  //Make the background the orginal map image
+    //background(img);                                  //Make the background the orginal map image
+    background(255);
     drawTarget();
     PlotRobot();
   
@@ -493,8 +494,8 @@ void detectObstacle()
      transRot(myRobot.x, myRobot.y, myRobot.heading, sensorX[i], sensorY[i]);  //translates sensordata to global frame
      obstacleX = x_temp + sensorObstacleDist[i] * cos(myRobot.heading + sensorPhi[i]);
      obstacleY = y_temp + sensorObstacleDist[i] * sin(myRobot.heading + sensorPhi[i]);   
-     color col = img.get (int(obstacleX), int(obstacleY));    //Test pixel colour to determine if there is an obstacle
-     if (red(col) == 0)
+     color col = get (int(obstacleX), int(obstacleY));    //Test pixel colour to determine if there is an obstacle
+     if (col == 0)                //Test to see if pixel is black
        obstacleFlag = true;
      sensorObstacleDist[i] += 1;      
    }

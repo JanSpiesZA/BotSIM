@@ -7,7 +7,7 @@ class Sensor
   float sensorGain = 1.0;      //Gains used to indicate importance of sensor
   int sensorObstacleDist = 0;  //Distance from THIS sensor to obstacle
   int sensorMaxDetect = 200;
-  int sensorMinDetect = 2;
+  int sensorMinDetect = 10;
   float sensorNoise = 5.0;
   
   Sensor(int _sensorXPos, int _sensorYPos, float _sensorHAngle)
@@ -48,7 +48,7 @@ class Sensor
       transRot(sensorXPos, sensorYPos, sensorHAngle, sensorObstacleDist, 0);    //Converts distance to sensor frame
       transRot(_refXPos, _refYPos, _refHeading, x_temp, y_temp);
       
-      color col = img.get (int(x_temp), int(y_temp));    //Test pixel colour to determine if there is an obstacle
+      color col = get (int(x_temp), int(y_temp));    //Test pixel colour to determine if there is an obstacle
       if (red(col) == 0)
         obstacleFlag = true;
       sensorObstacleDist += 1;      
