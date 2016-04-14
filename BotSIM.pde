@@ -1,9 +1,10 @@
 PImage img;
 
+//Actual distance of measured on ground, measured in cm's
 float worldMapScaleX = 1000; //3737;      //To be used as the actual distance of the world map x axis, measured in cm
 float worldMapScaleY = 1000; //1137;
 
-float screenSizeX = 500;
+float screenSizeX = 1000;
 float screenSizeY = screenSizeX * (worldMapScaleY/worldMapScaleX);  //Scale the y size according to ratio between worldMapScaleX an Y
 
 float scaleFactor = screenSizeX / worldMapScaleX;
@@ -75,7 +76,8 @@ int stateVal = 0;      //Values used to indicate which state the robot is curren
 boolean showVal = false;
 boolean step = false;
 
-int tileSize = 80;                            //Measurement of tiles to be used for occupancy grid in cm's
+//Measurement of tiles to be used for occupancy grid in cm's scaled to represented size in real world
+int tileSize = int(50 * scaleFactor);                            
 int maxTilesX = int(screenSizeX/tileSize);
 int maxTilesY = int(screenSizeY/tileSize);
 Tile tile[][] = new Tile[maxTilesX][maxTilesY];
@@ -129,7 +131,8 @@ void setup()
   //img.resize(int(screenSizeX), int(screenSizeY));
   
   
-  size(500,500,P2D);
+  surface.setResizable(true);
+  surface.setSize(int(screenSizeX),int(screenSizeY));
   
   //println (img.width);
   //println (img.height);  
