@@ -640,7 +640,7 @@ void dispVectors()
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //Rotates and translates an X and Y coordinate onto a local frame using the local frame's X,Y and HEADING
-//Returns x_temp and y_temp which must be allocated to other relevant variables in order to prevent overwriting of their values
+//Returns a PVector with new x and y coordinates
 PVector transRot (float x_frame, float y_frame, float phi_frame, float x_point, float y_point)
 {
   float x_temp = cos(phi_frame) * x_point - sin(phi_frame)*y_point + x_frame; //Uses transformation and rotation to plot sensor gloablly 
