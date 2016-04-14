@@ -79,6 +79,10 @@ int stateVal = 0;      //Values used to indicate which state the robot is curren
 boolean showVal = false;
 boolean step = false;
 
+int tileSize = 80;                            //Measurement of tiles to be used for occupancy grid in cm's
+int maxTilesX = int(screenSizeX/tileSize);
+int maxTilesY = int(screenSizeY/tileSize);
+
 void setup()
 {
   
