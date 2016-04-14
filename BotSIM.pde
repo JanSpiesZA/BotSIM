@@ -8,10 +8,6 @@ float screenSizeY = screenSizeX * (worldMapScaleY/worldMapScaleX);  //Scale the 
 
 float scaleFactor = screenSizeX / worldMapScaleX;
 
-float ogXResolution = 100 * scaleFactor;          ///The resolution of a the grid of the occupancy map, measured in cm
-float ogYResolution = 100 * scaleFactor;
-
-int occupiedFlag = 0;            //Indicates if a grid in the occupied map must be completely covered
 boolean collisionFlag = false;
 boolean makingProgress = true;    //Indicates if progress towards the goal is being made
 boolean wallDetect = false;
