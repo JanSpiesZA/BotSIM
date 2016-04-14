@@ -85,8 +85,8 @@ class Robot{
         for (int i=0; i < numSensors; i++)
         {
           fill(255,0,0);
-          transRot(x, y, heading, sensorX[i], sensorY[i]);    //Takes the sensor's x,y and plot it in the global frame
-          ellipse(x_temp, y_temp,3,3);
+          PVector returnVal = transRot(x, y, heading, sensorX[i], sensorY[i]);    //Takes the sensor's x,y and plot it in the global frame
+          ellipse(returnVal.x, returnVal.y,3,3);
         }
         
         //Displays sensor from ArrayList on robot avatar
