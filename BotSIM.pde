@@ -54,6 +54,7 @@ float[] vectorAwayFromWall = {0.0, 0.0};  //x and y values for vector pointing a
 float[] vectorFollowWall = {0.0, 0.0};    //Vector pointing in the direction the robot must move when following the wall
 
 int numSensors = sensorX.length;    //Determines the amount of sensor elements present
+int numSensors2 = 9;
 float[] sensorObstacleDist = new float[numSensors];
 float minDetectDistance = 10.0;        //Closer than this value and the sensors do not return valid data
 float maxDetectDistance = 200.0;
@@ -85,25 +86,29 @@ void setup()
   myRobot.set(screenSizeX/2, screenSizeY/2, -PI/2);
   
   //Add sensors to the robot object 
-  for (int k=0; k<numSensors; k++)
+  for (int k=0; k<numSensors2; k++)
   {
-    myRobot.addSensor(0.0, 0.0, -PI/2 + PI/(numSensors-1)*k);
+    //myRobot.addSensor(0.0, 0.0, -PI/2 + PI/(numSensors-1)*k);
+    
+    myRobot.addSensor(0, 0, -PI/2 + PI/(numSensors-1)*k);
+    
+    //myRobot.addSensor(0.0, 0.0, radians(-30 + 60/(numSensors2-1)*k));
   }  
   
 
   for (int i = 0; i < maxParticles; i++)
   {
     particles[i] = new Robot("PARTICLE");  
-    //particles[i].set(screenSizeX/2, screenSizeY/2, -PI/2);
+    particles[i].set(screenSizeX/2, screenSizeY/2, -PI/2);
     particles[i].setNoise(noiseForward, noiseTurn, noiseSense);    //Add noise to newly created particle
     
-    for (int k = 0; k < numSensors; k++)
+    for (int k = 0; k < numSensors2; k++)
     {
-      particles[i].addSensor(0.0, 0.0, -PI/2 + PI/(numSensors-1)*k);
+      particles[i].addSensor(0, 0, -PI/2 + PI/(numSensors2-1)*k);
     }    
   }  
   
-  println(particles[0].sensors.size());
+  //println(particles[0].sensors.size());
   
   applyScale();    //Applies the scale to all physical quantities
   
@@ -115,7 +120,7 @@ void setup()
   img.resize(int(screenSizeX), int(screenSizeY));
   
   
-  size(500,500);
+  size(500,500,P2D);
   
   println (img.width);
   println (img.height);  
@@ -185,7 +190,7 @@ void draw()
     
     resample();
     
-    step = true; //false;
+    step = true;
   }
   
   
