@@ -188,7 +188,7 @@ void draw()
     drawTarget();
     PlotRobot();
   
-    //detectObstacle();        //Detects distance to obstacle not using the sensor class  
+    detectObstacle();        //Detects distance to obstacle not using the sensor class  
     
     myRobot.sense();          //Makes use of sensor class to detect obstacles
     
@@ -200,7 +200,7 @@ void draw()
     
     // updateParticles(); 
     
-    // calcProgressPoint();
+     calcProgressPoint();
     
     // resample();
     
@@ -213,10 +213,10 @@ void draw()
   
   
   
-  // calcVecAO();       //Calculates the avoid obstacle vector;
+   calcVecAO();       //Calculates the avoid obstacle vector;
    calcVecGTG();
-  // calcVecAO_GTG();    //Calculates vector after blending Go-To-Goal and Avoid_Obstacle;
-  // estimateWall();    //Estimates the distance to the wall using closest sesnors to the wall  
+   calcVecAO_GTG();    //Calculates vector after blending Go-To-Goal and Avoid_Obstacle;
+   estimateWall();    //Estimates the distance to the wall using closest sesnors to the wall  
   //dispVectors();      //Displays different vectors, ie: Go-To-Goal, Avoid Obstacle, etc
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -378,7 +378,10 @@ void PlotRobot()
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
-//  Calculates a progress point towards the goal. If the progress point decreases, the robot progresses, else do Wall Following
+//  Calculates a progress point towards the goal.
+//  If the robot's distance-to-goal is less than the progress point distance-to-goal,
+//      the robot progresses, else do Wall Following
+
 void calcProgressPoint()
 {
   float oldDist = sqrt(pow(goalX - progressPoint[0],2) + pow(goalY - progressPoint[1],2));    //Calculates the straight line distance to the goal
@@ -521,7 +524,7 @@ void detectObstacle()
      obstacleX = x_temp + sensorObstacleDist[i] * cos(myRobot.heading + sensorPhi[i]);
      obstacleY = y_temp + sensorObstacleDist[i] * sin(myRobot.heading + sensorPhi[i]);   
      color col = get (int(obstacleX), int(obstacleY));    //Test pixel colour to determine if there is an obstacle
-     if (col == 0)                //Test to see if pixel is black
+     if (col == color(200,150,150))                //Test to see if tile is an obstacle
        obstacleFlag = true;
      sensorObstacleDist[i] += 1;      
    }
@@ -656,8 +659,10 @@ void mousePressed()
     myRobot.heading = 0.0;
     myRobot.x = mouseX;
     myRobot.y = mouseY;
-    progressPoint[0] = myRobot.state[0];
-    progressPoint[1] = myRobot.state[1];
+    //Resets progress point when target is moved to the current mouse position
+    progressPoint[0] = mouseX;
+    progressPoint[1] = mouseY;
+    makingProgress = true;  
   }
 }
 
@@ -668,7 +673,11 @@ void changeGoal()
   goalY = mouseY;
   startX = myRobot.x;
   startY = myRobot.y;  
- stateVal = 1; 
+  stateVal = 1; 
+  //Resets progress point when target is moved to the current robot position
+  progressPoint[0] = myRobot.state[0];
+  progressPoint[1] = myRobot.state[1];
+  makingProgress = true;  
 }
 
 void keyPressed()
