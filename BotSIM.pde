@@ -195,7 +195,7 @@ void draw()
    calcVecGTG();
    //calcVecAO_GTG();    //Calculates vector after blending Go-To-Goal and Avoid_Obstacle;
    //estimateWall();    //Estimates the distance to the wall using closest sesnors to the wall  
-  //dispVectors();      //Displays different vectors, ie: Go-To-Goal, Avoid Obstacle, etc
+  dispVectors();      //Displays different vectors, ie: Go-To-Goal, Avoid Obstacle, etc
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -595,28 +595,28 @@ void drawTarget()
 /////////////////////////////////////////////////////////////////////////////////////////////////
 void dispVectors()
 { 
- strokeWeight(5); 
- stroke(0,0,255);
+ strokeWeight(3); 
+ stroke(0,0,255); 
+ line (myRobot.x, myRobot.y, goalX, goalY);          //draws a line from the robot x,y to the goal loaction
  
- line (myRobot.x, myRobot.y, goalX, goalY);          //draws a line from the robot x,y to the goal loaction 
- stroke (255,0,0); 
- line (myRobot.x, myRobot.y, myRobot.x + vectorAO[0], myRobot.y + vectorAO[1]); //draws the Avoid Obstacle vector 
- stroke (0,255,0);
- line (myRobot.x, myRobot.y, myRobot.x + vectorAO_GTG[0], myRobot.y + vectorAO_GTG[1]);  //draws the AO and GTG blended vector
- 
- 
- line (closest1[0], closest1[1], closest1[0] +vectorWall[0], closest1[1] + vectorWall[1]);
- line (myRobot.x, myRobot.y, myRobot.x+vectorWallDist[0], myRobot.y+vectorWallDist[1]);
- line (myRobot.x, myRobot.y, myRobot.x+vectorAwayFromWall[0], myRobot.y+vectorAwayFromWall[1]);
- stroke(255,0,0);
- line (myRobot.x, myRobot.y, myRobot.x+vectorFollowWall[0],myRobot.y+vectorFollowWall[1]);
- 
- stroke(0);
+ //stroke (255,0,0); 
+ //line (myRobot.x, myRobot.y, myRobot.x + vectorAO[0], myRobot.y + vectorAO[1]); //draws the Avoid Obstacle vector 
+ //stroke (0,255,0);
+ //line (myRobot.x, myRobot.y, myRobot.x + vectorAO_GTG[0], myRobot.y + vectorAO_GTG[1]);  //draws the AO and GTG blended vector
  
  
+ //line (closest1[0], closest1[1], closest1[0] +vectorWall[0], closest1[1] + vectorWall[1]);
+ //line (myRobot.x, myRobot.y, myRobot.x+vectorWallDist[0], myRobot.y+vectorWallDist[1]);
+ //line (myRobot.x, myRobot.y, myRobot.x+vectorAwayFromWall[0], myRobot.y+vectorAwayFromWall[1]);
+ //stroke(255,0,0);
+ //line (myRobot.x, myRobot.y, myRobot.x+vectorFollowWall[0],myRobot.y+vectorFollowWall[1]);
  
- strokeWeight(1);
- stroke (0); 
+ //stroke(0);
+ 
+ 
+ 
+ //strokeWeight(1);
+ //stroke (0); 
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //Rotates and translates an X and Y coordinate onto a local frame using the local frame's X,Y and HEADING
