@@ -2,7 +2,7 @@
 float worldMapScaleX = 1000; //3737;      //To be used as the actual distance of the world map x axis, measured in cm
 float worldMapScaleY = 1000; //1137;
 
-float screenSizeX = 1000;
+float screenSizeX = 500;
 float screenSizeY = screenSizeX * (worldMapScaleY/worldMapScaleX);  //Scale the y size according to ratio between worldMapScaleX an Y
 
 float scaleFactor = screenSizeX / worldMapScaleX;
@@ -226,7 +226,8 @@ void applyScale()
 {
   myRobot.robotDiameter *= scaleFactor;
   myRobot.noseLength *= scaleFactor;
-  //myRobot.maxSpeed *= scaleFactor;      //I do not know why this must not be scaled???
+  myRobot.maxSpeed *= scaleFactor;
+  myRobot.maxTurnRate *= scaleFactor;
   minDetectDistance *= scaleFactor;        //Closer than this value and the sensors do not return valid data
   maxDetectDistance *= scaleFactor;
   //robotX *= scaleFactor;

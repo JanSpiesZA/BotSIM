@@ -4,8 +4,8 @@ class Robot{
   float heading = random (0, 2*PI);
   float robotDiameter = 0; //diameter; * scaleFactor;  //diameter of chassis
   float noseLength = diameter/2;
-  float maxSpeed = 1 * scaleFactor;
-  float maxTurnRate = 5 * scaleFactor;
+  float maxSpeed = 1.0;
+  float maxTurnRate = 1.0;
   float [] state = {x, y, heading};
   boolean collisionFlag = false;
   String nodeType = "";    //ROBOT or PARTICLE
