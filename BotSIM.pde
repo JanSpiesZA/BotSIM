@@ -229,9 +229,7 @@ void applyScale()
   myRobot.maxSpeed *= scaleFactor;
   myRobot.maxTurnRate *= scaleFactor;
   minDetectDistance *= scaleFactor;        //Closer than this value and the sensors do not return valid data
-  maxDetectDistance *= scaleFactor;
-  //robotX *= scaleFactor;
-  //robotY *= scaleFactor;
+  maxDetectDistance *= scaleFactor;  
   safeZone *= scaleFactor;          //Safe area around target assumed the robot reached its goal;
   safeDistance *= scaleFactor;    
   distanceFromWall *= scaleFactor;
