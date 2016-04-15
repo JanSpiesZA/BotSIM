@@ -31,7 +31,9 @@ float blendGain = 0.5;      //Gain used when blending the AO and GTG vectors;
 float normaliseGain = 100.0;
 
 float safeZone = 20.0;          //Safe area around target assumed the robot reached its goal;
-int safeDistance = 40;      //If sensor measured distance is less than this value, the robot is too close to an obstacle
+
+//safeDistance cannot be less than minDetectDistance
+int safeDistance = 50;      //If sensor measured distance is less than this value, the robot is too close to an obstacle
 float distanceFromWall = 50.0;    //Distance that must be maintained when following the wall
 
 
@@ -59,7 +61,7 @@ float[] vectorFollowWall = {0.0, 0.0};    //Vector pointing in the direction the
 int numSensors = sensorX.length;    //Determines the amount of sensor elements present
 int numSensors2 = 9;
 float[] sensorObstacleDist = new float[numSensors];
-int minDetectDistance = 0;        //Closer than this value and the sensors do not return valid data
+int minDetectDistance = 10;        //Closer than this value and the sensors do not return valid data
 float maxDetectDistance = 200.0;
 
 float goalX = screenSizeX / 2;            //Goal's X and Y coordinates, set up by clicking with the mouse on the screen
@@ -252,8 +254,8 @@ void applyScale()
   myRobot.noseLength *= scaleFactor;
   myRobot.maxSpeed *= scaleFactor;
   myRobot.maxTurnRate *= scaleFactor;
-  //minDetectDistance *= scaleFactor;        //Closer than this value and the sensors do not return valid data
-  //maxDetectDistance *= scaleFactor;  
+  minDetectDistance *= scaleFactor;        //Closer than this value and the sensors do not return valid data
+  maxDetectDistance *= scaleFactor;  
   safeZone *= scaleFactor;          //Safe area around target assumed the robot reached its goal;
   safeDistance *= scaleFactor;    
   distanceFromWall *= scaleFactor;

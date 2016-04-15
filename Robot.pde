@@ -98,7 +98,8 @@ class Robot{
         
         //Displays safeDistance in which a 'collision' occurs
         noFill();
-        ellipse(x, y, safeDistance*2, safeDistance*2);
+        stroke(255,0,0);
+        ellipse(x, y, safeDistance*2, safeDistance*2);    //Value *2 to convert from radius to diameter
         
         break;
       
