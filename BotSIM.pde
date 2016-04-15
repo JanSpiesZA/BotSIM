@@ -46,9 +46,11 @@ float[] sensorGains = {1.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 1.0};    //Gains 
 
 
 float[] vectorAO_GTG = {0.0, 0.0};    //x and y values for avoid obstacle and go-to-goal combined vector
+PVector vectorAOGTG = new PVector();
 float[] vectorAO = {0.0, 0.0};      //x and y values for avoid obstacle vector
 PVector vectorAvoidObstacles = new PVector();
 float[] vectorGTG = {0.0, 0.0};      //x and y values for vector go-to-goal
+PVector vectorGoToGoal = new PVector();
 float[] vectorWall = {0.0, 0.0};      //x and y values representing the vector of a piece of wall for follow wall procedure
 float[] vectorWallDist = {0.0, 0.0};  //x and y values for a line perpendicular to the wall vector
 float[] vectorAwayFromWall = {0.0, 0.0};  //x and y values for vector pointing away from the wall 
@@ -197,6 +199,10 @@ void draw()
   
   
   vectorAvoidObstacles = calcVectorAvoidObstacles(); 
+  vectorGoToGoal = calcVectorGoToGoal();
+  //vectorAOGTG = vectorAvoidObstacles;
+  vectorAOGTG = PVector.add(vectorGoToGoal, vectorAvoidObstacles);
+  println(vectorGoToGoal+" : "+vectorAvoidObstacles+" : "+vectorAOGTG);
   
   
   
@@ -563,13 +569,9 @@ PVector calcVectorAvoidObstacles()
 
     //Calculate vector away from obstacles from p143 in Behaviour Based Robotics
     tempCoords = tempCoords.sub(location);    
-    tempCoords.normalize();    
-    tempCoords.mult(-1);
-    tempCoords.div(myRobot.sensors.get(k).sensorObstacleDist);
-    
     result.add(tempCoords);
   } 
-  return result;
+  return result.normalize();
 }
 
 
@@ -583,6 +585,17 @@ void calcVecGTG()
   if (n==0) n=1;
   vectorGTG[0] = 100 * vectorGTG[0]/n;      //Multiply by 100 gain in order to control the length of the unity vectors
   vectorGTG[1] = 100 * vectorGTG[1]/n;
+  
+  
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////
+PVector calcVectorGoToGoal()
+{
+  PVector result = new PVector();  
+  result.x = goalX - myRobot.x;
+  result.y = goalY - myRobot.y;
+  result.normalize();  
+  return result;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
 void calcVecAO_GTG()
@@ -625,12 +638,20 @@ void drawTarget()
 /////////////////////////////////////////////////////////////////////////////////////////////////
 void dispVectors()
 { 
-  strokeWeight(3); 
+  strokeWeight(1); 
   stroke(0, 0, 255); 
-  line (myRobot.x, myRobot.y, goalX, goalY);          //draws a line from the robot x,y to the goal loaction
+  //line (myRobot.x, myRobot.y, goalX, goalY);          //draws a line from the robot x,y to the goal loaction
   
+  strokeWeight(3);
   stroke (255,0,0);
-  line (myRobot.x, myRobot.y, myRobot.x + vectorAvoidObstacles.x*1000, myRobot.y + vectorAvoidObstacles.y*1000);
+  line (myRobot.x, myRobot.y, myRobot.x + vectorAvoidObstacles.x*100, myRobot.y + vectorAvoidObstacles.y*100);
+  
+  stroke (0,0,255);  //BLUE
+  line (myRobot.x, myRobot.y, myRobot.x + vectorGoToGoal.x*100, myRobot.y + vectorGoToGoal.y*100);
+  
+  stroke (0,255,0);
+  line (myRobot.x, myRobot.y, myRobot.x + vectorAOGTG.x*100, myRobot.y + vectorAOGTG.y*100);
+  
   
   //path.x = avoid.x*1000 + vectorGTG[0];
   //path.y = avoid.y*1000 + vectorGTG[1];
