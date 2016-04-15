@@ -1,31 +1,27 @@
-PImage img;
-
 //Actual distance of measured on ground, measured in cm's
 float worldMapScaleX = 1000; //3737;      //To be used as the actual distance of the world map x axis, measured in cm
 float worldMapScaleY = 1000; //1137;
 
-float screenSizeX = 1000;
+float screenSizeX = 500;
 float screenSizeY = screenSizeX * (worldMapScaleY/worldMapScaleX);  //Scale the y size according to ratio between worldMapScaleX an Y
 
 float scaleFactor = screenSizeX / worldMapScaleX;
 
-boolean collisionFlag = false;
 boolean makingProgress = true;    //Indicates if progress towards the goal is being made
 boolean wallDetect = false;
 
-int maxParticles = 0;
-Robot[] particles = new Robot[maxParticles];
-float noiseForward = 1.0;
-float noiseTurn = 0.1;
-float noiseSense = 5.0;
+Robot myRobot;          //Creat a myRobot instance
+float diameter = 45.0; 
 
-float moveSpeed = 0;
+final int maxParticles = 0;
+Robot[] particles = new Robot[maxParticles];
+final float noiseForward = 1.0;            //global Noisevalues used to set the noise values in the praticles
+final float noiseTurn = 0.1;
+final float noiseSense = 5.0;
+
+float moveSpeed = 0;                    //Globals used to define speeds and turn angle
 float moveAngle = 0;
 
-Robot myRobot;
-float robotX = 0.0;
-float robotY = 0.0;
-float robotTheta = 0.0; //PI; //random(-PI,PI);
 float turnGain = 0.1;
 float moveGain = 0.01;
 float blendGain = 0.5;      //Gain used when blending the AO and GTG vectors;
@@ -34,8 +30,6 @@ float normaliseGain = 100.0;
 float safeZone = 20.0;          //Safe area around target assumed the robot reached its goal;
 float safeDistance = 20.0;      //Closer than this value and the robot is too close to an obstacle
 float distanceFromWall = 50.0;    //Distance that must be maintained when following the wall
-
-float diameter = 45.0; 
 
 float[] sensorX =   {0.0           , cos(PI/8*3)* diameter/2   , cos(PI/8*2)*diameter/2  , cos(PI/8)*diameter/2  , diameter/2 , cos(PI/8)*diameter/2, cos(PI/4)*diameter/2, cos(PI/8*3)*diameter/2, 0.0};      //Array containing all the sensors X values in the robot frame
 float[] sensorY =   {-(diameter/2) , -sin(PI/8*3)* diameter/2  , -sin(PI/8*2)*diameter/2 , -sin(PI/8)*diameter/2 ,        0.0 , sin(PI/8)*diameter/2, sin(PI/4)*diameter/2, sin(PI/8*3)*diameter/2, diameter/2};
@@ -87,12 +81,8 @@ void setup()
   
   //Add sensors to the robot object 
   for (int k=0; k<numSensors2; k++)
-  {
-    //myRobot.addSensor(0.0, 0.0, -PI/2 + PI/(numSensors-1)*k);
-    
-    myRobot.addSensor(0, 0, -PI/2 + PI/(numSensors-1)*k);
-    
-    //myRobot.addSensor(0.0, 0.0, radians(-30 + 60/(numSensors2-1)*k));
+  { 
+    myRobot.addSensor(0, 0, -PI/2 + PI/(numSensors-1)*k);   
   }  
   
   //Sets up a 2D array which will hold the world Tiles
@@ -114,31 +104,11 @@ void setup()
     {
       particles[i].addSensor(0, 0, -PI/2 + PI/(numSensors2-1)*k);
     }    
-  }  
-  
-  //println(particles[0].sensors.size());
-  
+  }
   applyScale();    //Applies the scale to all physical quantities
-  
-  
-  
-  //img = loadImage("kamer3.png");                        //Loads the selected image as background
-  //img.resize((int)worldMapScaleX, (int)worldMapScaleY);
-  //img.filter(THRESHOLD);                                //Convert image to black and white
-  //img.resize(int(screenSizeX), int(screenSizeY));
-  
   
   surface.setResizable(true);
   surface.setSize(int(screenSizeX),int(screenSizeY));
-  
-  //println (img.width);
-  //println (img.height);  
-  
-  println (numSensors);
-  
-  //tint(255,127);
-  //image(img,0,0);
-  
   
   //Change particle x and y values to prevent them from being inside walls
   //for (int i=0; i < maxParticles; i++)
@@ -256,11 +226,10 @@ void applyScale()
 {
   myRobot.robotDiameter *= scaleFactor;
   myRobot.noseLength *= scaleFactor;
-  //myRobot.maxSpeed *= scaleFactor;      //I do not know why this must not be scaled???
+  myRobot.maxSpeed *= scaleFactor;
+  myRobot.maxTurnRate *= scaleFactor;
   minDetectDistance *= scaleFactor;        //Closer than this value and the sensors do not return valid data
-  maxDetectDistance *= scaleFactor;
-  //robotX *= scaleFactor;
-  //robotY *= scaleFactor;
+  maxDetectDistance *= scaleFactor;  
   safeZone *= scaleFactor;          //Safe area around target assumed the robot reached its goal;
   safeDistance *= scaleFactor;    
   distanceFromWall *= scaleFactor;
