@@ -96,6 +96,10 @@ class Robot{
           sensors.get(k).display(x,y,heading);          
         }
         
+        //Displays safeDistance in which a 'collision' occurs
+        noFill();
+        ellipse(x, y, safeDistance*2, safeDistance*2);
+        
         break;
       
       case "PARTICLE":
@@ -147,6 +151,7 @@ class Robot{
     for (int k = 0; k < sensors.size(); k++)
     {
       sensors.get(k).sense(x,y,heading);
+      if (sensors.get(k).sensorObstacleDist <= safeDistance) myRobot.collisionFlag = true;
     }
   }  
   

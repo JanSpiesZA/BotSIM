@@ -31,7 +31,7 @@ float blendGain = 0.5;      //Gain used when blending the AO and GTG vectors;
 float normaliseGain = 100.0;
 
 float safeZone = 20.0;          //Safe area around target assumed the robot reached its goal;
-float safeDistance = 40.0;      //If sensor measured distance is less than this value, the robot is too close to an obstacle
+int safeDistance = 40;      //If sensor measured distance is less than this value, the robot is too close to an obstacle
 float distanceFromWall = 50.0;    //Distance that must be maintained when following the wall
 
 
@@ -59,7 +59,7 @@ float[] vectorFollowWall = {0.0, 0.0};    //Vector pointing in the direction the
 int numSensors = sensorX.length;    //Determines the amount of sensor elements present
 int numSensors2 = 9;
 float[] sensorObstacleDist = new float[numSensors];
-float minDetectDistance = 10.0;        //Closer than this value and the sensors do not return valid data
+int minDetectDistance = 0;        //Closer than this value and the sensors do not return valid data
 float maxDetectDistance = 200.0;
 
 float goalX = screenSizeX / 2;            //Goal's X and Y coordinates, set up by clicking with the mouse on the screen
@@ -90,12 +90,13 @@ void setup()
 
   myRobot = new Robot("ROBOT", diameter);        //Create a new robot object
   myRobot.set(screenSizeX/2, screenSizeY/2, -PI/2);
+    
 
   //Add sensors to the robot object 
   for (int k=0; k<numSensors2; k++)
   { 
     myRobot.addSensor(0, 0, -PI/2 + PI/(numSensors-1)*k);   
-    myRobot.sensors.get(k).sensorMinDetect = int(diameter / 2 + 10);
+    myRobot.sensors.get(k).sensorMinDetect = minDetectDistance;
   }  
 
   //Sets up a 2D array which will hold the world Tiles
@@ -118,6 +119,7 @@ void setup()
       particles[i].addSensor(0, 0, -PI/2 + PI/(numSensors2-1)*k);
     }
   }
+  
   applyScale();    //Applies the scale to all physical quantities
 
   surface.setResizable(true);
@@ -191,9 +193,6 @@ void draw()
   }
 
 
-
-  //println(myRobot.collisionFlag);
-
   //calcVecAO();       //Calculates the avoid obstacle vector;
   
   
@@ -202,7 +201,7 @@ void draw()
   vectorGoToGoal = calcVectorGoToGoal();
   //vectorAOGTG = vectorAvoidObstacles;
   vectorAOGTG = PVector.add(vectorGoToGoal, vectorAvoidObstacles);
-  println(vectorGoToGoal+" : "+vectorAvoidObstacles+" : "+vectorAOGTG);
+  //println(vectorGoToGoal+" : "+vectorAvoidObstacles+" : "+vectorAOGTG);
   
   
   
@@ -253,8 +252,8 @@ void applyScale()
   myRobot.noseLength *= scaleFactor;
   myRobot.maxSpeed *= scaleFactor;
   myRobot.maxTurnRate *= scaleFactor;
-  minDetectDistance *= scaleFactor;        //Closer than this value and the sensors do not return valid data
-  maxDetectDistance *= scaleFactor;  
+  //minDetectDistance *= scaleFactor;        //Closer than this value and the sensors do not return valid data
+  //maxDetectDistance *= scaleFactor;  
   safeZone *= scaleFactor;          //Safe area around target assumed the robot reached its goal;
   safeDistance *= scaleFactor;    
   distanceFromWall *= scaleFactor;
@@ -360,9 +359,6 @@ void PlotRobot()
   moveSpeed = min (myRobot.maxSpeed, (moveGain * (distanceToTarget))); 
   myRobot.move(moveAngle, moveSpeed);  
   myRobot.display();
-  //println("State: "+stateVal);
-
-  //moveSpeed = 1;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -639,8 +635,7 @@ void drawTarget()
 void dispVectors()
 { 
   strokeWeight(1); 
-  stroke(0, 0, 255); 
-  //line (myRobot.x, myRobot.y, goalX, goalY);          //draws a line from the robot x,y to the goal loaction
+  stroke(0, 0, 255);
   
   strokeWeight(3);
   stroke (255,0,0);

@@ -7,7 +7,7 @@ class Sensor
   float sensorGain = 1.0;      //Gains used to indicate importance of sensor
   int sensorObstacleDist = 0;  //Distance from THIS sensor to obstacle
   int sensorMaxDetect = 200;
-  int sensorMinDetect = 10;
+  int sensorMinDetect = 0;
   float sensorNoise = 5.0;
   
   Sensor(int _sensorXPos, int _sensorYPos, float _sensorHAngle)
@@ -24,7 +24,7 @@ class Sensor
     sensorHAngle = _sensorHAngle;
   }
   
-  //Displays a sensor based on the reference X, Y and heading values
+  //Displays a sensor based on the reference X, Y and heading values on the chassis of the robot
   void display(float _refXPos, float _refYPos, float _refHeading)
   {        
     PVector returnVal = transRot(_refXPos, _refYPos, _refHeading, sensorXPos, sensorYPos);    //Takes the sensor's x,y and plot it in the global frame    
@@ -35,13 +35,8 @@ class Sensor
   void sense(float _refXPos, float _refYPos, float _refHeading)
   {
     boolean obstacleFlag = false;
-     
-    fill(255);
-    stroke(1);
     
-    sensorObstacleDist = sensorMinDetect; //myrobot.diameter/2 + 1;    //Set starting point of collision detect to 1 pixel wider than the radius of the robot
-    
-    obstacleFlag = false;
+    sensorObstacleDist = sensorMinDetect;          //Simulate sensor dead zone    
      
     while ((obstacleFlag == false) && (sensorObstacleDist < sensorMaxDetect))
     {
@@ -51,7 +46,9 @@ class Sensor
       
       color col = get (int(returnVal.x), int(returnVal.y));    //Test pixel colour to determine if there is an obstacle
       if (col == color(200,150,150))
+      {
         obstacleFlag = true;
+      }
       sensorObstacleDist += 1;      
     }
     
@@ -62,6 +59,8 @@ class Sensor
     //Plot sensor scan range after adding noise
     PVector returnVal = transRot(sensorXPos, sensorYPos, sensorHAngle, sensorObstacleDist, 0);    //Converts distance to sensor frame
     returnVal = transRot(_refXPos, _refYPos, _refHeading, returnVal.x, returnVal.y);
+    fill(255);
+    stroke(1);
     ellipse (returnVal.x, returnVal.y, 10*scaleFactor,10*scaleFactor);
         
     if (sensorObstacleDist <= safeDistance) myRobot.collisionFlag = true;      //Set collision flag when any sensor is too close to obstacle
