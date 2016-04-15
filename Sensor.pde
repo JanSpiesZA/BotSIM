@@ -30,7 +30,7 @@ class Sensor
     PVector returnVal = transRot(_refXPos, _refYPos, _refHeading, sensorXPos, sensorYPos);    //Takes the sensor's x,y and plot it in the global frame    
     ellipse(returnVal.x, returnVal.y,3,3);
   }  
-  
+////////////////////////////////////////////////////////////////////////////////////////////  
   //Senses if an obstacle is within its cone of detection
   void sense(float _refXPos, float _refYPos, float _refHeading)
   {
@@ -39,7 +39,8 @@ class Sensor
     fill(255);
     stroke(1);
     
-    sensorObstacleDist = sensorMinDetect; //myrobot.diameter/2 + 1;    //Set starting point of collision detect to 1 pixel wider than the radius of the robot    
+    sensorObstacleDist = sensorMinDetect; //myrobot.diameter/2 + 1;    //Set starting point of collision detect to 1 pixel wider than the radius of the robot
+    
     obstacleFlag = false;
      
     while ((obstacleFlag == false) && (sensorObstacleDist < sensorMaxDetect))
@@ -49,18 +50,20 @@ class Sensor
       returnVal = transRot(_refXPos, _refYPos, _refHeading, returnVal.x, returnVal.y);
       
       color col = get (int(returnVal.x), int(returnVal.y));    //Test pixel colour to determine if there is an obstacle
-      if (col == 0)
+      if (col == color(200,150,150))
         obstacleFlag = true;
       sensorObstacleDist += 1;      
     }
     
     //Add noise to the sensor distance
     sensorObstacleDist += randomGaussian() * sensorNoise;
+    
         
+    //Plot sensor scan range after adding noise
     PVector returnVal = transRot(sensorXPos, sensorYPos, sensorHAngle, sensorObstacleDist, 0);    //Converts distance to sensor frame
     returnVal = transRot(_refXPos, _refYPos, _refHeading, returnVal.x, returnVal.y);
-    //ellipse (x_temp, y_temp, 10*scaleFactor,10*scaleFactor);
-    
+    ellipse (returnVal.x, returnVal.y, 10*scaleFactor,10*scaleFactor);
+        
     if (sensorObstacleDist <= safeDistance) myRobot.collisionFlag = true;      //Set collision flag when any sensor is too close to obstacle
   }
 }

@@ -1,3 +1,6 @@
+//All distances are measured and listed in cm's unless specified differently
+
+
 //Actual distance of measured on ground, measured in cm's
 float worldMapScaleX = 1000; //3737;      //To be used as the actual distance of the world map x axis, measured in cm
 float worldMapScaleY = 1000; //1137;
@@ -28,13 +31,19 @@ float blendGain = 0.5;      //Gain used when blending the AO and GTG vectors;
 float normaliseGain = 100.0;
 
 float safeZone = 20.0;          //Safe area around target assumed the robot reached its goal;
-float safeDistance = 20.0;      //Closer than this value and the robot is too close to an obstacle
+float safeDistance = 40.0;      //If sensor measured distance is less than this value, the robot is too close to an obstacle
 float distanceFromWall = 50.0;    //Distance that must be maintained when following the wall
 
+
+
+//This section must be removed when only sensor class is used
 float[] sensorX =   {0.0           , cos(PI/8*3)* diameter/2   , cos(PI/8*2)*diameter/2  , cos(PI/8)*diameter/2  , diameter/2 , cos(PI/8)*diameter/2, cos(PI/4)*diameter/2, cos(PI/8*3)*diameter/2, 0.0};      //Array containing all the sensors X values in the robot frame
 float[] sensorY =   {-(diameter/2) , -sin(PI/8*3)* diameter/2  , -sin(PI/8*2)*diameter/2 , -sin(PI/8)*diameter/2 ,        0.0 , sin(PI/8)*diameter/2, sin(PI/4)*diameter/2, sin(PI/8*3)*diameter/2, diameter/2};
 float[] sensorPhi = {-PI/2, -PI/8*3, -PI/8*2, -PI/8, 0.0 , PI/8, PI/4, PI/8*3, PI/2};
 float[] sensorGains = {1.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 1.0};    //Gains used to indicate imprtance of sensor values
+//This section must be removed when only sensor class is used
+
+
 
 float[] vectorAO_GTG = {0.0, 0.0};    //x and y values for avoid obstacle and go-to-goal combined vector
 float[] vectorAO = {0.0, 0.0};      //x and y values for avoid obstacle vector
@@ -83,6 +92,7 @@ void setup()
   for (int k=0; k<numSensors2; k++)
   { 
     myRobot.addSensor(0, 0, -PI/2 + PI/(numSensors-1)*k);   
+    myRobot.sensors.get(k).sensorMinDetect = int(diameter / 2 + 10);
   }  
   
   //Sets up a 2D array which will hold the world Tiles
@@ -132,6 +142,7 @@ void draw()
   if (showVal)
   {
     for (int k=0; k<numSensors; k++) print(int(myRobot.sensors.get(k).sensorObstacleDist)+"\t");
+    println("\nState: "+stateVal+", CollisionFlag: "+myRobot.collisionFlag);
     println();
     
     for (int k = 0; k< maxParticles; k++) 
@@ -155,7 +166,7 @@ void draw()
     drawTarget();
     PlotRobot();
   
-    detectObstacle();        //Detects distance to obstacle not using the sensor class  
+    //detectObstacle();        //Detects distance to obstacle not using the sensor class  
     
     myRobot.sense();          //Makes use of sensor class to detect obstacles
     
@@ -178,12 +189,12 @@ void draw()
   
   
   
+  //println(myRobot.collisionFlag);
   
-  
-   calcVecAO();       //Calculates the avoid obstacle vector;
+   //calcVecAO();       //Calculates the avoid obstacle vector;
    calcVecGTG();
-   calcVecAO_GTG();    //Calculates vector after blending Go-To-Goal and Avoid_Obstacle;
-   estimateWall();    //Estimates the distance to the wall using closest sesnors to the wall  
+   //calcVecAO_GTG();    //Calculates vector after blending Go-To-Goal and Avoid_Obstacle;
+   //estimateWall();    //Estimates the distance to the wall using closest sesnors to the wall  
   //dispVectors();      //Displays different vectors, ie: Go-To-Goal, Avoid Obstacle, etc
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -248,7 +259,7 @@ void applyScale()
   {
     myRobot.sensors.get(k).sensorXPos *= scaleFactor;
     myRobot.sensors.get(k).sensorYPos *= scaleFactor;
-    //myRobot.sensors.get(k).sensorMaxDetect *= scaleFactor;
+    myRobot.sensors.get(k).sensorMaxDetect *= scaleFactor;
   }
   
 }
@@ -337,7 +348,7 @@ void PlotRobot()
   moveSpeed = min (myRobot.maxSpeed ,(moveGain * (distanceToTarget))); 
   myRobot.move(moveAngle,moveSpeed);  
   myRobot.display();
-  println("State: "+stateVal);
+  //println("State: "+stateVal);
   
   //moveSpeed = 1;
   
