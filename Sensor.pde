@@ -56,7 +56,7 @@ class Sensor
     }
     
     //Add noise to the sensor distance
-    sensorObstacleDist += randomGaussian() * sensorNoise;
+    //sensorObstacleDist += randomGaussian() * sensorNoise;
     
         
     //Plot sensor scan range after adding noise
