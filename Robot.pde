@@ -13,6 +13,9 @@ class Robot{
   float noiseForward = 0.0;
   float noiseTurn = 0.0;
   float noiseSense = 1.0;  
+  boolean makingProgress = false;       //Add progress point in order to show if robot is making progress towards goal
+  PVector progressPoint = new PVector();  //Holds the coords for the latest progress point of the robot
+  PVector location = new PVector();   //Holds the robot x and y pos
  
   ArrayList<Sensor> sensors = new ArrayList<Sensor>();
   
@@ -42,6 +45,8 @@ class Robot{
     state[0] = x;
     state[1] = y;
     state[2] = heading;
+    location.x = tempX;
+    location.y = tempY;
   }
   
   
@@ -96,6 +101,11 @@ class Robot{
           sensors.get(k).display(x,y,heading);          
         }
         
+        //Displays safeDistance in which a 'collision' occurs
+        noFill();
+        stroke(255,0,0);
+        ellipse(x, y, safeDistance*2, safeDistance*2);    //Value *2 to convert from radius to diameter
+        
         break;
       
       case "PARTICLE":
@@ -128,7 +138,11 @@ class Robot{
     
     state[0] = x;
     state[1] = y;
-    state[2] = heading;   
+    state[2] = heading;  
+
+    location.x = x;
+    location.y = y;
+    location.z = heading; 
     
     
     //Allows PARTICLES to live in a continuous world
@@ -147,6 +161,7 @@ class Robot{
     for (int k = 0; k < sensors.size(); k++)
     {
       sensors.get(k).sense(x,y,heading);
+      if (sensors.get(k).sensorObstacleDist <= safeDistance) myRobot.collisionFlag = true;
     }
   }  
   
