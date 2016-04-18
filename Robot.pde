@@ -1,12 +1,9 @@
-class Robot{
-  //float x = random (0, screenSizeX);  //x-pos of robot
-  //float y = random (0, screenSizeY);  //y-pos of robot
+class Robot{  
   float heading = random (0, 2*PI);
   float robotDiameter = 0; //diameter; * scaleFactor;  //diameter of chassis
   float noseLength = diameter/2;
   float maxSpeed = 1.0;
-  float maxTurnRate = 1.0;
-  //float [] state = {x, y, heading};
+  float maxTurnRate = 1.0;  
   boolean collisionFlag = false;
   String nodeType = "";    //ROBOT or PARTICLE
   float prob = 1.0;
@@ -38,13 +35,7 @@ class Robot{
   }
   
   void set(float tempX, float tempY, float tempHeading)
-  {
-    //x = tempX;
-    //y = tempY;
-    //heading = tempHeading;
-    //state[0] = x;
-    //state[1] = y;
-    //state[2] = heading;
+  {    
     location.x = tempX;
     location.y = tempY;
     heading = tempHeading;
@@ -136,15 +127,6 @@ class Robot{
     float newY = location.y + distance * sin(heading);
     location.x = newX;
     location.y = newY;
-    
-    //state[0] = x;
-    //state[1] = y;
-    //state[2] = heading;  
-
-    //location.x = x;
-    //location.y = y;
-    //heading = heading; 
-    
     
     //Allows PARTICLES to live in a continuous world
     if (nodeType == "PARTICLE")

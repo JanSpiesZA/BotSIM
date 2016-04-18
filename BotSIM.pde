@@ -36,34 +36,40 @@ int safeDistance = 50;      //If sensor measured distance is less than this valu
 float distanceFromWall = 50.0;    //Distance that must be maintained when following the wall
 
 
-//This section must be removed when only sensor class is used
+//This section must be removed when only the sensor class is used
 float[] sensorX =   {0.0, cos(PI/8*3)* diameter/2, cos(PI/8*2)*diameter/2, cos(PI/8)*diameter/2, diameter/2, cos(PI/8)*diameter/2, cos(PI/4)*diameter/2, cos(PI/8*3)*diameter/2, 0.0};      //Array containing all the sensors X values in the robot frame
 float[] sensorY =   {-(diameter/2), -sin(PI/8*3)* diameter/2, -sin(PI/8*2)*diameter/2, -sin(PI/8)*diameter/2, 0.0, sin(PI/8)*diameter/2, sin(PI/4)*diameter/2, sin(PI/8*3)*diameter/2, diameter/2};
 float[] sensorPhi = {-PI/2, -PI/8*3, -PI/8*2, -PI/8, 0.0, PI/8, PI/4, PI/8*3, PI/2};
 float[] sensorGains = {1.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 1.0};    //Gains used to indicate imprtance of sensor values
-//This section must be removed when only sensor class is used
-
-
+int numSensors = sensorX.length;    //Determines the amount of sensor elements present
+float[] sensorObstacleDist = new float[numSensors];
 
 float[] vectorAO_GTG = {0.0, 0.0};    //x and y values for avoid obstacle and go-to-goal combined vector
-PVector vectorAOGTG = new PVector();
 float[] vectorAO = {0.0, 0.0};      //x and y values for avoid obstacle vector
-PVector vectorAvoidObstacles = new PVector();
 float[] vectorGTG = {0.0, 0.0};      //x and y values for vector go-to-goal
+float goalX = screenSizeX / 2;            //Goal's X and Y coordinates, set up by clicking with the mouse on the screen
+float goalY = screenSizeY / 2;
+//This section must be removed when only the sensor class is used
+
+
+
+
+PVector vectorAOGTG = new PVector();
+PVector vectorAvoidObstacles = new PVector();
 PVector vectorGoToGoal = new PVector();
+
 float[] vectorWall = {0.0, 0.0};      //x and y values representing the vector of a piece of wall for follow wall procedure
 float[] vectorWallDist = {0.0, 0.0};  //x and y values for a line perpendicular to the wall vector
 float[] vectorAwayFromWall = {0.0, 0.0};  //x and y values for vector pointing away from the wall
 float[] vectorFollowWall = {0.0, 0.0};    //Vector pointing in the direction the robot must move when following the wall
 
-int numSensors = sensorX.length;    //Determines the amount of sensor elements present
+
 int numSensors2 = 9;
-float[] sensorObstacleDist = new float[numSensors];
+
 int minDetectDistance = 10;        //Closer than this value and the sensors do not return valid data
 float maxDetectDistance = 200.0;
 
-float goalX = screenSizeX / 2;            //Goal's X and Y coordinates, set up by clicking with the mouse on the screen
-float goalY = screenSizeY / 2;
+
 PVector goalXY = new PVector(screenSizeX / 2, screenSizeY / 2);       //Holds the goal's x and y coords
 float startX = 0;          //Starting point for straight line to goal used by Bug algorithm families
 float startY = 0;
@@ -630,23 +636,13 @@ void mousePressed()
   if (mousePressed && (mouseButton == LEFT)) changeGoal();
   if (mousePressed && (mouseButton == RIGHT))
   {
-    //myRobot.heading = 0.0;
-    //myRobot.x = mouseX;
-    //myRobot.y = mouseY;
-
     myRobot.location.x = mouseX;
-    myRobot.location.y = mouseY;
-    //myRobot.heading = 0.0;
+    myRobot.location.y = mouseY;   
 
-    //Resets progress point when target is moved to the current mouse position
-    // progressPoint[0] = mouseX;
-    // progressPoint[1] = mouseY;
-    
+    //Resets progress point when target is moved to the current mouse position    
     myRobot.progressPoint.x = mouseX;
     myRobot.progressPoint.y = mouseY;
     myRobot.makingProgress = true;
-    
-    //makingProgress = true;
   }
 }
 
@@ -662,12 +658,9 @@ void changeGoal()
   startY = myRobot.location.y;
 
   stateVal = 1;
-  //Resets progress point when target is moved to the current robot position
-  // progressPoint[0] = myRobot.state[0];
-  // progressPoint[1] = myRobot.state[1];
+  
+  //Resets progress point when target is moved to the current robot position  
   myRobot.progressPoint = myRobot.location;
-
-  //makingProgress = true;
   myRobot.makingProgress  = true;
 }
 
