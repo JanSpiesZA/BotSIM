@@ -56,7 +56,9 @@ float goalY = screenSizeY / 2;
 
 PVector vectorAOGTG = new PVector();
 PVector vectorAvoidObstacles = new PVector();
+PVector coordsAvoidObstacles = new PVector();    //Coords on the world frame, holding the point of the avoid obstacle vector
 PVector vectorGoToGoal = new PVector();
+PVector vectorBlendedAOGTG = new PVector();      //Holds the vector which is blended between AvoidObstacles an GoToGoal
 
 float[] vectorWall = {0.0, 0.0};      //x and y values representing the vector of a piece of wall for follow wall procedure
 float[] vectorWallDist = {0.0, 0.0};  //x and y values for a line perpendicular to the wall vector
@@ -198,7 +200,7 @@ void draw()
 
 
     step = false;
-  }
+  
 
 
   //calcVecAO();       //Calculates the avoid obstacle vector;
@@ -206,17 +208,18 @@ void draw()
 
 
   vectorAvoidObstacles = calcVectorAvoidObstacles();
-  vectorGoToGoal = calcVectorGoToGoal();
-  //vectorAOGTG = vectorAvoidObstacles;
-  vectorAOGTG = PVector.add(vectorGoToGoal, vectorAvoidObstacles);
+  vectorGoToGoal = calcVectorGoToGoal();  
+  //vectorAOGTG = PVector.add(vectorGoToGoal, vectorAvoidObstacles);
+  vectorBlendedAOGTG = calculateVectorBlendedAOGTG();
   //println(vectorGoToGoal+" : "+vectorAvoidObstacles+" : "+vectorAOGTG);
 
-
+  }
 
   //calcVecGTG();
   //calcVecAO_GTG();    //Calculates vector after blending Go-To-Goal and Avoid_Obstacle;
   //estimateWall();    //Estimates the distance to the wall using closest sesnors to the wall
   dispVectors();      //Displays different vectors, ie: Go-To-Goal, Avoid Obstacle, etc
+  
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -506,24 +509,26 @@ void estimateWall()
 /////////////////////////////////////////////////////////////////////////////////////////////////
 PVector calcVectorAvoidObstacles()
 {
-  PVector tempCoords = new PVector();
-  PVector location = new PVector(); //myRobot.x, myRobot.y);
-  PVector result = new PVector();
+  PVector tempCoords = new PVector();   
+  PVector vectorAO = new PVector();
   
-  location = myRobot.location;
-
   for (int k = 0; k < myRobot.sensors.size(); k++)
   {
-    //TransRotate sensor distance value to sensor frame
+    //TransRotate sensor distance value to robot frame
     tempCoords = transRot(myRobot.sensors.get(k).sensorXPos, myRobot.sensors.get(k).sensorYPos, myRobot.sensors.get(k).sensorHAngle, myRobot.sensors.get(k).sensorObstacleDist, 0);
-    //TransRotate sensor distance value in sensor frame to robot frame
-    tempCoords = transRot(myRobot.location.x, myRobot.location.y, myRobot.heading, tempCoords.x, tempCoords.y);
-
-    //Calculate vector away from obstacles from p143 in Behaviour Based Robotics
-    tempCoords = tempCoords.sub(location);
-    result.add(tempCoords);
+    
+    //Add all the x's and y's together to get combined vector of avoid obstacles        
+    vectorAO.add(tempCoords);
   }
-  return result.normalize();
+  //vectorAO.normalize();
+  //println(vectorAO.mag());
+  //Transrotate avoidObstacles coords into world frame with a scaling factor
+  tempCoords = transRot(myRobot.location.x, myRobot.location.y, myRobot.heading, vectorAO.x, vectorAO.y);
+  
+  tempCoords.x = tempCoords.x - myRobot.location.x;
+  tempCoords.y = tempCoords.y - myRobot.location.y;
+  
+  return tempCoords;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -531,8 +536,24 @@ PVector calcVectorGoToGoal()
 {
   PVector result = new PVector();
   result.x = goalX - myRobot.location.x;
-  result.y = goalY - myRobot.location.y;
-  result.normalize();
+  result.y = goalY - myRobot.location.y;  
+  return result; //.normalize();
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+PVector calculateVectorBlendedAOGTG()
+{
+  PVector result = new PVector();
+  float dist = vectorAvoidObstacles.mag();
+  float beta = 0.002;          //The smaller this value gets the smaller sigma becomes
+  float sigma = 1 - exp(-beta*dist);
+  PVector gtgBlend = new PVector();
+  PVector aoBlend = new PVector();  
+  
+  PVector.mult(vectorGoToGoal,sigma, gtgBlend);
+  PVector.mult(vectorAvoidObstacles, (1-sigma), aoBlend); 
+
+  result = PVector.add(gtgBlend, aoBlend);
   return result;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -576,18 +597,18 @@ void drawTarget()
 /////////////////////////////////////////////////////////////////////////////////////////////////
 void dispVectors()
 {
-  strokeWeight(1);
-  stroke(0, 0, 255);
-
   strokeWeight(3);
-  stroke (255,0,0);
-  line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorAvoidObstacles.x*100, myRobot.location.y + vectorAvoidObstacles.y*100);
+  stroke (255,0,0);  //RED  
+  line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorAvoidObstacles.normalize().x*100, myRobot.location.y + vectorAvoidObstacles.normalize().y*100);
 
   stroke (0,0,255);  //BLUE
-  line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorGoToGoal.x*100, myRobot.location.y + vectorGoToGoal.y*100);
+  line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorGoToGoal.normalize().x*100, myRobot.location.y + vectorGoToGoal.normalize().y*100);
 
-  stroke (0,255,0);
-  line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorAOGTG.x*100, myRobot.location.y + vectorAOGTG.y*100);
+  //stroke (0,255,0);  //GREEN
+  //line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorAOGTG.x*100, myRobot.location.y + vectorAOGTG.y*100);
+  
+  stroke (0,255,255);
+  line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorBlendedAOGTG.normalize().x*100, myRobot.location.y + vectorBlendedAOGTG.normalize().y*100);
 
 
   //path.x = avoid.x*1000 + vectorGTG[0];
