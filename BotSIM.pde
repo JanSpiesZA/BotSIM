@@ -213,7 +213,7 @@ void draw()
 
 
 
-  calcVecGTG();
+  //calcVecGTG();
   //calcVecAO_GTG();    //Calculates vector after blending Go-To-Goal and Avoid_Obstacle;
   //estimateWall();    //Estimates the distance to the wall using closest sesnors to the wall
   dispVectors();      //Displays different vectors, ie: Go-To-Goal, Avoid Obstacle, etc
@@ -300,10 +300,13 @@ void PlotRobot()
   float targetAngle = atan2(deltaY, deltaX);
   float distanceToTarget = sqrt(pow(deltaX, 2) + pow(deltaY, 2));
 
-  float phi_GTG = calcGoalAngle(vectorGTG[0], vectorGTG[1]);
+  float phi_GTG = calcGoalAngle(vectorGoToGoal.x, vectorGoToGoal.y);
   float phi_AO = calcGoalAngle(vectorAO[0], vectorAO[1]);
   float phi_AO_GTG = calcGoalAngle(vectorAO_GTG[0], vectorAO_GTG[1]);
   float phi_FW = calcGoalAngle(vectorFollowWall[0], vectorFollowWall[1]);
+  
+  
+  
 
 
   switch (stateVal)
