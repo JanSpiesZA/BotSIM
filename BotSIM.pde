@@ -66,6 +66,7 @@ float maxDetectDistance = 200.0;
 
 float goalX = screenSizeX / 2;            //Goal's X and Y coordinates, set up by clicking with the mouse on the screen
 float goalY = screenSizeY / 2;
+PVector goalXY = new PVector();       //Holds the goal's x and y coords
 float startX = 0;          //Starting point for straight line to goal used by Bug algorithm families
 float startY = 0;
 float x_vector_avoid = 0.0;
@@ -110,6 +111,7 @@ void setup()
     }
   }
 
+  //Create particles to localise robot
   for (int i = 0; i < maxParticles; i++)
   {
     particles[i] = new Robot("PARTICLE");
@@ -191,7 +193,7 @@ void draw()
 
 
 
-    step = true;
+    step = false;
   }
 
 
@@ -217,6 +219,8 @@ void draw()
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Draws the world using tiles
 void drawTiles()
 {
   for (int x = 0; x < maxTilesX; x++)
@@ -232,6 +236,7 @@ void drawTiles()
 }
 
 //###############################################################################################
+//Updates each particle accoridng to robot movement
 void updateParticles()
 {
   //Update particle movement
@@ -248,6 +253,9 @@ void updateParticles()
 }
 
 //###############################################################################################
+//Applies a scale factor to all the values used according to the actual world size and the displayed screen size
+
+//MUST BE CLEANED
 void applyScale()
 {
   myRobot.robotDiameter *= scaleFactor;
@@ -278,6 +286,7 @@ void applyScale()
   }
 }
 //###############################################################################################
+//Main FSM for robot movement and decisions
 void PlotRobot()
 {
   float difference = 0.0;
@@ -370,22 +379,23 @@ void PlotRobot()
 
 void calcProgressPoint()
 {
-  float oldDist = sqrt(pow(goalX - progressPoint[0], 2) + pow(goalY - progressPoint[1], 2));    //Calculates the straight line distance to the goal
-  float newDist = sqrt(pow(goalX - myRobot.state[0], 2) + pow(goalY - myRobot.state[1], 2));
+  // float oldDist = sqrt(pow(goalX - progressPoint[0], 2) + pow(goalY - progressPoint[1], 2));    //Calculates the straight line distance to the goal
+  // float newDist = sqrt(pow(goalX - myRobot.state[0], 2) + pow(goalY - myRobot.state[1], 2));
+  float oldDist = PVector.dist(goalXY, myRobot.progressPoint);
+  float newDist = PVector.dist(goalXY, myRobot.location);
 
   if (newDist <= oldDist)
   {
-    progressPoint[0] = myRobot.state[0];
-    progressPoint[1] = myRobot.state[1];
-    makingProgress = true;
+    myRobot.progressPoint = myRobot.location;    
+    myRobot.makingProgress = true;
   } else
   {
-    makingProgress = false;
+    myRobot.makingProgress = false;
   }
 
   strokeWeight(5);
   stroke(0, 255, 255);
-  ellipse(progressPoint[0], progressPoint[1], 5, 5);
+  ellipse(myRobot.progressPoint.x, myRobot.progressPoint.y, 5, 5);
   strokeWeight(1);
   stroke(0);
 }
