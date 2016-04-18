@@ -208,10 +208,9 @@ void draw()
 
 
   vectorAvoidObstacles = calcVectorAvoidObstacles();
-  vectorGoToGoal = calcVectorGoToGoal();
-  //vectorAOGTG = vectorAvoidObstacles;
-  vectorAOGTG = PVector.add(vectorGoToGoal, vectorAvoidObstacles);
-  //vectorBlendedAOGTG = calculateVectorBlendedAOGTG();
+  vectorGoToGoal = calcVectorGoToGoal();  
+  //vectorAOGTG = PVector.add(vectorGoToGoal, vectorAvoidObstacles);
+  vectorBlendedAOGTG = calculateVectorBlendedAOGTG();
   //println(vectorGoToGoal+" : "+vectorAvoidObstacles+" : "+vectorAOGTG);
 
   }
@@ -521,17 +520,15 @@ PVector calcVectorAvoidObstacles()
     //Add all the x's and y's together to get combined vector of avoid obstacles        
     vectorAO.add(tempCoords);
   }
-  vectorAO.normalize();
-  
+  //vectorAO.normalize();
+  //println(vectorAO.mag());
   //Transrotate avoidObstacles coords into world frame with a scaling factor
-  tempCoords = transRot(myRobot.location.x, myRobot.location.y, myRobot.heading, vectorAO.x*100, vectorAO.y*100); 
-  
-  line (myRobot.location.x, myRobot.location.y, tempCoords.x, tempCoords.y); 
+  tempCoords = transRot(myRobot.location.x, myRobot.location.y, myRobot.heading, vectorAO.x, vectorAO.y);
   
   tempCoords.x = tempCoords.x - myRobot.location.x;
   tempCoords.y = tempCoords.y - myRobot.location.y;
   
-  return tempCoords; //.normalize();
+  return tempCoords;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -540,7 +537,7 @@ PVector calcVectorGoToGoal()
   PVector result = new PVector();
   result.x = goalX - myRobot.location.x;
   result.y = goalY - myRobot.location.y;  
-  return result.normalize();
+  return result; //.normalize();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -548,14 +545,16 @@ PVector calculateVectorBlendedAOGTG()
 {
   PVector result = new PVector();
   float dist = vectorAvoidObstacles.mag();
-  float beta = 1.0;
+  float beta = 0.002;          //The smaller this value gets the smaller sigma becomes
   float sigma = 1 - exp(-beta*dist);
-  PVector gtgBlend = vectorGoToGoal.mult(sigma);
-  PVector aoBlend = vectorAvoidObstacles.mult(1-sigma);
+  PVector gtgBlend = new PVector();
+  PVector aoBlend = new PVector();  
   
-  println ("AO dist: "+dist+", sigma: "+sigma);
+  PVector.mult(vectorGoToGoal,sigma, gtgBlend);
+  PVector.mult(vectorAvoidObstacles, (1-sigma), aoBlend); 
+
   result = PVector.add(gtgBlend, aoBlend);
-  return result.normalize();
+  return result;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
 void calcVecAO_GTG()
@@ -599,18 +598,17 @@ void drawTarget()
 void dispVectors()
 {
   strokeWeight(3);
-  stroke (255,0,0);  //RED
-  //line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorAvoidObstacles.x*100, myRobot.location.y + vectorAvoidObstacles.y*100);
-  line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorAvoidObstacles.x, myRobot.location.y + vectorAvoidObstacles.y);
+  stroke (255,0,0);  //RED  
+  line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorAvoidObstacles.normalize().x*100, myRobot.location.y + vectorAvoidObstacles.normalize().y*100);
 
   stroke (0,0,255);  //BLUE
-  line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorGoToGoal.x*100, myRobot.location.y + vectorGoToGoal.y*100);
+  line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorGoToGoal.normalize().x*100, myRobot.location.y + vectorGoToGoal.normalize().y*100);
 
   //stroke (0,255,0);  //GREEN
   //line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorAOGTG.x*100, myRobot.location.y + vectorAOGTG.y*100);
   
   stroke (0,255,255);
-  line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorBlendedAOGTG.x*100, myRobot.location.y + vectorBlendedAOGTG.y*100);
+  line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorBlendedAOGTG.normalize().x*100, myRobot.location.y + vectorBlendedAOGTG.normalize().y*100);
 
 
   //path.x = avoid.x*1000 + vectorGTG[0];
