@@ -1,12 +1,12 @@
 class Robot{
-  float x = random (0, screenSizeX);  //x-pos of robot
-  float y = random (0, screenSizeY);  //y-pos of robot
+  //float x = random (0, screenSizeX);  //x-pos of robot
+  //float y = random (0, screenSizeY);  //y-pos of robot
   float heading = random (0, 2*PI);
   float robotDiameter = 0; //diameter; * scaleFactor;  //diameter of chassis
   float noseLength = diameter/2;
   float maxSpeed = 1.0;
   float maxTurnRate = 1.0;
-  float [] state = {x, y, heading};
+  //float [] state = {x, y, heading};
   boolean collisionFlag = false;
   String nodeType = "";    //ROBOT or PARTICLE
   float prob = 1.0;
@@ -15,7 +15,7 @@ class Robot{
   float noiseSense = 1.0;  
   boolean makingProgress = false;       //Add progress point in order to show if robot is making progress towards goal
   PVector progressPoint = new PVector();  //Holds the coords for the latest progress point of the robot
-  PVector location = new PVector();   //Holds the robot x and y pos
+  PVector location = new PVector(random(0, screenSizeX), random(0, screenSizeY), random(0, 2*PI));   //Holds the robot x and y pos
  
   ArrayList<Sensor> sensors = new ArrayList<Sensor>();
   
@@ -39,14 +39,15 @@ class Robot{
   
   void set(float tempX, float tempY, float tempHeading)
   {
-    x = tempX;
-    y = tempY;
-    heading = tempHeading;
-    state[0] = x;
-    state[1] = y;
-    state[2] = heading;
+    //x = tempX;
+    //y = tempY;
+    //heading = tempHeading;
+    //state[0] = x;
+    //state[1] = y;
+    //state[2] = heading;
     location.x = tempX;
     location.y = tempY;
+    heading = tempHeading;
   }
   
   
@@ -76,7 +77,7 @@ class Robot{
       case "ROBOT":
         stroke(0);
         fill(0,255,0);    
-        ellipse(x, y, robotDiameter, robotDiameter);         
+        ellipse(location.x, location.y, robotDiameter, robotDiameter);         
         textAlign(CENTER, CENTER);
         textSize(10);
         
@@ -90,7 +91,7 @@ class Robot{
         for (int i=0; i < numSensors; i++)
         {
           fill(255,0,0);
-          PVector returnVal = transRot(x, y, heading, sensorX[i], sensorY[i]);    //Takes the sensor's x,y and plot it in the global frame
+          PVector returnVal = transRot(location.x, location.y, heading, sensorX[i], sensorY[i]);    //Takes the sensor's x,y and plot it in the global frame
           ellipse(returnVal.x, returnVal.y,3,3);
         }
         
@@ -98,28 +99,28 @@ class Robot{
         for (int k = 0; k < sensors.size(); k++)
         {
           fill(255,0,0);          
-          sensors.get(k).display(x,y,heading);          
+          sensors.get(k).display(location.x,location.y,heading);          
         }
         
         //Displays safeDistance in which a 'collision' occurs
         noFill();
         stroke(255,0,0);
-        ellipse(x, y, safeDistance*2, safeDistance*2);    //Value *2 to convert from radius to diameter
+        ellipse(location.x, location.y, safeDistance*2, safeDistance*2);    //Value *2 to convert from radius to diameter
         
         break;
       
       case "PARTICLE":
         stroke(255,0,0);
         fill(255,0,0);
-        ellipse(x, y, max(1,prob*10), max(1,prob*10));  //Shows a small red dot where the head of the particle is else proportionate to the probability        
+        ellipse(location.x, location.y, max(1,prob*10), max(1,prob*10));  //Shows a small red dot where the head of the particle is else proportionate to the probability        
         textAlign(CENTER, CENTER);
         fill(0);        
         break;
     } 
     stroke(0);    
-    float noseX = x + noseLength * cos(heading);
-    float noseY = y + noseLength * sin(heading);
-    line (x, y, noseX, noseY);
+    float noseX = location.x + noseLength * cos(heading);
+    float noseY = location.y + noseLength * sin(heading);
+    line (location.x, location.y, noseX, noseY);
   }
   
 
@@ -131,27 +132,27 @@ class Robot{
     if (heading <= (-2*PI)) heading += (2*PI);    
     
     float distance = _forward + randomGaussian() * noiseForward;
-    float newX = x + distance * cos(heading);
-    float newY = y + distance * sin(heading);
-    x = newX;
-    y = newY;
+    float newX = location.x + distance * cos(heading);
+    float newY = location.y + distance * sin(heading);
+    location.x = newX;
+    location.y = newY;
     
-    state[0] = x;
-    state[1] = y;
-    state[2] = heading;  
+    //state[0] = x;
+    //state[1] = y;
+    //state[2] = heading;  
 
-    location.x = x;
-    location.y = y;
-    location.z = heading; 
+    //location.x = x;
+    //location.y = y;
+    //heading = heading; 
     
     
     //Allows PARTICLES to live in a continuous world
     if (nodeType == "PARTICLE")
     {
-      if (x > screenSizeX) x =- screenSizeX;
-      if (x < 0) x += screenSizeX;
-      if (y > screenSizeY) y =- screenSizeY;
-      if (y < 0) y += screenSizeY;
+      if (location.x > screenSizeX) location.x =- screenSizeX;
+      if (location.x < 0) location.x += screenSizeX;
+      if (location.y > screenSizeY) location.y =- screenSizeY;
+      if (location.y < 0) location.y += screenSizeY;
     }
   }
   
@@ -160,7 +161,7 @@ class Robot{
   {
     for (int k = 0; k < sensors.size(); k++)
     {
-      sensors.get(k).sense(x,y,heading);
+      sensors.get(k).sense(location.x,location.y,heading);
       if (sensors.get(k).sensorObstacleDist <= safeDistance) myRobot.collisionFlag = true;
     }
   }  

@@ -289,8 +289,8 @@ void PlotRobot()
 {
   float difference = 0.0;
 
-  float deltaX = goalX - myRobot.x;
-  float deltaY = goalY - myRobot.y;
+  float deltaX = goalX - myRobot.location.x;
+  float deltaY = goalY - myRobot.location.y;
   float targetAngle = atan2(deltaY, deltaX);
   float distanceToTarget = sqrt(pow(deltaX, 2) + pow(deltaY, 2));
 
@@ -446,12 +446,12 @@ void estimateWall()
   if ((c1 >= 0) & (c2 >= 0))
   {
     PVector returnVal = transRot (sensorX[c1], sensorY[c1], sensorPhi[c1], sensorObstacleDist[c1], 0);    //translates obstacle distance to robot frame
-    returnVal = transRot (myRobot.x, myRobot.y, myRobot.heading, returnVal.x, returnVal.y);  //translates sensordata in robot frame to global frame
+    returnVal = transRot (myRobot.location.x, myRobot.location.y, myRobot.heading, returnVal.x, returnVal.y);  //translates sensordata in robot frame to global frame
     closest1[0] = returnVal.x;
     closest1[1] = returnVal.y;
 
     returnVal = transRot (sensorX[c2], sensorY[c2], sensorPhi[c2], sensorObstacleDist[c2], 0);    //translates obstacle distance to robot frame
-    returnVal = transRot (myRobot.x, myRobot.y, myRobot.heading, returnVal.x, returnVal.y);  //translates sensordata in robot frame to global frame
+    returnVal = transRot (myRobot.location.x, myRobot.location.y, myRobot.heading, returnVal.x, returnVal.y);  //translates sensordata in robot frame to global frame
     closest2[0] = returnVal.x;
     closest2[1] = returnVal.y;
 
@@ -470,12 +470,12 @@ void estimateWall()
     //  Compute a vector perpendicular with the wall pointing from the center of the robot to the wall vector
     //  http://stackoverflow.com/questions/1811549/perpendicular-on-a-line-from-a-given-point
 
-    float k = ((closest2[1] - closest1[1]) * (myRobot.x - closest1[0]) - (closest2[0] - closest1[0])*(myRobot.y - closest1[1])) / (pow(closest2[1]-closest1[1], 2) + pow(closest2[0]-closest1[0], 2));
-    vectorWallDist[0] = myRobot.x - k *(closest2[1] - closest1[1]);
-    vectorWallDist[1] = myRobot.y + k *(closest2[0] - closest1[0]);
+    float k = ((closest2[1] - closest1[1]) * (myRobot.location.x - closest1[0]) - (closest2[0] - closest1[0])*(myRobot.location.y - closest1[1])) / (pow(closest2[1]-closest1[1], 2) + pow(closest2[0]-closest1[0], 2));
+    vectorWallDist[0] = myRobot.location.x - k *(closest2[1] - closest1[1]);
+    vectorWallDist[1] = myRobot.location.y + k *(closest2[0] - closest1[0]);
 
-    vectorWallDist[0] -= myRobot.x;
-    vectorWallDist[1] -= myRobot.y;
+    vectorWallDist[0] -= myRobot.location.x;
+    vectorWallDist[1] -= myRobot.location.y;
 
     n = sqrt(pow(vectorWallDist[0], 2)+pow(vectorWallDist[1], 2));    //Calculates the normalisation factor for the AvoidObstacle vector
     /*
@@ -505,15 +505,17 @@ void estimateWall()
 PVector calcVectorAvoidObstacles()
 {
   PVector tempCoords = new PVector();
-  PVector location = new PVector(myRobot.x, myRobot.y);
+  PVector location = new PVector(); //myRobot.x, myRobot.y);
   PVector result = new PVector();
+  
+  location = myRobot.location;
 
   for (int k = 0; k < myRobot.sensors.size(); k++)
   {
     //TransRotate sensor distance value to sensor frame
     tempCoords = transRot(myRobot.sensors.get(k).sensorXPos, myRobot.sensors.get(k).sensorYPos, myRobot.sensors.get(k).sensorHAngle, myRobot.sensors.get(k).sensorObstacleDist, 0);
     //TransRotate sensor distance value in sensor frame to robot frame
-    tempCoords = transRot(myRobot.x, myRobot.y, myRobot.heading, tempCoords.x, tempCoords.y);
+    tempCoords = transRot(myRobot.location.x, myRobot.location.y, myRobot.heading, tempCoords.x, tempCoords.y);
 
     //Calculate vector away from obstacles from p143 in Behaviour Based Robotics
     tempCoords = tempCoords.sub(location);
@@ -526,8 +528,8 @@ PVector calcVectorAvoidObstacles()
 PVector calcVectorGoToGoal()
 {
   PVector result = new PVector();
-  result.x = goalX - myRobot.x;
-  result.y = goalY - myRobot.y;
+  result.x = goalX - myRobot.location.x;
+  result.y = goalY - myRobot.location.y;
   result.normalize();
   return result;
 }
@@ -577,13 +579,13 @@ void dispVectors()
 
   strokeWeight(3);
   stroke (255,0,0);
-  line (myRobot.x, myRobot.y, myRobot.x + vectorAvoidObstacles.x*100, myRobot.y + vectorAvoidObstacles.y*100);
+  line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorAvoidObstacles.x*100, myRobot.location.y + vectorAvoidObstacles.y*100);
 
   stroke (0,0,255);  //BLUE
-  line (myRobot.x, myRobot.y, myRobot.x + vectorGoToGoal.x*100, myRobot.y + vectorGoToGoal.y*100);
+  line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorGoToGoal.x*100, myRobot.location.y + vectorGoToGoal.y*100);
 
   stroke (0,255,0);
-  line (myRobot.x, myRobot.y, myRobot.x + vectorAOGTG.x*100, myRobot.y + vectorAOGTG.y*100);
+  line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorAOGTG.x*100, myRobot.location.y + vectorAOGTG.y*100);
 
 
   //path.x = avoid.x*1000 + vectorGTG[0];
@@ -628,13 +630,13 @@ void mousePressed()
   if (mousePressed && (mouseButton == LEFT)) changeGoal();
   if (mousePressed && (mouseButton == RIGHT))
   {
-    myRobot.heading = 0.0;
-    myRobot.x = mouseX;
-    myRobot.y = mouseY;
+    //myRobot.heading = 0.0;
+    //myRobot.x = mouseX;
+    //myRobot.y = mouseY;
 
     myRobot.location.x = mouseX;
     myRobot.location.y = mouseY;
-    //myRobot.location.z = 0.0;
+    //myRobot.heading = 0.0;
 
     //Resets progress point when target is moved to the current mouse position
     // progressPoint[0] = mouseX;
@@ -656,8 +658,8 @@ void changeGoal()
   goalXY.x = mouseX;
   goalXY.y = mouseY;
 
-  startX = myRobot.x;
-  startY = myRobot.y;
+  startX = myRobot.location.x;
+  startY = myRobot.location.y;
 
   stateVal = 1;
   //Resets progress point when target is moved to the current robot position

@@ -30,7 +30,7 @@ void resample()
     index = (index + 1) % maxParticles;
    }  
    
-   tempParticles[i].set(particles[index].x, particles[index].y, particles[index].heading);
+   tempParticles[i].set(particles[index].location.x, particles[index].location.y, particles[index].heading);
    tempParticles[i].setNoise(noiseForward, noiseTurn, noiseSense);
    
    for (int k = 0; k < particles[index].sensors.size(); k++)
