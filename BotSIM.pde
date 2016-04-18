@@ -296,13 +296,13 @@ void PlotRobot()
   float distanceToTarget = PVector.dist(goalXY, myRobot.location);
 
   float phi_GTG = calcGoalAngle(vectorGoToGoal.x, vectorGoToGoal.y);
-  float phi_AO = calcGoalAngle(vectorAO[0], vectorAO[1]);
+  float phi_AO = calcGoalAngle(vectorAvoidObstacles.x, vectorAvoidObstacles.y);
   float phi_AO_GTG = calcGoalAngle(vectorAO_GTG[0], vectorAO_GTG[1]);
   float phi_FW = calcGoalAngle(vectorFollowWall[0], vectorFollowWall[1]);
   
   
   
-
+  println("State: "+stateVal);
 
   switch (stateVal)
   {
@@ -336,12 +336,13 @@ void PlotRobot()
 
     if ((!myRobot.makingProgress) && (myRobot.collisionFlag))
     {
-      stateVal = 3;
+      stateVal = 2;
     }
     break;
 
   case 2:    //Avoid obstacle state
     calcErrorAngle(phi_AO);
+    println("Phi_AO: "+phi_AO);
 
     if (myRobot.collisionFlag)
     {
