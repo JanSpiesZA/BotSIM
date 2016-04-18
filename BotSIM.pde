@@ -386,11 +386,8 @@ void calcProgressPoint()
   // float oldDist = sqrt(pow(goalX - progressPoint[0], 2) + pow(goalY - progressPoint[1], 2));    //Calculates the straight line distance to the goal
   // float newDist = sqrt(pow(goalX - myRobot.state[0], 2) + pow(goalY - myRobot.state[1], 2));
   float oldDist = PVector.dist(goalXY, myRobot.progressPoint);
-  float newDist = PVector.dist(goalXY, myRobot.location);  
+  float newDist = PVector.dist(goalXY, myRobot.location);
   
-  println("Location: "+myRobot.location+ ", ProgressPoint: "+myRobot.progressPoint);
-  println("Old Dist: " + oldDist + ", New Dist: "+newDist);
-
   if (newDist <= oldDist)
   {
     myRobot.progressPoint = myRobot.location.copy();    
