@@ -207,11 +207,11 @@ void draw()
 
 
 
-  coordsAvoidObstacles = calcCoordsAvoidObstacles();
+  vectorAvoidObstacles = calcVectorAvoidObstacles();
   vectorGoToGoal = calcVectorGoToGoal();
   //vectorAOGTG = vectorAvoidObstacles;
   vectorAOGTG = PVector.add(vectorGoToGoal, vectorAvoidObstacles);
-  vectorBlendedAOGTG = calculateVectorBlendedAOGTG();
+  //vectorBlendedAOGTG = calculateVectorBlendedAOGTG();
   //println(vectorGoToGoal+" : "+vectorAvoidObstacles+" : "+vectorAOGTG);
 
   }
@@ -508,7 +508,7 @@ void estimateWall()
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
-PVector calcCoordsAvoidObstacles()
+PVector calcVectorAvoidObstacles()
 {
   PVector tempCoords = new PVector();   
   PVector vectorAO = new PVector();
@@ -524,7 +524,13 @@ PVector calcCoordsAvoidObstacles()
   vectorAO.normalize();
   
   //Transrotate avoidObstacles coords into world frame with a scaling factor
-  tempCoords = transRot(myRobot.location.x, myRobot.location.y, myRobot.heading, vectorAO.x*100, vectorAO.y*100);
+  tempCoords = transRot(myRobot.location.x, myRobot.location.y, myRobot.heading, vectorAO.x*100, vectorAO.y*100); 
+  
+  line (myRobot.location.x, myRobot.location.y, tempCoords.x, tempCoords.y); 
+  
+  tempCoords.x = tempCoords.x - myRobot.location.x;
+  tempCoords.y = tempCoords.y - myRobot.location.y;
+  
   return tempCoords; //.normalize();
 }
 
@@ -595,13 +601,13 @@ void dispVectors()
   strokeWeight(3);
   stroke (255,0,0);  //RED
   //line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorAvoidObstacles.x*100, myRobot.location.y + vectorAvoidObstacles.y*100);
-  line (myRobot.location.x, myRobot.location.y, coordsAvoidObstacles.x, coordsAvoidObstacles.y);
+  line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorAvoidObstacles.x, myRobot.location.y + vectorAvoidObstacles.y);
 
   stroke (0,0,255);  //BLUE
   line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorGoToGoal.x*100, myRobot.location.y + vectorGoToGoal.y*100);
 
-  stroke (0,255,0);  //GREEN
-  line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorAOGTG.x*100, myRobot.location.y + vectorAOGTG.y*100);
+  //stroke (0,255,0);  //GREEN
+  //line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorAOGTG.x*100, myRobot.location.y + vectorAOGTG.y*100);
   
   stroke (0,255,255);
   line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorBlendedAOGTG.x*100, myRobot.location.y + vectorBlendedAOGTG.y*100);
