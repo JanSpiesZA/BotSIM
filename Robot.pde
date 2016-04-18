@@ -78,19 +78,20 @@ class Robot{
         float y_glob = 0.0;
         fill(255);
         
-        //Plots the sensors position on the robot avatar
-        for (int i=0; i < numSensors; i++)
-        {
-          fill(255,0,0);
-          PVector returnVal = transRot(location.x, location.y, heading, sensorX[i], sensorY[i]);    //Takes the sensor's x,y and plot it in the global frame
-          ellipse(returnVal.x, returnVal.y,3,3);
-        }
+        ////Plots the sensors position on the robot avatar
+        //for (int i=0; i < numSensors; i++)
+        //{
+        //  fill(255,0,0);
+        //  PVector returnVal = transRot(location.x, location.y, heading, sensorX[i], sensorY[i]);    //Takes the sensor's x,y and plot it in the global frame
+        //  ellipse(returnVal.x, returnVal.y,3,3);
+        //}
         
         //Displays sensor from ArrayList on robot avatar
         for (int k = 0; k < sensors.size(); k++)
         {
           fill(255,0,0);          
-          sensors.get(k).display(location.x,location.y,heading);          
+          sensors.get(k).display(location.x,location.y,heading);
+          sensors.get(k).displaySensorData(location.x,location.y,heading);
         }
         
         //Displays safeDistance in which a 'collision' occurs

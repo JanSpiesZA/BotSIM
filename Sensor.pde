@@ -29,7 +29,20 @@ class Sensor
   {        
     PVector returnVal = transRot(_refXPos, _refYPos, _refHeading, sensorXPos, sensorYPos);    //Takes the sensor's x,y and plot it in the global frame    
     ellipse(returnVal.x, returnVal.y,3,3);
-  }  
+  }
+
+////////////////////////////////////////////////////////////////////////////////////////////
+  //Display the sensors max distance and obstacles detected by sensors
+  void displaySensorData(float _refXPos, float _refYPos, float _refHeading)
+  {  
+    PVector returnVal = transRot(sensorXPos, sensorYPos, sensorHAngle, sensorObstacleDist, 0);    //Takes the sensor's x,y and plot it in the global frame
+    returnVal = transRot(_refXPos, _refYPos, _refHeading, returnVal.x, returnVal.y);    //Takes the sensor's x,y and plot it in the global frame
+    fill(255);
+    stroke(0);
+    strokeWeight(1);
+    ellipse(returnVal.x, returnVal.y, 10*scaleFactor,10*scaleFactor);
+  }
+  
 ////////////////////////////////////////////////////////////////////////////////////////////  
   //Senses if an obstacle is within its cone of detection
   void sense(float _refXPos, float _refYPos, float _refHeading)
@@ -57,10 +70,10 @@ class Sensor
     
         
     //Plot sensor scan range after adding noise
-    PVector returnVal = transRot(sensorXPos, sensorYPos, sensorHAngle, sensorObstacleDist, 0);    //Converts distance to sensor frame
-    returnVal = transRot(_refXPos, _refYPos, _refHeading, returnVal.x, returnVal.y);
-    fill(255);
-    stroke(1);
-    ellipse (returnVal.x, returnVal.y, 10*scaleFactor,10*scaleFactor);
+    //PVector returnVal = transRot(sensorXPos, sensorYPos, sensorHAngle, sensorObstacleDist, 0);    //Converts distance to sensor frame
+    //returnVal = transRot(_refXPos, _refYPos, _refHeading, returnVal.x, returnVal.y);
+    //fill(255);
+    //stroke(1);
+    //ellipse (returnVal.x, returnVal.y, 10*scaleFactor,10*scaleFactor);
   }
 }

@@ -76,3 +76,18 @@ void calcVecGTG()
   
   
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+void calcVecAO_GTG()
+{
+
+  for (int i = 0; i <= 1; i++)
+  {
+    vectorAO_GTG[i] = blendGain*vectorAO[i] + (1 - blendGain)*vectorGTG[i];
+  }
+
+  float n = sqrt(pow(vectorAO_GTG[0], 2)+pow(vectorAO_GTG[1], 2));    //Calculates the normailsation factor for the AvoidObstacle vector
+
+  vectorAO_GTG[0] = 100 * vectorAO_GTG[0]/n;      //Multiply by 100 gain in order to control the length of the unity vectors
+  vectorAO_GTG[1] = 100 * vectorAO_GTG[1]/n;
+}

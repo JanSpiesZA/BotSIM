@@ -15,7 +15,7 @@ boolean wallDetect = false;
 Robot myRobot;          //Creat a myRobot instance
 float diameter = 45.0;
 
-final int maxParticles = 0;
+final int maxParticles = 10;
 Robot[] particles = new Robot[maxParticles];
 final float noiseForward = 1.0;            //global Noisevalues used to set the noise values in the praticles
 final float noiseTurn = 0.1;
@@ -191,7 +191,7 @@ void draw()
       particles[k].measureProb();
     }
 
-    // updateParticles();
+    //updateParticles();
 
     calcProgressPoint();
 
@@ -291,6 +291,17 @@ void applyScale()
     myRobot.sensors.get(k).sensorYPos *= scaleFactor;
     myRobot.sensors.get(k).sensorMaxDetect *= scaleFactor;
   }
+  
+  //Applies scale factor to each particle
+  for (int k = 0; k < maxParticles; k++)
+  {
+    for (int i = 0; i < numSensors2; i++)
+    {
+      particles[k].sensors.get(i).sensorXPos *= scaleFactor;
+      particles[k].sensors.get(i).sensorYPos *= scaleFactor;
+      particles[k].sensors.get(i).sensorMaxDetect *= scaleFactor;
+    }
+  }
 }
 //###############################################################################################
 //Main FSM for robot movement and decisions
@@ -303,10 +314,6 @@ void PlotRobot()
   float phi_AO_GTG = calcGoalAngle(vectorAO_GTG[0], vectorAO_GTG[1]);
   float phi_FW = calcGoalAngle(vectorFollowWall[0], vectorFollowWall[1]);
   
-  
-  
-  println("State: "+stateVal);
-
   switch (stateVal)
   {
   case 0:    //Stop State / Arrived at Goal
@@ -344,8 +351,7 @@ void PlotRobot()
     break;
 
   case 2:    //Avoid obstacle state
-    calcErrorAngle(phi_AO);
-    println("Phi_AO: "+phi_AO);
+    calcErrorAngle(phi_AO);    
 
     if (myRobot.collisionFlag)
     {
@@ -556,20 +562,7 @@ PVector calculateVectorBlendedAOGTG()
   result = PVector.add(gtgBlend, aoBlend);
   return result;
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////
-void calcVecAO_GTG()
-{
 
-  for (int i = 0; i <= 1; i++)
-  {
-    vectorAO_GTG[i] = blendGain*vectorAO[i] + (1 - blendGain)*vectorGTG[i];
-  }
-
-  float n = sqrt(pow(vectorAO_GTG[0], 2)+pow(vectorAO_GTG[1], 2));    //Calculates the normailsation factor for the AvoidObstacle vector
-
-  vectorAO_GTG[0] = 100 * vectorAO_GTG[0]/n;      //Multiply by 100 gain in order to control the length of the unity vectors
-  vectorAO_GTG[1] = 100 * vectorAO_GTG[1]/n;
-}
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
 float calcGoalAngle(float vectX, float vectY)
