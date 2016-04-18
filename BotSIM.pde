@@ -510,12 +510,9 @@ void estimateWall()
 /////////////////////////////////////////////////////////////////////////////////////////////////
 PVector calcCoordsAvoidObstacles()
 {
-  PVector tempCoords = new PVector();
-  PVector location = new PVector(); 
+  PVector tempCoords = new PVector();   
   PVector vectorAO = new PVector();
   
-  location = myRobot.location;
-
   for (int k = 0; k < myRobot.sensors.size(); k++)
   {
     //TransRotate sensor distance value to robot frame
