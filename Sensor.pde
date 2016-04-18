@@ -66,14 +66,6 @@ class Sensor
     }
     
     //Add noise to the sensor distance
-    //sensorObstacleDist += randomGaussian() * sensorNoise;
-    
-        
-    //Plot sensor scan range after adding noise
-    //PVector returnVal = transRot(sensorXPos, sensorYPos, sensorHAngle, sensorObstacleDist, 0);    //Converts distance to sensor frame
-    //returnVal = transRot(_refXPos, _refYPos, _refHeading, returnVal.x, returnVal.y);
-    //fill(255);
-    //stroke(1);
-    //ellipse (returnVal.x, returnVal.y, 10*scaleFactor,10*scaleFactor);
+    sensorObstacleDist += randomGaussian() * sensorNoise;
   }
 }

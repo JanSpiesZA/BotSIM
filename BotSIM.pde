@@ -180,9 +180,8 @@ void draw()
     drawTiles();
     drawTarget();
     PlotRobot();
-
-    //detectObstacle();        //Detects distance to obstacle not using the sensor class
-
+    calcProgressPoint();
+    
     myRobot.sense();          //Makes use of sensor class to detect obstacles
 
     for (int k = 0; k < maxParticles; k++)
@@ -191,21 +190,12 @@ void draw()
       particles[k].measureProb();
     }
 
-    //updateParticles();
-
-    calcProgressPoint();
-
-    // resample();
+    updateParticles();
+    resample();
 
 
 
-    step = false;
-  
-
-
-  //calcVecAO();       //Calculates the avoid obstacle vector;
-
-
+    step = true;
 
   vectorAvoidObstacles = calcVectorAvoidObstacles();
   vectorGoToGoal = calcVectorGoToGoal();  
@@ -214,9 +204,7 @@ void draw()
   //println(vectorGoToGoal+" : "+vectorAvoidObstacles+" : "+vectorAOGTG);
 
   }
-
-  //calcVecGTG();
-  //calcVecAO_GTG();    //Calculates vector after blending Go-To-Goal and Avoid_Obstacle;
+  
   //estimateWall();    //Estimates the distance to the wall using closest sesnors to the wall
   dispVectors();      //Displays different vectors, ie: Go-To-Goal, Avoid Obstacle, etc
   
