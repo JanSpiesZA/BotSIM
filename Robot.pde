@@ -45,6 +45,8 @@ class Robot{
     state[0] = x;
     state[1] = y;
     state[2] = heading;
+    location.x = tempX;
+    location.y = tempY;
   }
   
   
@@ -136,7 +138,11 @@ class Robot{
     
     state[0] = x;
     state[1] = y;
-    state[2] = heading;   
+    state[2] = heading;  
+
+    location.x = x;
+    location.y = y;
+    location.z = heading; 
     
     
     //Allows PARTICLES to live in a continuous world
