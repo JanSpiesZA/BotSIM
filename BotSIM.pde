@@ -56,6 +56,7 @@ float goalY = screenSizeY / 2;
 
 PVector vectorAOGTG = new PVector();
 PVector vectorAvoidObstacles = new PVector();
+PVector coordsAvoidObstacles = new PVector();    //Coords on the world frame, holding the point of the avoid obstacle vector
 PVector vectorGoToGoal = new PVector();
 PVector vectorBlendedAOGTG = new PVector();      //Holds the vector which is blended between AvoidObstacles an GoToGoal
 
@@ -206,7 +207,7 @@ void draw()
 
 
 
-  vectorAvoidObstacles = calcVectorAvoidObstacles();
+  coordsAvoidObstacles = calcCoordsAvoidObstacles();
   vectorGoToGoal = calcVectorGoToGoal();
   //vectorAOGTG = vectorAvoidObstacles;
   vectorAOGTG = PVector.add(vectorGoToGoal, vectorAvoidObstacles);
@@ -507,7 +508,7 @@ void estimateWall()
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
-PVector calcVectorAvoidObstacles()
+PVector calcCoordsAvoidObstacles()
 {
   PVector tempCoords = new PVector();
   PVector location = new PVector(); 
@@ -522,19 +523,12 @@ PVector calcVectorAvoidObstacles()
     
     //Add all the x's and y's together to get combined vector of avoid obstacles        
     vectorAO.add(tempCoords);
-    
-    ////TransRotate sensor distance value in sensor frame to robot frame in order to draw lines to each sensor
-    //tempCoords = transRot(myRobot.location.x, myRobot.location.y, myRobot.heading, tempCoords.x, tempCoords.y);    
-    //strokeWeight(1);
-    //line(myRobot.location.x, myRobot.location.y, tempCoords.x, tempCoords.y);
   }
-  //Transrotate avoidObstacles coords into world frame
-  tempCoords = transRot(myRobot.location.x, myRobot.location.y, myRobot.heading, vectorAO.x, vectorAO.y);
+  vectorAO.normalize();
   
-  //println("result: "+result);
-  //strokeWeight(3);
-  //line(myRobot.location.x, myRobot.location.y, tempCoords.x, tempCoords.y);
-  return tempCoords.normalize();
+  //Transrotate avoidObstacles coords into world frame with a scaling factor
+  tempCoords = transRot(myRobot.location.x, myRobot.location.y, myRobot.heading, vectorAO.x*100, vectorAO.y*100);
+  return tempCoords; //.normalize();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -603,7 +597,8 @@ void dispVectors()
 {
   strokeWeight(3);
   stroke (255,0,0);  //RED
-  line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorAvoidObstacles.x*100, myRobot.location.y + vectorAvoidObstacles.y*100);
+  //line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorAvoidObstacles.x*100, myRobot.location.y + vectorAvoidObstacles.y*100);
+  line (myRobot.location.x, myRobot.location.y, coordsAvoidObstacles.x, coordsAvoidObstacles.y);
 
   stroke (0,0,255);  //BLUE
   line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorGoToGoal.x*100, myRobot.location.y + vectorGoToGoal.y*100);
