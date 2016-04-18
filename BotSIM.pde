@@ -1,4 +1,4 @@
-//All distances are measured and listed in cm's unless specified differently
+//All distances are measured and listed in cm's unless specified otherwise
 
 
 //Actual distance of measured on ground, measured in cm's
@@ -14,7 +14,7 @@ boolean makingProgress = true;    //Indicates if progress towards the goal is be
 boolean wallDetect = false;
 
 Robot myRobot;          //Creat a myRobot instance
-float diameter = 45.0; 
+float diameter = 45.0;
 
 final int maxParticles = 0;
 Robot[] particles = new Robot[maxParticles];
@@ -55,7 +55,7 @@ float[] vectorGTG = {0.0, 0.0};      //x and y values for vector go-to-goal
 PVector vectorGoToGoal = new PVector();
 float[] vectorWall = {0.0, 0.0};      //x and y values representing the vector of a piece of wall for follow wall procedure
 float[] vectorWallDist = {0.0, 0.0};  //x and y values for a line perpendicular to the wall vector
-float[] vectorAwayFromWall = {0.0, 0.0};  //x and y values for vector pointing away from the wall 
+float[] vectorAwayFromWall = {0.0, 0.0};  //x and y values for vector pointing away from the wall
 float[] vectorFollowWall = {0.0, 0.0};    //Vector pointing in the direction the robot must move when following the wall
 
 int numSensors = sensorX.length;    //Determines the amount of sensor elements present
@@ -82,7 +82,7 @@ boolean showVal = false;
 boolean step = true;
 
 //Measurement of tiles to be used for occupancy grid in cm's scaled to represented size in real world
-int tileSize = int(50 * scaleFactor);                            
+int tileSize = int(50 * scaleFactor);
 int maxTilesX = int(screenSizeX/tileSize);
 int maxTilesY = int(screenSizeY/tileSize);
 Tile tile[][] = new Tile[maxTilesX][maxTilesY];
@@ -92,14 +92,14 @@ void setup()
 
   myRobot = new Robot("ROBOT", diameter);        //Create a new robot object
   myRobot.set(screenSizeX/2, screenSizeY/2, -PI/2);
-    
 
-  //Add sensors to the robot object 
+
+  //Add sensors to the robot object
   for (int k=0; k<numSensors2; k++)
-  { 
-    myRobot.addSensor(0, 0, -PI/2 + PI/(numSensors-1)*k);   
+  {
+    myRobot.addSensor(0, 0, -PI/2 + PI/(numSensors-1)*k);
     myRobot.sensors.get(k).sensorMinDetect = minDetectDistance;
-  }  
+  }
 
   //Sets up a 2D array which will hold the world Tiles
   for (int x = 0; x < maxTilesX; x++)
@@ -108,11 +108,11 @@ void setup()
     {
       tile[x][y] = new Tile();
     }
-  }  
+  }
 
   for (int i = 0; i < maxParticles; i++)
   {
-    particles[i] = new Robot("PARTICLE");  
+    particles[i] = new Robot("PARTICLE");
     particles[i].set(screenSizeX/2, screenSizeY/2, -PI/2);
     particles[i].setNoise(noiseForward, noiseTurn, noiseSense);    //Add noise to newly created particle
 
@@ -121,7 +121,7 @@ void setup()
       particles[i].addSensor(0, 0, -PI/2 + PI/(numSensors2-1)*k);
     }
   }
-  
+
   applyScale();    //Applies the scale to all physical quantities
 
   surface.setResizable(true);
@@ -129,17 +129,17 @@ void setup()
 
   //Change particle x and y values to prevent them from being inside walls
   //for (int i=0; i < maxParticles; i++)
-  //{  
+  //{
   //  color col = img.get (int(particles[i].x) ,int(particles[i].y));    //Test pixel colour to determine if there is an obstacle
   //  if (red(col) == 0)
   //  {
-  //    while(red(col) == 0)    
+  //    while(red(col) == 0)
   //    {
   //      particles[i].x = random (0, screenSizeX);
   //      particles[i].y = random (0, screenSizeY);
   //      col = img.get (int(particles[i].x) ,int(particles[i].y));    //Test pixel colour to determine if there is an obstacle
   //    }
-  //  }      
+  //  }
   //}
 }
 
@@ -152,10 +152,10 @@ void draw()
     println("\nState: "+stateVal+", CollisionFlag: "+myRobot.collisionFlag);
     println();
 
-    for (int k = 0; k< maxParticles; k++) 
+    for (int k = 0; k< maxParticles; k++)
     {
       for (int i = 0; i < numSensors; i++)
-      {        
+      {
         print (int(particles[k].sensors.get(i).sensorObstacleDist)+"\t");
       }
       print ("PROB: "+ particles[k].prob);
@@ -167,23 +167,23 @@ void draw()
 
   if (step)
   {
-    //background(img);                                  //Make the background the orginal map image    
+    //background(img);                                  //Make the background the orginal map image
     //background(255);
     drawTiles();
     drawTarget();
     PlotRobot();
 
-    //detectObstacle();        //Detects distance to obstacle not using the sensor class  
+    //detectObstacle();        //Detects distance to obstacle not using the sensor class
 
     myRobot.sense();          //Makes use of sensor class to detect obstacles
 
     for (int k = 0; k < maxParticles; k++)
-    {    
+    {
       particles[k].sense();
       particles[k].measureProb();
     }
 
-    // updateParticles(); 
+    // updateParticles();
 
     calcProgressPoint();
 
@@ -191,25 +191,25 @@ void draw()
 
 
 
-    step = false;
+    step = true;
   }
 
 
   //calcVecAO();       //Calculates the avoid obstacle vector;
-  
-  
-  
-  vectorAvoidObstacles = calcVectorAvoidObstacles(); 
+
+
+
+  vectorAvoidObstacles = calcVectorAvoidObstacles();
   vectorGoToGoal = calcVectorGoToGoal();
   //vectorAOGTG = vectorAvoidObstacles;
   vectorAOGTG = PVector.add(vectorGoToGoal, vectorAvoidObstacles);
   //println(vectorGoToGoal+" : "+vectorAvoidObstacles+" : "+vectorAOGTG);
-  
-  
-  
+
+
+
   calcVecGTG();
   //calcVecAO_GTG();    //Calculates vector after blending Go-To-Goal and Avoid_Obstacle;
-  //estimateWall();    //Estimates the distance to the wall using closest sesnors to the wall  
+  //estimateWall();    //Estimates the distance to the wall using closest sesnors to the wall
   dispVectors();      //Displays different vectors, ie: Go-To-Goal, Avoid Obstacle, etc
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -255,9 +255,9 @@ void applyScale()
   myRobot.maxSpeed *= scaleFactor;
   myRobot.maxTurnRate *= scaleFactor;
   minDetectDistance *= scaleFactor;        //Closer than this value and the sensors do not return valid data
-  maxDetectDistance *= scaleFactor;  
+  maxDetectDistance *= scaleFactor;
   safeZone *= scaleFactor;          //Safe area around target assumed the robot reached its goal;
-  safeDistance *= scaleFactor;    
+  safeDistance *= scaleFactor;
   distanceFromWall *= scaleFactor;
 
   //Apply the scalefactor to the position of each of the sensors
@@ -283,12 +283,12 @@ void PlotRobot()
   float difference = 0.0;
 
   float deltaX = goalX - myRobot.x;
-  float deltaY = goalY - myRobot.y;  
-  float targetAngle = atan2(deltaY, deltaX);    
+  float deltaY = goalY - myRobot.y;
+  float targetAngle = atan2(deltaY, deltaX);
   float distanceToTarget = sqrt(pow(deltaX, 2) + pow(deltaY, 2));
 
   float phi_GTG = calcGoalAngle(vectorGTG[0], vectorGTG[1]);
-  float phi_AO = calcGoalAngle(vectorAO[0], vectorAO[1]); 
+  float phi_AO = calcGoalAngle(vectorAO[0], vectorAO[1]);
   float phi_AO_GTG = calcGoalAngle(vectorAO_GTG[0], vectorAO_GTG[1]);
   float phi_FW = calcGoalAngle(vectorFollowWall[0], vectorFollowWall[1]);
 
@@ -296,7 +296,7 @@ void PlotRobot()
   switch (stateVal)
   {
   case 0:    //Stop State / Arrived at Goal
-    if (distanceToTarget > safeZone) 
+    if (distanceToTarget > safeZone)
     {
       stateVal = 1;
     } else
@@ -318,7 +318,7 @@ void PlotRobot()
       stateVal = 2;
     }
 
-    if (!myRobot.collisionFlag) 
+    if (!myRobot.collisionFlag)
     {
       calcErrorAngle(phi_GTG);
     }
@@ -337,19 +337,19 @@ void PlotRobot()
       stateVal = 1;
       myRobot.collisionFlag = false;
     }
-    break;      
+    break;
 
   case 3:
     calcErrorAngle(phi_FW);
     //makingProgress = true;
     if (makingProgress) stateVal = 1;
     break;
-  } 
+  }
 
-  //calcErrorAngle(phi_FW); 
+  //calcErrorAngle(phi_FW);
 
   //Stop the robot when it is close enough to the target area
-  //if (distanceToTarget <= safeZone) distanceToTarget = 0;  
+  //if (distanceToTarget <= safeZone) distanceToTarget = 0;
 
   //float errorAngle = difference;
   //println("Length of vector: ",distanceToTarget, " : ",stateVal);
@@ -358,8 +358,8 @@ void PlotRobot()
 
 
   moveAngle = min (myRobot.maxTurnRate, (turnGain * errorAngle));  //P controller to turn towards goal
-  moveSpeed = min (myRobot.maxSpeed, (moveGain * (distanceToTarget))); 
-  myRobot.move(moveAngle, moveSpeed);  
+  moveSpeed = min (myRobot.maxSpeed, (moveGain * (distanceToTarget)));
+  myRobot.move(moveAngle, moveSpeed);
   myRobot.display();
 }
 
@@ -397,7 +397,7 @@ void calcProgressPoint()
 //    3) Converts this difference into the robot's local frame in order to determine left and right turns
 // Based on Games Programming: Methods and How to's - Dr James Jordaan Revision 4.1 p196
 void calcErrorAngle (float goalAngle)
-{  
+{
   //if (goalAngle < 0) goalAngle += (2*PI);        //Change goal angle from atan2 to radians (global frame)
   errorAngle = goalAngle - myRobot.heading;
   if (errorAngle < -PI) errorAngle += (2*PI);
@@ -406,12 +406,12 @@ void calcErrorAngle (float goalAngle)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 void estimateWall()
-{ 
+{
   int c1 = 0;
   int c2 = 1;
 
   //Step 1:
-  //  Determine the two smallest values from the left sensors  
+  //  Determine the two smallest values from the left sensors
   for (int i = 0; i <= ceil(numSensors/2); i++)
   {
     if (sensorObstacleDist[i] < sensorObstacleDist[c1]) c1 = i;
@@ -424,7 +424,7 @@ void estimateWall()
   if (c1 == c2) c2 = c1 + 1;
 
   int leftC1 = min(c1, c2);
-  int leftC2 = max(c1, c2); 
+  int leftC2 = max(c1, c2);
 
   c1 = leftC1;
   c2 = leftC2;
@@ -433,7 +433,7 @@ void estimateWall()
   //  Convert the distances to points in the global frame
   //  Create a wall vector and normalise it
   if ((c1 >= 0) & (c2 >= 0))
-  { 
+  {
     PVector returnVal = transRot (sensorX[c1], sensorY[c1], sensorPhi[c1], sensorObstacleDist[c1], 0);    //translates obstacle distance to robot frame
     returnVal = transRot (myRobot.x, myRobot.y, myRobot.heading, returnVal.x, returnVal.y);  //translates sensordata in robot frame to global frame
     closest1[0] = returnVal.x;
@@ -451,12 +451,12 @@ void estimateWall()
     vectorWall[0] = closest2[0] - closest1[0];
     vectorWall[1] = closest2[1] - closest1[1];
 
-    float n = sqrt(pow(vectorWall[0], 2)+pow(vectorWall[1], 2));    //Calculates the normalisation factor for the AvoidObstacle vector  
+    float n = sqrt(pow(vectorWall[0], 2)+pow(vectorWall[1], 2));    //Calculates the normalisation factor for the AvoidObstacle vector
     vectorWall[0] = normaliseGain * vectorWall[0]/n;      //Multiply by 100 gain in order to control the length of the unity vectors
-    vectorWall[1] = normaliseGain * vectorWall[1]/n;  
+    vectorWall[1] = normaliseGain * vectorWall[1]/n;
 
     //Step 3
-    //  Compute a vector perpendicular with the wall pointing from the center of the robot to the wall vector    
+    //  Compute a vector perpendicular with the wall pointing from the center of the robot to the wall vector
     //  http://stackoverflow.com/questions/1811549/perpendicular-on-a-line-from-a-given-point
 
     float k = ((closest2[1] - closest1[1]) * (myRobot.x - closest1[0]) - (closest2[0] - closest1[0])*(myRobot.y - closest1[1])) / (pow(closest2[1]-closest1[1], 2) + pow(closest2[0]-closest1[0], 2));
@@ -464,15 +464,15 @@ void estimateWall()
     vectorWallDist[1] = myRobot.y + k *(closest2[0] - closest1[0]);
 
     vectorWallDist[0] -= myRobot.x;
-    vectorWallDist[1] -= myRobot.y;    
+    vectorWallDist[1] -= myRobot.y;
 
     n = sqrt(pow(vectorWallDist[0], 2)+pow(vectorWallDist[1], 2));    //Calculates the normalisation factor for the AvoidObstacle vector
-    /*  
+    /*
      vectorWallDist[0] = normaliseGain * vectorWallDist[0]/n;      //Multiply by 100 gain in order to control the length of the unity vectors
-     vectorWallDist[1] = normaliseGain * vectorWallDist[1]/n;  
+     vectorWallDist[1] = normaliseGain * vectorWallDist[1]/n;
      */
     //Step 4
-    //  Determines vector pointing away from the wall and weighted with distanceFromWall    
+    //  Determines vector pointing away from the wall and weighted with distanceFromWall
     for (int i = 0; i < 2; i++)
     {
       vectorAwayFromWall[i] =  vectorWallDist[i] - distanceFromWall * vectorWallDist[i]/n;
@@ -480,20 +480,20 @@ void estimateWall()
 
 
     //Step 5
-    //  Calculates vectorFollowWall used to point the robot in the right direction when following the wall 
+    //  Calculates vectorFollowWall used to point the robot in the right direction when following the wall
     for (int i=0; i < 2; i++)
     {
       vectorFollowWall[i] = vectorWall[i] + vectorAwayFromWall[i];
     }
   }
-} 
+}
 
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 PVector calcVectorAvoidObstacles()
 {
-  PVector tempCoords = new PVector();  
+  PVector tempCoords = new PVector();
   PVector location = new PVector(myRobot.x, myRobot.y);
   PVector result = new PVector();
 
@@ -505,29 +505,29 @@ PVector calcVectorAvoidObstacles()
     tempCoords = transRot(myRobot.x, myRobot.y, myRobot.heading, tempCoords.x, tempCoords.y);
 
     //Calculate vector away from obstacles from p143 in Behaviour Based Robotics
-    tempCoords = tempCoords.sub(location);    
+    tempCoords = tempCoords.sub(location);
     result.add(tempCoords);
-  } 
+  }
   return result.normalize();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 PVector calcVectorGoToGoal()
 {
-  PVector result = new PVector();  
+  PVector result = new PVector();
   result.x = goalX - myRobot.x;
   result.y = goalY - myRobot.y;
-  result.normalize();  
+  result.normalize();
   return result;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
 void calcVecAO_GTG()
-{       
+{
 
   for (int i = 0; i <= 1; i++)
   {
     vectorAO_GTG[i] = blendGain*vectorAO[i] + (1 - blendGain)*vectorGTG[i];
-  }  
+  }
 
   float n = sqrt(pow(vectorAO_GTG[0], 2)+pow(vectorAO_GTG[1], 2));    //Calculates the normailsation factor for the AvoidObstacle vector
 
@@ -537,7 +537,7 @@ void calcVecAO_GTG()
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
 float calcGoalAngle(float vectX, float vectY)
-{  
+{
   float angle = atan2 (vectY, vectX);
   //if (angle <= 0) angle += (2*PI);
   return angle;
@@ -549,7 +549,7 @@ void drawTarget()
   stroke(0);
   fill(255, 0, 0);
   strokeWeight(1);
-  ellipse (goalX, goalY, safeZone*3, safeZone*3);  
+  ellipse (goalX, goalY, safeZone*3, safeZone*3);
   stroke(0);
   fill(255);
   ellipse (goalX, goalY, safeZone*2, safeZone*2);
@@ -560,29 +560,29 @@ void drawTarget()
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 void dispVectors()
-{ 
-  strokeWeight(1); 
+{
+  strokeWeight(1);
   stroke(0, 0, 255);
-  
+
   strokeWeight(3);
   stroke (255,0,0);
   line (myRobot.x, myRobot.y, myRobot.x + vectorAvoidObstacles.x*100, myRobot.y + vectorAvoidObstacles.y*100);
-  
+
   stroke (0,0,255);  //BLUE
   line (myRobot.x, myRobot.y, myRobot.x + vectorGoToGoal.x*100, myRobot.y + vectorGoToGoal.y*100);
-  
+
   stroke (0,255,0);
   line (myRobot.x, myRobot.y, myRobot.x + vectorAOGTG.x*100, myRobot.y + vectorAOGTG.y*100);
-  
-  
+
+
   //path.x = avoid.x*1000 + vectorGTG[0];
   //path.y = avoid.y*1000 + vectorGTG[1];
-  
+
   //stroke(0,255,255);
   //line (location.x, location.y, location.x + path.x, location.y + path.y);
 
-  //stroke (255,0,0); 
-  //line (myRobot.x, myRobot.y, myRobot.x + vectorAO[0], myRobot.y + vectorAO[1]); //draws the Avoid Obstacle vector 
+  //stroke (255,0,0);
+  //line (myRobot.x, myRobot.y, myRobot.x + vectorAO[0], myRobot.y + vectorAO[1]); //draws the Avoid Obstacle vector
   //stroke (0,255,0);
   //line (myRobot.x, myRobot.y, myRobot.x + vectorAO_GTG[0], myRobot.y + vectorAO_GTG[1]);  //draws the AO and GTG blended vector
 
@@ -605,7 +605,7 @@ void dispVectors()
 //Returns a PVector with new x and y coordinates
 PVector transRot (float x_frame, float y_frame, float phi_frame, float x_point, float y_point)
 {
-  float x_temp = cos(phi_frame) * x_point - sin(phi_frame)*y_point + x_frame; //Uses transformation and rotation to plot sensor gloablly 
+  float x_temp = cos(phi_frame) * x_point - sin(phi_frame)*y_point + x_frame; //Uses transformation and rotation to plot sensor gloablly
   float y_temp = sin(phi_frame) * x_point + cos(phi_frame)*y_point + y_frame;
   PVector result = new PVector(x_temp, y_temp);
   return result;
@@ -615,7 +615,7 @@ PVector transRot (float x_frame, float y_frame, float phi_frame, float x_point, 
 void mousePressed()
 {
   if (mousePressed && (mouseButton == LEFT)) changeGoal();
-  if (mousePressed && (mouseButton == RIGHT)) 
+  if (mousePressed && (mouseButton == RIGHT))
   {
     myRobot.heading = 0.0;
     myRobot.x = mouseX;
@@ -633,8 +633,8 @@ void changeGoal()
   goalX = mouseX;
   goalY = mouseY;
   startX = myRobot.x;
-  startY = myRobot.y;  
-  stateVal = 1; 
+  startY = myRobot.y;
+  stateVal = 1;
   //Resets progress point when target is moved to the current robot position
   progressPoint[0] = myRobot.state[0];
   progressPoint[1] = myRobot.state[1];
@@ -650,7 +650,7 @@ void keyPressed()
   //Use this key to enable or diable obstacle
   if (key == 'o')
   {
-    tile[int(mouseX/tileSize)][int(mouseY/tileSize)].gravity *= -1;    
+    tile[int(mouseX/tileSize)][int(mouseY/tileSize)].gravity *= -1;
     tile[int(mouseX/tileSize)][int(mouseY/tileSize)].update();
   }
 }
