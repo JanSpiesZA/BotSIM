@@ -292,13 +292,8 @@ void applyScale()
 //###############################################################################################
 //Main FSM for robot movement and decisions
 void PlotRobot()
-{
-  float difference = 0.0;
-
-  float deltaX = goalX - myRobot.location.x;
-  float deltaY = goalY - myRobot.location.y;
-  float targetAngle = atan2(deltaY, deltaX);
-  float distanceToTarget = sqrt(pow(deltaX, 2) + pow(deltaY, 2));
+{  
+  float distanceToTarget = PVector.dist(goalXY, myRobot.location);
 
   float phi_GTG = calcGoalAngle(vectorGoToGoal.x, vectorGoToGoal.y);
   float phi_AO = calcGoalAngle(vectorAO[0], vectorAO[1]);
