@@ -15,7 +15,7 @@ boolean wallDetect = false;
 Robot myRobot;          //Creat a myRobot instance
 float diameter = 45.0;
 
-final int maxParticles = 10;
+final int maxParticles = 0;
 Robot[] particles = new Robot[maxParticles];
 final float noiseForward = 1.0;            //global Noisevalues used to set the noise values in the praticles
 final float noiseTurn = 0.1;
@@ -190,8 +190,11 @@ void draw()
       particles[k].measureProb();
     }
 
-    updateParticles();
-    resample();
+    if (stateVal != 0)
+    {
+      updateParticles();
+      resample();
+    }
 
 
 
