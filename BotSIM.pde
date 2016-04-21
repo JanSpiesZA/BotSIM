@@ -128,9 +128,7 @@ void setup()
     {
       color c = img.get(x,y);
       if (c == color(0))
-      { 
-        color nc = color(255,0,0);
-        //img.set(x,y,nc);
+      {         
         tile[x/tileSize][y/tileSize].gravity = 1;  
         tile[x/tileSize][y/tileSize].update();
       }      
@@ -193,64 +191,59 @@ void setup()
 void draw()
 {
   background (img);
-  drawTiles();
-
   
+  if (showVal)
+  {
+   for (int k=0; k<numSensors; k++) print(int(myRobot.sensors.get(k).sensorObstacleDist)+"\t");
+   println("\nState: "+stateVal+", CollisionFlag: "+myRobot.collisionFlag);
+   println();
 
-  //if (showVal)
-  //{
-  //  for (int k=0; k<numSensors; k++) print(int(myRobot.sensors.get(k).sensorObstacleDist)+"\t");
-  //  println("\nState: "+stateVal+", CollisionFlag: "+myRobot.collisionFlag);
-  //  println();
+   for (int k = 0; k< maxParticles; k++)
+   {
+     for (int i = 0; i < numSensors; i++)
+     {
+       print (int(particles[k].sensors.get(i).sensorObstacleDist)+"\t");
+     }
+     print ("PROB: "+ particles[k].prob);
+     println();
+   }
+   println();
+   showVal = false;
+  }
 
-  //  for (int k = 0; k< maxParticles; k++)
-  //  {
-  //    for (int i = 0; i < numSensors; i++)
-  //    {
-  //      print (int(particles[k].sensors.get(i).sensorObstacleDist)+"\t");
-  //    }
-  //    print ("PROB: "+ particles[k].prob);
-  //    println();
-  //  }
-  //  println();
-  //  showVal = false;
-  //}
-
-  //if (step)
-  //{
-  //  //background(img);                                  //Make the background the orginal map image
-  //  //background(255);
-  //  drawTiles();
-  //  drawTarget();
-  //  PlotRobot();
-  //  calcProgressPoint();
+  if (step)
+  {   
+   drawTiles();
+   drawTarget();
+   PlotRobot();
+   calcProgressPoint();
     
-  //  int startTime = millis();
-  //  myRobot.sense();          //Makes use of sensor class to detect obstacles
+   int startTime = millis();
+   myRobot.sense();          //Makes use of sensor class to detect obstacles
 
-  //  for (int k = 0; k < maxParticles; k++)
-  //  {
-  //    particles[k].sense();
-  //    particles[k].measureProb();
-  //  }
+   for (int k = 0; k < maxParticles; k++)
+   {
+     particles[k].sense();
+     particles[k].measureProb();
+   }
     
-  //  int endTime = millis();
-  //  println(endTime - startTime);
+   int endTime = millis();
+   println(endTime - startTime);
 
-  //  updateParticles();
-  //  resample();
+   updateParticles();
+   resample();
 
 
 
-  //  step = true;
+   step = true;
 
-  //vectorAvoidObstacles = calcVectorAvoidObstacles();
-  //vectorGoToGoal = calcVectorGoToGoal();  
-  ////vectorAOGTG = PVector.add(vectorGoToGoal, vectorAvoidObstacles);
-  //vectorBlendedAOGTG = calculateVectorBlendedAOGTG();
-  ////println(vectorGoToGoal+" : "+vectorAvoidObstacles+" : "+vectorAOGTG);
+  vectorAvoidObstacles = calcVectorAvoidObstacles();
+  vectorGoToGoal = calcVectorGoToGoal();  
+  //vectorAOGTG = PVector.add(vectorGoToGoal, vectorAvoidObstacles);
+  vectorBlendedAOGTG = calculateVectorBlendedAOGTG();
+  //println(vectorGoToGoal+" : "+vectorAvoidObstacles+" : "+vectorAOGTG);
 
-  //}
+  }
   
   //estimateWall();    //Estimates the distance to the wall using closest sesnors to the wall
   //dispVectors();      //Displays different vectors, ie: Go-To-Goal, Avoid Obstacle, etc
