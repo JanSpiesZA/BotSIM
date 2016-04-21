@@ -1,7 +1,8 @@
 //All distances are measured and listed in cm's unless specified otherwise
 
+PImage img;
 
-//Actual distance of measured on ground, measured in cm's
+//Actual distance of measured on ground, measured in cm's, where one pixel = 1cm???
 float worldMapScaleX = 1000; //3737;      //To be used as the actual distance of the world map x axis, measured in cm
 float worldMapScaleY = 1000; //1137;
 
@@ -89,25 +90,27 @@ boolean showVal = false;
 boolean step = true;
 
 //Measurement of tiles to be used for occupancy grid in cm's scaled to represented size in real world
-int tileSize = int(50 * scaleFactor);
-int maxTilesX = int(screenSizeX/tileSize);
-int maxTilesY = int(screenSizeY/tileSize);
-Tile tile[][] = new Tile[maxTilesX][maxTilesY];
+int tileSize = 50;
+int maxTilesX = 0;
+int maxTilesY = 0;
+Tile tile[][];
 
 void setup()
 {
-
-  myRobot = new Robot("ROBOT", diameter);        //Create a new robot object
-  myRobot.set(screenSizeX/2, screenSizeY/2, -PI/2);
-
-
-  //Add sensors to the robot object
-  for (int k=0; k<numSensors2; k++)
-  {
-    myRobot.addSensor(0, 0, -PI/2 + PI/(numSensors-1)*k);
-    myRobot.sensors.get(k).sensorMinDetect = minDetectDistance;
-  }
-
+  //img = loadImage("blank.png");         //Loads image
+  img = loadImage("kamer2.png");         //Loads image
+  img.resize(int(screenSizeX), int(screenSizeY));
+  
+  tileSize *= scaleFactor;        //Aplies scale factor to the tile size
+    
+  maxTilesX = ceil((float(img.width)/float(tileSize)));
+  maxTilesY = ceil((float(img.height)/float(tileSize)));  
+  
+  println("img.width : "+img.width+", img.Height: "+img.height);
+  println(maxTilesX+","+maxTilesY);
+  
+  tile = new Tile[int(maxTilesX)][int(maxTilesY)];
+  
   //Sets up a 2D array which will hold the world Tiles
   for (int x = 0; x < maxTilesX; x++)
   {
@@ -116,7 +119,40 @@ void setup()
       tile[x][y] = new Tile();
     }
   }
+  
+  //Scans the pixels of the background image to build the occupancy grid
+  img.filter(THRESHOLD);              //Convert image to greyscale
+  for (int x = 0; x < screenSizeX; x++)
+  {
+    for (int y = 0; y < screenSizeY; y++)
+    {
+      color c = img.get(x,y);
+      if (c == color(0))
+      {         
+        tile[x/tileSize][y/tileSize].gravity = 1;  
+        tile[x/tileSize][y/tileSize].update();
+      }      
+    }
+  } 
 
+  
+  //-------------------------------------------------------------------------------
+  //Initialise Robot
+  myRobot = new Robot("ROBOT", diameter);        //Create a new robot object
+  myRobot.set(screenSizeX/2, screenSizeY/2, -PI/2);
+
+  //Add sensors to the robot object
+  for (int k=0; k<numSensors2; k++)
+  {
+    myRobot.addSensor(0, 0, -PI/2 + PI/(numSensors-1)*k);
+    
+    //myRobot.addSensor(0,0,0);
+    myRobot.sensors.get(k).sensorMinDetect = minDetectDistance;
+  }
+  //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  
+  //-------------------------------------------------------------------------------
   //Create particles to localise robot
   for (int i = 0; i < maxParticles; i++)
   {
@@ -129,6 +165,7 @@ void setup()
       particles[i].addSensor(0, 0, -PI/2 + PI/(numSensors2-1)*k);
     }
   }
+  //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   applyScale();    //Applies the scale to all physical quantities
 
@@ -153,42 +190,45 @@ void setup()
 
 void draw()
 {
-
+  background (img);
+  
   if (showVal)
   {
-    for (int k=0; k<numSensors; k++) print(int(myRobot.sensors.get(k).sensorObstacleDist)+"\t");
-    println("\nState: "+stateVal+", CollisionFlag: "+myRobot.collisionFlag);
-    println();
+   for (int k=0; k<numSensors; k++) print(int(myRobot.sensors.get(k).sensorObstacleDist)+"\t");
+   println("\nState: "+stateVal+", CollisionFlag: "+myRobot.collisionFlag);
+   println();
 
-    for (int k = 0; k< maxParticles; k++)
-    {
-      for (int i = 0; i < numSensors; i++)
-      {
-        print (int(particles[k].sensors.get(i).sensorObstacleDist)+"\t");
-      }
-      print ("PROB: "+ particles[k].prob);
-      println();
-    }
-    println();
-    showVal = false;
+   for (int k = 0; k< maxParticles; k++)
+   {
+     for (int i = 0; i < numSensors; i++)
+     {
+       print (int(particles[k].sensors.get(i).sensorObstacleDist)+"\t");
+     }
+     print ("PROB: "+ particles[k].prob);
+     println();
+   }
+   println();
+   showVal = false;
   }
 
   if (step)
-  {
-    //background(img);                                  //Make the background the orginal map image
-    //background(255);
-    drawTiles();
-    drawTarget();
-    PlotRobot();
-    calcProgressPoint();
+  {   
+   drawTiles();
+   drawTarget();
+   PlotRobot();
+   calcProgressPoint();
     
-    myRobot.sense();          //Makes use of sensor class to detect obstacles
+   int startTime = millis();
+   myRobot.sense();          //Makes use of sensor class to detect obstacles
 
-    for (int k = 0; k < maxParticles; k++)
-    {
-      particles[k].sense();
-      particles[k].measureProb();
-    }
+   for (int k = 0; k < maxParticles; k++)
+   {
+     particles[k].sense();
+     particles[k].measureProb();
+   }
+    
+   int endTime = millis();
+   println(endTime - startTime);
 
     if (stateVal != 0)
     {
@@ -197,8 +237,7 @@ void draw()
     }
 
 
-
-    step = true;
+   step = true;
 
   vectorAvoidObstacles = calcVectorAvoidObstacles();
   vectorGoToGoal = calcVectorGoToGoal();  
@@ -209,7 +248,7 @@ void draw()
   }
   
   //estimateWall();    //Estimates the distance to the wall using closest sesnors to the wall
-  dispVectors();      //Displays different vectors, ie: Go-To-Goal, Avoid Obstacle, etc
+  //dispVectors();      //Displays different vectors, ie: Go-To-Goal, Avoid Obstacle, etc
   
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -227,7 +266,7 @@ void drawTiles()
     {
       stroke(0);        //Lines between tiles are black
       strokeWeight(1);  //Stroke weight makes the lines very light
-      fill(tile[x][y].gravityCol);
+      fill(tile[x][y].gravityCol,200);
       rect(x*tileSize, y*tileSize, tileSize, tileSize);  //Draws a rectangle to indicate the tile
     }
   }
