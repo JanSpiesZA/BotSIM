@@ -15,7 +15,7 @@ boolean wallDetect = false;
 Robot myRobot;          //Creat a myRobot instance
 float diameter = 45.0;
 
-final int maxParticles = 10;
+final int maxParticles = 0;
 Robot[] particles = new Robot[maxParticles];
 final float noiseForward = 1.0;            //global Noisevalues used to set the noise values in the praticles
 final float noiseTurn = 0.1;
@@ -105,6 +105,8 @@ void setup()
   for (int k=0; k<numSensors2; k++)
   {
     myRobot.addSensor(0, 0, -PI/2 + PI/(numSensors-1)*k);
+    
+    //myRobot.addSensor(0,0,0);
     myRobot.sensors.get(k).sensorMinDetect = minDetectDistance;
   }
 
@@ -182,6 +184,7 @@ void draw()
     PlotRobot();
     calcProgressPoint();
     
+    int startTime = millis();
     myRobot.sense();          //Makes use of sensor class to detect obstacles
 
     for (int k = 0; k < maxParticles; k++)
@@ -189,6 +192,9 @@ void draw()
       particles[k].sense();
       particles[k].measureProb();
     }
+    
+    int endTime = millis();
+    println(endTime - startTime);
 
     updateParticles();
     resample();
@@ -206,7 +212,7 @@ void draw()
   }
   
   //estimateWall();    //Estimates the distance to the wall using closest sesnors to the wall
-  dispVectors();      //Displays different vectors, ie: Go-To-Goal, Avoid Obstacle, etc
+  //dispVectors();      //Displays different vectors, ie: Go-To-Goal, Avoid Obstacle, etc
   
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////

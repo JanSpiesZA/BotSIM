@@ -50,18 +50,31 @@ class Sensor
     boolean obstacleFlag = false;
     
     sensorObstacleDist = sensorMinDetect;          //Simulate sensor dead zone    
+    
+    float heading = _refHeading + sensorHAngle;
      
     while ((obstacleFlag == false) && (sensorObstacleDist < sensorMaxDetect))
     {
       //translates and rotates sensor position and heading onto robot frame
-      PVector returnVal = transRot(sensorXPos, sensorYPos, sensorHAngle, sensorObstacleDist, 0);    //Converts distance to sensor frame
-      returnVal = transRot(_refXPos, _refYPos, _refHeading, returnVal.x, returnVal.y);
+      //PVector returnVal = transRot(sensorXPos, sensorYPos, sensorHAngle, sensorObstacleDist, 0);    //Converts distance to sensor frame
+      //returnVal = transRot(_refXPos, _refYPos, _refHeading, returnVal.x, returnVal.y);
       
-      color col = get (int(returnVal.x), int(returnVal.y));    //Test pixel colour to determine if there is an obstacle
-      if (col == color(200,150,150))
+      //color col = get (int(returnVal.x), int(returnVal.y));    //Test pixel colour to determine if there is an obstacle
+      //if (col == color(200,150,150))
+      //{
+      // obstacleFlag = true;
+      //}
+      
+      float dX = cos(heading) * sensorObstacleDist;
+      float dY = sin(heading) * sensorObstacleDist;
+      
+      //if (tile[int(returnVal.x/tileSize)][int(returnVal.y/tileSize)].gravity == 1)
+      if (tile[int((_refXPos + dX)/tileSize)][int((_refYPos + dY)/tileSize)].gravity == 1)
       {
-        obstacleFlag = true;
+       obstacleFlag = true;
       }
+      
+      
       sensorObstacleDist += 1;      
     }
     
