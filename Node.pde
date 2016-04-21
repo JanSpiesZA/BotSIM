@@ -1,3 +1,7 @@
+color allNodesColor = color(211); //Colour of the connections between the nodes
+int allNodesStrokeWeight = 1;    //Stroke weight of the connections between the nodes
+color finalPathColor = color(0,255,0);
+int finalPathStrokeWeight = 10;
 
 class Node
 { 
