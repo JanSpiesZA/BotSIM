@@ -108,7 +108,9 @@ class Node
         ellipse(nodeXPos, nodeYPos, 30,30);
         break;
         
-      default:          
+      default:     
+          strokeWeight(1);
+          fill(0);
           ellipse(nodeXPos,nodeYPos, 10,10);   //Draws an ellipse to indicate node x,y        
     }
     
