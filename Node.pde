@@ -29,7 +29,7 @@ class Node
   float nodeXPos, nodeYPos;        //x and y location of node;
   
   boolean nodeActive = false;    //Active node used for path finding
-  int nodeType = 0;              //0 = DEFAULT, 1 = START, 2 = GOAL
+  String nodeType = "";
   
   ArrayList<Integer> nodeConnectedTo = new ArrayList<Integer>();
   
@@ -37,7 +37,7 @@ class Node
   
   Node(float _nodeXPos, float _nodeYPos)
   {        
-    nodeType = 0;    //As opposed to START or GOAL
+    nodeType = "DEFAULT";    //As opposed to START or GOAL
     nodeActive = false;
     
     nodeXPos = _nodeXPos;
@@ -46,18 +46,18 @@ class Node
   
   Node()
   {    
-    nodeType = 0;    //As opposed to START or END
+    nodeType = "DEFAULT";    //As opposed to START or END
     nodeActive = false;
   }
   
   Node(int _nodeID)
   {    
-    nodeType = 0;    //As opposed to START or END
+    nodeType = "DEFAULT";    //As opposed to START or END
     nodeActive = false;
     nodeID = _nodeID;
   }
   
-  Node(float _nodeXPos, float _nodeYPos, int _nodeType)
+  Node(float _nodeXPos, float _nodeYPos, String _nodeType)
   {    
     nodeType = _nodeType;    //As opposed to START or GOAL
     nodeActive = false;
@@ -66,7 +66,7 @@ class Node
     nodeYPos = _nodeYPos;
   }
   
-  Node(float _nodeXPos, float _nodeYPos, int _nodeType, int _nodeID)
+  Node(float _nodeXPos, float _nodeYPos, String _nodeType, int _nodeID)
   {    
     nodeType = _nodeType;    //As opposed to START or GOAL
     nodeActive = false;
@@ -75,6 +75,17 @@ class Node
     nodeXPos = _nodeXPos;
     nodeYPos = _nodeYPos;
   }
+  
+  Node(float _nodeXPos, float _nodeYPos, int _nodeID)
+  {    
+    nodeType = "DEFAULT";    //As opposed to START or GOAL
+    nodeActive = false;
+    nodeID = _nodeID;
+    
+    nodeXPos = _nodeXPos;
+    nodeYPos = _nodeYPos;
+  }
+  
   
   void display()
   {
@@ -83,14 +94,14 @@ class Node
     
     switch (nodeType)
     {
-      case 1:
+      case "START":
         strokeWeight(1);
         fill(0,255,0);
         stroke(0);
         ellipse(nodeXPos, nodeYPos, 30,30);
         break;
         
-      case 2:
+      case "GOAL":
         strokeWeight(1);
         fill(255,0,0);
         stroke(0);
@@ -100,14 +111,21 @@ class Node
       default:          
           ellipse(nodeXPos,nodeYPos, 10,10);   //Draws an ellipse to indicate node x,y        
     }
-
+    
+    
+    
     textSize(30);    
     fill(0);
     textAlign(CENTER,CENTER);
     text(nodeID,nodeXPos,nodeYPos-20);
     textSize(15);
-    text(int(H),nodeXPos+20,nodeYPos+20);  //Bottom Right - distance to GOAL    
-    text(int(G),nodeXPos-20, nodeYPos+20);  //Bottom Left - from START with path values added    
+    text(int(H),nodeXPos+20,nodeYPos+20);  //Bottom Right - distance to GOAL
+    
+    text(int(G),nodeXPos-20, nodeYPos+20);  //Bottom Left - from START with path values added
+    
     text(int(H+G),nodeXPos-20, nodeYPos-40);  //Top Left  -  sum of G and H
   }
+    
+  
+  
 }
