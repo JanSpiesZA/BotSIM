@@ -114,16 +114,16 @@ class Node
     
     
     
-    textSize(30);    
+    textSize(15);    
     fill(0);
     textAlign(CENTER,CENTER);
     text(nodeID,nodeXPos,nodeYPos-20);
-    textSize(15);
-    text(int(H),nodeXPos+20,nodeYPos+20);  //Bottom Right - distance to GOAL
+    //textSize(15);
+    //text(int(H),nodeXPos+20,nodeYPos+20);  //Bottom Right - distance to GOAL
     
-    text(int(G),nodeXPos-20, nodeYPos+20);  //Bottom Left - from START with path values added
+    //text(int(G),nodeXPos-20, nodeYPos+20);  //Bottom Left - from START with path values added
     
-    text(int(H+G),nodeXPos-20, nodeYPos-40);  //Top Left  -  sum of G and H
+    //text(int(H+G),nodeXPos-20, nodeYPos-40);  //Top Left  -  sum of G and H
   }
     
   

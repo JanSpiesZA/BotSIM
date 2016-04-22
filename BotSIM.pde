@@ -186,6 +186,14 @@ void setup()
   //    }
   //  }
   //}
+  allNodes.clear();
+  doQuadTree(0,0, maxTilesX, maxTilesY, QuadTreeLevel);
+  allNodes.add( new Node(myRobot.location.x, myRobot.location.y, "START", allNodes.size()));
+  allNodes.add( new Node(goalXY.x, goalXY.y, "GOAL", allNodes.size()));
+     
+  //println("\nNumber of allNodes: "+allNodes.size());        //Print the total number of nodes
+  nodeLink();
+  findPath();
 }
 
 void draw()
@@ -215,18 +223,15 @@ void draw()
   { 
    drawTiles();
    
-   allNodes.clear();
-   allNodes.add( new Node(myRobot.location.x, myRobot.location.y, "START", allNodes.size()));
-   allNodes.add( new Node(goalXY.x, goalXY.y, "GOAL", allNodes.size()));
-   
-   doQuadTree(0,0, maxTilesX, maxTilesY, QuadTreeLevel);
-   //println("\nNumber of allNodes: "+allNodes.size());        //Print the total number of nodes
-   nodeLink();
-   findPath();
-   
    drawTarget();
    PlotRobot();
    calcProgressPoint();
+   
+   //Displays the node position on the map
+   for (Node n: allNodes)
+   {
+     n.display();     
+   }
     
    int startTime = millis();
    myRobot.sense();          //Makes use of sensor class to detect obstacles
