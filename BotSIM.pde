@@ -90,7 +90,7 @@ boolean showVal = false;
 boolean step = true;
 
 //Measurement of tiles to be used for occupancy grid in cm's scaled to represented size in real world
-int tileSize = 50;
+int tileSize = 10;
 int maxTilesX = 0;
 int maxTilesY = 0;
 Tile tile[][];
@@ -212,8 +212,14 @@ void draw()
   }
 
   if (step)
-  {   
+  { 
    drawTiles();
+   
+   allNodes.clear();
+   //allNodes.add( new Node(
+   
+   doQuadTree(0,0, maxTilesX, maxTilesY, QuadTreeLevel);
+   
    drawTarget();
    PlotRobot();
    calcProgressPoint();
