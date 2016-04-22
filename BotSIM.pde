@@ -186,6 +186,7 @@ void setup()
   //    }
   //  }
   //}
+  
   allNodes.clear();
   doQuadTree(0,0, maxTilesX, maxTilesY, QuadTreeLevel);
   allNodes.add( new Node(myRobot.location.x, myRobot.location.y, "START", allNodes.size()));
@@ -586,8 +587,8 @@ PVector calcVectorAvoidObstacles()
 PVector calcVectorGoToGoal()
 {
   PVector result = new PVector();
-  result.x = goalX - myRobot.location.x;
-  result.y = goalY - myRobot.location.y;  
+  result.x = goalXY.x - myRobot.location.x;
+  result.y = goalXY.y - myRobot.location.y;  
   return result; //.normalize();
 }
 
@@ -623,13 +624,13 @@ void drawTarget()
   stroke(0);
   fill(255, 0, 0);
   strokeWeight(1);
-  ellipse (goalX, goalY, safeZone*3, safeZone*3);
+  ellipse (goalXY.x, goalXY.y, safeZone*3, safeZone*3);
   stroke(0);
   fill(255);
-  ellipse (goalX, goalY, safeZone*2, safeZone*2);
+  ellipse (goalXY.x, goalXY.y, safeZone*2, safeZone*2);
   stroke(0);
   fill(0);
-  ellipse (goalX, goalY, safeZone, safeZone);
+  ellipse (goalXY.x, goalXY.y, safeZone, safeZone);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -704,8 +705,8 @@ void mousePressed()
 //Change the goal location everytime the mouse is clicked
 void changeGoal()
 {
-  goalX = mouseX;
-  goalY = mouseY;
+  //goalX = mouseX;
+  //goalY = mouseY;
   goalXY.x = mouseX;
   goalXY.y = mouseY;
 
@@ -717,6 +718,20 @@ void changeGoal()
   //Resets progress point when target is moved to the current robot position  
   myRobot.progressPoint = myRobot.location;
   myRobot.makingProgress  = true;
+  
+  //Changes the GOAL node to new goal position
+  for (int k = 0; k < allNodes.size(); k++)
+  {
+    if (allNodes.get(k).nodeType == "GOAL")
+    {
+      allNodes.get(k).nodeXPos = goalXY.x;
+      allNodes.get(k).nodeYPos = goalXY.y;        
+    }
+  }
+  //Link all the nodes together again
+  nodeLink();
+  //Calculate new shortest route to GOAL
+  findPath();
 }
 
 void keyPressed()
