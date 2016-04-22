@@ -3,10 +3,10 @@
 PImage img;
 
 //Actual distance of measured on ground, measured in cm's, where one pixel = 1cm???
-float worldMapScaleX = 1000; //3737;      //To be used as the actual distance of the world map x axis, measured in cm
-float worldMapScaleY = 1000; //1137;
+float worldMapScaleX = 800; //3737;      //To be used as the actual distance of the world map x axis, measured in cm
+float worldMapScaleY = 800; //1137;
 
-float screenSizeX = 500;
+float screenSizeX = 800;
 float screenSizeY = screenSizeX * (worldMapScaleY/worldMapScaleX);  //Scale the y size according to ratio between worldMapScaleX an Y
 
 float scaleFactor = screenSizeX / worldMapScaleX;
@@ -90,7 +90,7 @@ boolean showVal = false;
 boolean step = true;
 
 //Measurement of tiles to be used for occupancy grid in cm's scaled to represented size in real world
-int tileSize = 10;
+int tileSize = 25;
 int maxTilesX = 0;
 int maxTilesY = 0;
 Tile tile[][];
@@ -216,9 +216,13 @@ void draw()
    drawTiles();
    
    allNodes.clear();
-   //allNodes.add( new Node(
+   allNodes.add( new Node(myRobot.location.x, myRobot.location.y, "START", allNodes.size()));
+   allNodes.add( new Node(goalXY.x, goalXY.y, "GOAL", allNodes.size()));
    
    doQuadTree(0,0, maxTilesX, maxTilesY, QuadTreeLevel);
+   //println("\nNumber of allNodes: "+allNodes.size());        //Print the total number of nodes
+   nodeLink();
+   findPath();
    
    drawTarget();
    PlotRobot();
@@ -234,7 +238,7 @@ void draw()
    }
     
    int endTime = millis();
-   println(endTime - startTime);
+   //println(endTime - startTime);
 
     if (stateVal != 0)
     {
