@@ -461,8 +461,9 @@ void calcProgressPoint()
     myRobot.makingProgress = false;    
   }
 
-  strokeWeight(5);
-  stroke(0, 255, 255);  
+  strokeWeight(1);
+  stroke(0);  
+  fill (0, 255, 255);
   ellipse(myRobot.progressPoint.x, myRobot.progressPoint.y, 5, 5);
   strokeWeight(1);
   stroke(0);

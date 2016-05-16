@@ -252,7 +252,7 @@ void findPath()
   
   if (foundPath)
   {
-    //println("Shortest Path: "+finalPath);
+    println("Shortest Path: "+finalPath);
     for (int k = 0; k < finalPath.size()-1; k++)
     {
       strokeWeight(finalPathStrokeWeight);

@@ -67,6 +67,7 @@ class Robot{
     {
       case "ROBOT":
         stroke(0);
+        strokeWeight(1);
         fill(0,255,0);    
         ellipse(location.x, location.y, robotDiameter, robotDiameter);         
         textAlign(CENTER, CENTER);
@@ -76,7 +77,7 @@ class Robot{
         //Sensor data is translated into global coords an then plotted as global coords
         float x_glob = 0.0;
         float y_glob = 0.0;
-        fill(255);
+        //fill(255);
         
         ////Plots the sensors position on the robot avatar
         //for (int i=0; i < numSensors; i++)
