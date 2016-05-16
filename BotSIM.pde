@@ -187,19 +187,20 @@ void setup()
   //  }
   //}
   
-  allNodes.clear();
-  doQuadTree(0,0, maxTilesX, maxTilesY, QuadTreeLevel);
-  allNodes.add( new Node(myRobot.location.x, myRobot.location.y, "START", allNodes.size()));
-  allNodes.add( new Node(goalXY.x, goalXY.y, "GOAL", allNodes.size()));
+  //allNodes.clear();
+  //doQuadTree(0,0, maxTilesX, maxTilesY, QuadTreeLevel);
+  //allNodes.add( new Node(myRobot.location.x, myRobot.location.y, "START", allNodes.size()));
+  //allNodes.add( new Node(goalXY.x, goalXY.y, "GOAL", allNodes.size()));
      
-  //println("\nNumber of allNodes: "+allNodes.size());        //Print the total number of nodes
-  nodeLink();
-  findPath();
+  ////println("\nNumber of allNodes: "+allNodes.size());        //Print the total number of nodes
+  //nodeLink();
+  //findPath();
 }
 
 void draw()
 {
   background (img);
+  
   
   if (showVal)
   {
@@ -222,9 +223,20 @@ void draw()
 
   if (step)
   { 
-   drawTiles();
-   
+   drawTiles();   
    drawTarget();
+   
+   allNodes.clear();
+   doQuadTree(0,0, maxTilesX, maxTilesY, QuadTreeLevel);
+   allNodes.add( new Node(myRobot.location.x, myRobot.location.y, "START", allNodes.size()));
+   allNodes.add( new Node(goalXY.x, goalXY.y, "GOAL", allNodes.size()));  
+   float oldMillis = millis();
+   nodeLink();
+   float time = millis()-oldMillis;
+   println("Node Link time: "+time);
+  
+   findPath();
+   
    PlotRobot();
    calcProgressPoint();
    

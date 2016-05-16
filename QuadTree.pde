@@ -98,9 +98,9 @@ void nodeLink()
       }
       else
       {        
-        stroke(allNodesColor);   
-        strokeWeight(allNodesStrokeWeight);
-        line(n1.nodeXPos,n1.nodeYPos,n2.nodeXPos,n2.nodeYPos);        
+        //stroke(allNodesColor);   
+        //strokeWeight(allNodesStrokeWeight);
+        //line(n1.nodeXPos,n1.nodeYPos,n2.nodeXPos,n2.nodeYPos);        
         if(!(n1.nodeXPos == n2.nodeXPos && n1.nodeYPos == n2.nodeYPos))      //Does not link to itself
         {
           n1.nodeConnectedTo.add(j);
@@ -150,8 +150,8 @@ void findPath()
     }
   }
   
-  println("Current openList: "+openList);
-  println ("Current closedList :"+closedList+"\n");
+  //println("Current openList: "+openList);
+  //println ("Current closedList :"+closedList+"\n");
   
   //LOOP to work through the openList in order to test all possible routes
   while (openList.size() > 0)
@@ -174,7 +174,7 @@ void findPath()
       }
     }
     
-    println("Closest node is "+currentNodeID+" with F of "+smallestF);
+    //println("Closest node is "+currentNodeID+" with F of "+smallestF);
     
     //Move node with lowest F score to closedList
     openList.remove(openList.indexOf(currentNodeID));
@@ -195,27 +195,27 @@ void findPath()
           openListNode.parentID = currentNodeID;
           openListNode.G = currentNode.G + dist(openListNode.nodeXPos,openListNode.nodeYPos, currentNode.nodeXPos, currentNode.nodeYPos);
           openListNode.F = openListNode.G + openListNode.H;                
-          println("Node "+openListNode.nodeID+"'s H: "+openListNode.H+" G: "+openListNode.G+" and F: "+openListNode.F);                
+          //println("Node "+openListNode.nodeID+"'s H: "+openListNode.H+" G: "+openListNode.G+" and F: "+openListNode.F);                
         }
         else
         {     
-          println(openListNode.nodeID+" already in openList");
+          //println(openListNode.nodeID+" already in openList");
           float _dist = dist(currentNode.nodeXPos, currentNode.nodeYPos, openListNode.nodeXPos, openListNode.nodeYPos);
-          println("Distance from "+currentNode.nodeID+" to "+openListNode.nodeID+" is "+_dist);
-          println("Current node G: "+currentNode.G+" openListNode.G: "+openListNode.G);
-          println((currentNode.G + _dist));
+          //println("Distance from "+currentNode.nodeID+" to "+openListNode.nodeID+" is "+_dist);
+          //println("Current node G: "+currentNode.G+" openListNode.G: "+openListNode.G);
+          //println((currentNode.G + _dist));
           if ((currentNode.G + _dist) < openListNode.G)
           {
             openListNode.G = currentNode.G + _dist;
             openListNode.parentID = currentNode.nodeID;
-            println("Node "+openListNode.nodeID+" new G value = "+openListNode.G);
+            //println("Node "+openListNode.nodeID+" new G value = "+openListNode.G);
           }
         }
       }
     }
     
-    println("Current openList: "+openList);
-    println("Current closedList :"+closedList+"\n");
+    //println("Current openList: "+openList);
+    //println("Current closedList :"+closedList+"\n");
   }
   //LOOP EINDIG HIERSO
   
@@ -252,7 +252,7 @@ void findPath()
   
   if (foundPath)
   {
-    println("Shortest Path: "+finalPath);
+    //println("Shortest Path: "+finalPath);
     for (int k = 0; k < finalPath.size()-1; k++)
     {
       strokeWeight(finalPathStrokeWeight);
