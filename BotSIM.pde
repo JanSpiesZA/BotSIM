@@ -3,10 +3,10 @@
 PImage img;
 
 //Actual distance of measured on ground, measured in cm's, where one pixel = 1cm???
-float worldMapScaleX = 1000; //3737;      //To be used as the actual distance of the world map x axis, measured in cm
-float worldMapScaleY = 1000; //1137;
+float worldMapScaleX = 800; //3737;      //To be used as the actual distance of the world map x axis, measured in cm
+float worldMapScaleY = 800; //1137;
 
-float screenSizeX = 500;
+float screenSizeX = 800;
 float screenSizeY = screenSizeX * (worldMapScaleY/worldMapScaleX);  //Scale the y size according to ratio between worldMapScaleX an Y
 
 float scaleFactor = screenSizeX / worldMapScaleX;
@@ -90,7 +90,7 @@ boolean showVal = false;
 boolean step = true;
 
 //Measurement of tiles to be used for occupancy grid in cm's scaled to represented size in real world
-int tileSize = 50;
+int tileSize = 25;
 int maxTilesX = 0;
 int maxTilesY = 0;
 Tile tile[][];
@@ -186,12 +186,19 @@ void setup()
   //    }
   //  }
   //}
+  
+  //allNodes.clear();
+  //doQuadTree(0,0, maxTilesX, maxTilesY, QuadTreeLevel);
+  //allNodes.add( new Node(myRobot.location.x, myRobot.location.y, "START", allNodes.size()));
+  //allNodes.add( new Node(goalXY.x, goalXY.y, "GOAL", allNodes.size()));
+     
+  ////println("\nNumber of allNodes: "+allNodes.size());        //Print the total number of nodes
+  //nodeLink();
+  //findPath();
 }
 
 void draw()
 {
-  background (img);
-  
   if (showVal)
   {
    for (int k=0; k<numSensors; k++) print(int(myRobot.sensors.get(k).sensorObstacleDist)+"\t");
@@ -212,11 +219,30 @@ void draw()
   }
 
   if (step)
-  {   
-   drawTiles();
+  { 
+    background (img);        //draws map as background
+   drawTiles();   
    drawTarget();
+   
+   allNodes.clear();
+   doQuadTree(0,0, maxTilesX, maxTilesY, QuadTreeLevel);
+   allNodes.add( new Node(myRobot.location.x, myRobot.location.y, "START", allNodes.size()));
+   allNodes.add( new Node(goalXY.x, goalXY.y, "GOAL", allNodes.size()));  
+   float oldMillis = millis();
+   nodeLink();
+   float time = millis()-oldMillis;
+   println("Node Link time: "+time);
+  
+   findPath();
+   
    PlotRobot();
    calcProgressPoint();
+   
+   //Displays the node position on the map
+   for (Node n: allNodes)
+   {
+     n.display();     
+   }
     
    int startTime = millis();
    myRobot.sense();          //Makes use of sensor class to detect obstacles
@@ -228,14 +254,16 @@ void draw()
    }
     
    int endTime = millis();
-   println(endTime - startTime);
+   //println(endTime - startTime);
 
-   updateParticles();
-   resample();
+    if (stateVal != 0)
+    {
+      updateParticles();
+      resample();
+    }
 
 
-
-   step = true;
+   step = false;
 
   vectorAvoidObstacles = calcVectorAvoidObstacles();
   vectorGoToGoal = calcVectorGoToGoal();  
@@ -262,7 +290,7 @@ void drawTiles()
   {
     for (int y = 0; y < maxTilesY; y++)
     {
-      stroke(0);        //Lines between tiles are black
+      stroke(150);        //Lines between tiles are black
       strokeWeight(1);  //Stroke weight makes the lines very light
       fill(tile[x][y].gravityCol,200);
       rect(x*tileSize, y*tileSize, tileSize, tileSize);  //Draws a rectangle to indicate the tile
@@ -569,8 +597,8 @@ PVector calcVectorAvoidObstacles()
 PVector calcVectorGoToGoal()
 {
   PVector result = new PVector();
-  result.x = goalX - myRobot.location.x;
-  result.y = goalY - myRobot.location.y;  
+  result.x = goalXY.x - myRobot.location.x;
+  result.y = goalXY.y - myRobot.location.y;  
   return result; //.normalize();
 }
 
@@ -606,13 +634,13 @@ void drawTarget()
   stroke(0);
   fill(255, 0, 0);
   strokeWeight(1);
-  ellipse (goalX, goalY, safeZone*3, safeZone*3);
+  ellipse (goalXY.x, goalXY.y, safeZone*3, safeZone*3);
   stroke(0);
   fill(255);
-  ellipse (goalX, goalY, safeZone*2, safeZone*2);
+  ellipse (goalXY.x, goalXY.y, safeZone*2, safeZone*2);
   stroke(0);
   fill(0);
-  ellipse (goalX, goalY, safeZone, safeZone);
+  ellipse (goalXY.x, goalXY.y, safeZone, safeZone);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -687,8 +715,8 @@ void mousePressed()
 //Change the goal location everytime the mouse is clicked
 void changeGoal()
 {
-  goalX = mouseX;
-  goalY = mouseY;
+  //goalX = mouseX;
+  //goalY = mouseY;
   goalXY.x = mouseX;
   goalXY.y = mouseY;
 
@@ -700,6 +728,20 @@ void changeGoal()
   //Resets progress point when target is moved to the current robot position  
   myRobot.progressPoint = myRobot.location;
   myRobot.makingProgress  = true;
+  
+  //Changes the GOAL node to new goal position
+  for (int k = 0; k < allNodes.size(); k++)
+  {
+    if (allNodes.get(k).nodeType == "GOAL")
+    {
+      allNodes.get(k).nodeXPos = goalXY.x;
+      allNodes.get(k).nodeYPos = goalXY.y;        
+    }
+  }
+  //Link all the nodes together again
+  nodeLink();
+  //Calculate new shortest route to GOAL
+  findPath();
 }
 
 void keyPressed()
