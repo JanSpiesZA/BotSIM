@@ -95,31 +95,32 @@ class Node
     switch (nodeType)
     {
       case "START":
-        strokeWeight(1);
-        fill(0,255,0);
-        stroke(0);
-        ellipse(nodeXPos, nodeYPos, 30,30);
+        //strokeWeight(1);
+        //fill(0,255,0);
+        //stroke(0);
+        //ellipse(nodeXPos, nodeYPos, 30,30);
         break;
         
       case "GOAL":
-        strokeWeight(1);
-        fill(255,0,0);
-        stroke(0);
-        ellipse(nodeXPos, nodeYPos, 30,30);
+        //strokeWeight(1);
+        //fill(255,0,0);
+        //stroke(0);
+        //ellipse(nodeXPos, nodeYPos, 30,30);
         break;
         
       default:     
           strokeWeight(1);
-          fill(0);
+          stroke(0);
+          fill(150);
           ellipse(nodeXPos,nodeYPos, 10,10);   //Draws an ellipse to indicate node x,y        
     }
     
     
     
-    textSize(15);    
-    fill(0);
-    textAlign(CENTER,CENTER);
-    text(nodeID,nodeXPos,nodeYPos-20);
+    //textSize(15);    
+    //fill(0);
+    //textAlign(CENTER,CENTER);
+    //text(nodeID,nodeXPos,nodeYPos-20);
     //textSize(15);
     //text(int(H),nodeXPos+20,nodeYPos+20);  //Bottom Right - distance to GOAL
     

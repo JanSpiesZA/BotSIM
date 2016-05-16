@@ -199,9 +199,6 @@ void setup()
 
 void draw()
 {
-  background (img);
-  
-  
   if (showVal)
   {
    for (int k=0; k<numSensors; k++) print(int(myRobot.sensors.get(k).sensorObstacleDist)+"\t");
@@ -223,6 +220,7 @@ void draw()
 
   if (step)
   { 
+    background (img);        //draws map as background
    drawTiles();   
    drawTarget();
    
@@ -265,7 +263,7 @@ void draw()
     }
 
 
-   step = true;
+   step = false;
 
   vectorAvoidObstacles = calcVectorAvoidObstacles();
   vectorGoToGoal = calcVectorGoToGoal();  
@@ -292,7 +290,7 @@ void drawTiles()
   {
     for (int y = 0; y < maxTilesY; y++)
     {
-      stroke(0);        //Lines between tiles are black
+      stroke(150);        //Lines between tiles are black
       strokeWeight(1);  //Stroke weight makes the lines very light
       fill(tile[x][y].gravityCol,200);
       rect(x*tileSize, y*tileSize, tileSize, tileSize);  //Draws a rectangle to indicate the tile

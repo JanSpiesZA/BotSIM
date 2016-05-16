@@ -48,7 +48,7 @@ boolean findMix(int _topLeftX, int _topLeftY, int _sizeW, int _sizeH)
 {
   noFill();
   stroke (0);
-  strokeWeight(5);
+  strokeWeight(1);
   rect (_topLeftX * tileSize, _topLeftY * tileSize, _sizeW * tileSize, _sizeH * tileSize);
   
   for (int x = 0; x < _sizeW; x++)
