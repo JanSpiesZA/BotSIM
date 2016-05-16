@@ -2,6 +2,8 @@
 
 PImage img;
 
+boolean followPath = true;    //Setting to control if path must be followd or is it a true bug goal locate algorithm
+
 //Actual distance of measured on ground, measured in cm's, where one pixel = 1cm???
 float worldMapScaleX = 800; //3737;      //To be used as the actual distance of the world map x axis, measured in cm
 float worldMapScaleY = 800; //1137;
@@ -219,24 +221,24 @@ void draw()
   }
 
   if (step)
-  { 
+  {
     background (img);        //draws map as background
-   drawTiles();   
-   drawTarget();
+    drawTiles();   
+    drawTarget();
    
-   allNodes.clear();
-   doQuadTree(0,0, maxTilesX, maxTilesY, QuadTreeLevel);
-   allNodes.add( new Node(myRobot.location.x, myRobot.location.y, "START", allNodes.size()));
-   allNodes.add( new Node(goalXY.x, goalXY.y, "GOAL", allNodes.size()));  
-   float oldMillis = millis();
-   nodeLink();
-   float time = millis()-oldMillis;
-   println("Node Link time: "+time);
+    allNodes.clear();
+    doQuadTree(0,0, maxTilesX, maxTilesY, QuadTreeLevel);
+    allNodes.add( new Node(myRobot.location.x, myRobot.location.y, "START", allNodes.size()));
+    allNodes.add( new Node(goalXY.x, goalXY.y, "GOAL", allNodes.size()));  
+    float oldMillis = millis();
+    nodeLink();
+    float time = millis()-oldMillis;
+    println("Node Link time: "+time);
   
-   findPath();
+    findPath();
    
-   PlotRobot();
-   calcProgressPoint();
+    PlotRobot();
+    calcProgressPoint();
    
    //Displays the node position on the map
    for (Node n: allNodes)
@@ -396,7 +398,19 @@ void PlotRobot()
     }
 
     if (!myRobot.collisionFlag)
-    {
+    { 
+      if (followPath)
+      {
+        int nextWayPoint = finalPath.get(finalPath.size()-2);
+        float nextWayPointX = allNodes.get(nextWayPoint).nodeXPos;
+        float nextWayPointY = allNodes.get(nextWayPoint).nodeYPos;
+        
+        stroke(0,0,255);
+        strokeWeight(0);
+        fill(0,0,255);
+        ellipse (nextWayPointX, nextWayPointY, 20,20);      
+        phi_GTG = calcGoalAngle(nextWayPointX - myRobot.location.x, nextWayPointY - myRobot.location.y);
+      }
       calcErrorAngle(phi_GTG);
     }
 
