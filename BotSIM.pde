@@ -2,6 +2,8 @@
 
 PImage img;
 
+boolean followPath = true;    //Setting to control if path must be followd or is it a true bug goal locate algorithm
+
 //Actual distance of measured on ground, measured in cm's, where one pixel = 1cm???
 float worldMapScaleX = 800; //3737;      //To be used as the actual distance of the world map x axis, measured in cm
 float worldMapScaleY = 800; //1137;
@@ -16,7 +18,7 @@ boolean wallDetect = false;
 Robot myRobot;          //Creat a myRobot instance
 float diameter = 45.0;
 
-final int maxParticles = 0;
+final int maxParticles = 100;
 Robot[] particles = new Robot[maxParticles];
 final float noiseForward = 1.0;            //global Noisevalues used to set the noise values in the praticles
 final float noiseTurn = 0.1;
@@ -98,7 +100,8 @@ Tile tile[][];
 void setup()
 {
   //img = loadImage("blank.png");         //Loads image
-  img = loadImage("kamer2.png");         //Loads image
+  //img = loadImage("Floorplan.png");
+  img = loadImage("kamer3.png");         //Loads image
   img.resize(int(screenSizeX), int(screenSizeY));
   
   tileSize *= scaleFactor;        //Aplies scale factor to the tile size
@@ -219,29 +222,29 @@ void draw()
   }
 
   if (step)
-  { 
+  {
     background (img);        //draws map as background
-   drawTiles();   
-   drawTarget();
+    drawTiles();   
+    drawTarget();
    
-   allNodes.clear();
-   doQuadTree(0,0, maxTilesX, maxTilesY, QuadTreeLevel);
-   allNodes.add( new Node(myRobot.location.x, myRobot.location.y, "START", allNodes.size()));
-   allNodes.add( new Node(goalXY.x, goalXY.y, "GOAL", allNodes.size()));  
-   float oldMillis = millis();
-   nodeLink();
-   float time = millis()-oldMillis;
-   println("Node Link time: "+time);
+    allNodes.clear();
+    doQuadTree(0,0, maxTilesX, maxTilesY, QuadTreeLevel);
+    allNodes.add( new Node(myRobot.location.x, myRobot.location.y, "START", allNodes.size()));
+    allNodes.add( new Node(goalXY.x, goalXY.y, "GOAL", allNodes.size()));  
+    float oldMillis = millis();
+    nodeLink();
+    float time = millis()-oldMillis;
+    println("Node Link time: "+time);
   
-   findPath();
+    findPath();
    
-   PlotRobot();
-   calcProgressPoint();
+    PlotRobot();
+    calcProgressPoint();
    
    //Displays the node position on the map
    for (Node n: allNodes)
    {
-     n.display();     
+    n.display();     
    }
     
    int startTime = millis();
@@ -263,7 +266,7 @@ void draw()
     }
 
 
-   step = false;
+   step = true;
 
   vectorAvoidObstacles = calcVectorAvoidObstacles();
   vectorGoToGoal = calcVectorGoToGoal();  
@@ -396,7 +399,19 @@ void PlotRobot()
     }
 
     if (!myRobot.collisionFlag)
-    {
+    { 
+      if (followPath)
+      {
+        int nextWayPoint = finalPath.get(finalPath.size()-2);
+        float nextWayPointX = allNodes.get(nextWayPoint).nodeXPos;
+        float nextWayPointY = allNodes.get(nextWayPoint).nodeYPos;
+        
+        stroke(0,0,255);
+        strokeWeight(0);
+        fill(0,0,255);
+        ellipse (nextWayPointX, nextWayPointY, 20,20);      
+        phi_GTG = calcGoalAngle(nextWayPointX - myRobot.location.x, nextWayPointY - myRobot.location.y);
+      }
       calcErrorAngle(phi_GTG);
     }
 
