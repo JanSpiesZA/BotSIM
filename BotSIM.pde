@@ -97,6 +97,8 @@ int maxTilesX = 0;
 int maxTilesY = 0;
 Tile tile[][];
 
+float oldMillis, newMillis;
+
 void setup()
 {
   //img = loadImage("blank.png");         //Loads image
@@ -201,7 +203,7 @@ void setup()
 }
 
 void draw()
-{
+{ 
   if (showVal)
   {
    for (int k=0; k<numSensors; k++) print(int(myRobot.sensors.get(k).sensorObstacleDist)+"\t");
@@ -226,6 +228,13 @@ void draw()
     background (img);        //draws map as background
     drawTiles();   
     drawTarget();
+    
+    oldMillis = newMillis;
+    newMillis = millis();
+    textSize(16);  
+    textAlign(LEFT, TOP);
+    fill(0);
+    text("frame rate (ms): "+(newMillis - oldMillis),5,5);
    
     allNodes.clear();
     doQuadTree(0,0, maxTilesX, maxTilesY, QuadTreeLevel);
