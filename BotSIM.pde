@@ -18,7 +18,7 @@ boolean wallDetect = false;
 Robot myRobot;          //Creat a myRobot instance
 float diameter = 45.0;
 
-final int maxParticles = 0;
+final int maxParticles = 100;
 Robot[] particles = new Robot[maxParticles];
 final float noiseForward = 1.0;            //global Noisevalues used to set the noise values in the praticles
 final float noiseTurn = 0.1;
@@ -100,7 +100,8 @@ Tile tile[][];
 void setup()
 {
   //img = loadImage("blank.png");         //Loads image
-  img = loadImage("kamer2.png");         //Loads image
+  //img = loadImage("Floorplan.png");
+  img = loadImage("kamer3.png");         //Loads image
   img.resize(int(screenSizeX), int(screenSizeY));
   
   tileSize *= scaleFactor;        //Aplies scale factor to the tile size
@@ -243,7 +244,7 @@ void draw()
    //Displays the node position on the map
    for (Node n: allNodes)
    {
-     n.display();     
+    n.display();     
    }
     
    int startTime = millis();
@@ -265,7 +266,7 @@ void draw()
     }
 
 
-   step = false;
+   step = true;
 
   vectorAvoidObstacles = calcVectorAvoidObstacles();
   vectorGoToGoal = calcVectorGoToGoal();  
