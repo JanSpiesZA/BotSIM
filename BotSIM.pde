@@ -69,7 +69,7 @@ float[] vectorAwayFromWall = {0.0, 0.0};  //x and y values for vector pointing a
 float[] vectorFollowWall = {0.0, 0.0};    //Vector pointing in the direction the robot must move when following the wall
 
 
-int numSensors2 = 9;
+int numSensors2 = 7;          //Number of sensors used by the new code
 
 int minDetectDistance = 10;        //Closer than this value and the sensors do not return valid data
 float maxDetectDistance = 200.0;
@@ -149,7 +149,7 @@ void setup()
   //Add sensors to the robot object
   for (int k=0; k<numSensors2; k++)
   {
-    myRobot.addSensor(0, 0, -PI/2 + PI/(numSensors-1)*k);
+    myRobot.addSensor(0, 0, -PI/2 + PI/(numSensors2-1)*k);
     
     //myRobot.addSensor(0,0,0);
     myRobot.sensors.get(k).sensorMinDetect = minDetectDistance;
@@ -206,13 +206,13 @@ void draw()
 { 
   if (showVal)
   {
-   for (int k=0; k<numSensors; k++) print(int(myRobot.sensors.get(k).sensorObstacleDist)+"\t");
+   for (int k=0; k<numSensors2; k++) print(int(myRobot.sensors.get(k).sensorObstacleDist)+"\t");
    println("\nState: "+stateVal+", CollisionFlag: "+myRobot.collisionFlag);
    println();
 
    for (int k = 0; k< maxParticles; k++)
    {
-     for (int i = 0; i < numSensors; i++)
+     for (int i = 0; i < numSensors2; i++)
      {
        print (int(particles[k].sensors.get(i).sensorObstacleDist)+"\t");
      }
@@ -345,11 +345,11 @@ void applyScale()
 
   //Apply the scalefactor to the position of each of the sensors
   //sensorObstacleDist[i] will automatically be less since the map being measured is smaller
-  for (int i = 0; i < numSensors; i++)
-  {
-    sensorX[i] *= scaleFactor;
-    sensorY[i] *= scaleFactor;
-  }
+  //for (int i = 0; i < numSensors; i++)
+  //{
+  //  sensorX[i] *= scaleFactor;
+  //  sensorY[i] *= scaleFactor;
+  //}
 
   //Applies scale factor to sensors on the robot
   //---should probably be moved to the robot or sensor display function
