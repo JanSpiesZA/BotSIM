@@ -57,6 +57,7 @@ class Tile
       
       case 3:
       {
+        gravity = 0;
         gravityCol = color(0,191,255);    //deepskyblue for kinect obstacles
         break;
       }
