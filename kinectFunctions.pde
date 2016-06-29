@@ -43,7 +43,7 @@ void drawPixels()
     v.x *= scaleFactor;  //Multiply values with scale factor 
     v.z *= scaleFactor;
          
-     //transRot(robotPos.x, robotPos.y, robotPos.z, v.x, -v.z);     
+     
      
      if (v.z > 0 && v.z < maxKinectDetectNormal*scaleFactor)    //Test for any invalid depth values      
      {
