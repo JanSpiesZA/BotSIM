@@ -163,7 +163,8 @@ void setup()
       color c = img.get(x,y);
       if (c == color(0))
       {         
-        tile[x/tileSize][y/tileSize].gravity = 1;  
+        tile[x/tileSize][y/tileSize].gravity = 1;
+        tile[x/tileSize][y/tileSize].tileType = 1;      //Set tileType to PERMANENT/MAP OBSTACLE
         tile[x/tileSize][y/tileSize].update();
       }      
     }
@@ -259,6 +260,13 @@ void draw()
     background (img);        //draws map as background
     drawTiles();   
     drawTarget();
+    
+   for(int y = 0; y < maxTilesY; y++)
+    for(int x = 0; x < maxTilesX; x++)
+    {
+      tile[x][y].clearGravity();
+    } 
+    
     drawPixels();  
     
     
@@ -816,7 +824,23 @@ void keyPressed()
   //Use this key to enable or diable obstacle
   if (key == 'o')
   {
-    tile[int(mouseX/tileSize)][int(mouseY/tileSize)].gravity *= -1;
-    tile[int(mouseX/tileSize)][int(mouseY/tileSize)].update();
+    switch(tile[int(mouseX/tileSize)][int(mouseY/tileSize)].tileType)
+    {
+      case 0:
+      {    
+        tile[int(mouseX/tileSize)][int(mouseY/tileSize)].tileType = 2; //Set tileType to USER obstacle
+        tile[int(mouseX/tileSize)][int(mouseY/tileSize)].gravity = 1;
+        tile[int(mouseX/tileSize)][int(mouseY/tileSize)].update();
+        break;
+      }
+      
+      case 2:
+      {
+        tile[int(mouseX/tileSize)][int(mouseY/tileSize)].tileType = 0; //Set tileType to UNASSIGNED obstacle
+        tile[int(mouseX/tileSize)][int(mouseY/tileSize)].gravity = -1;
+        tile[int(mouseX/tileSize)][int(mouseY/tileSize)].update();
+        break;
+      }
+    }
   }
 }
