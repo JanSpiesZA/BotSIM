@@ -265,6 +265,7 @@ void draw()
     for(int x = 0; x < maxTilesX; x++)
     {
       tile[x][y].clearGravity();
+      tile[x][y].update();
     } 
     
     drawPixels();  

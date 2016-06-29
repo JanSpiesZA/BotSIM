@@ -23,13 +23,10 @@ class Tile
     {
       case 3:
       {
-        gravity = 0;
-        gravityCol = color(150,200,150);
+        gravity = -1;
+        //gravityCol = color(150,200,150);
+        tileType = 0;
         break;
-      }
-      
-      case 1:
-      {        
       }
     }
   }
