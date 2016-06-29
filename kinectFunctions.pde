@@ -47,15 +47,32 @@ void drawPixels()
      
      if (v.z > 0 && v.z < maxKinectDetectNormal*scaleFactor)    //Test for any invalid depth values      
      {
-        fill(255);     
-        //ellipse((x_temp*scaleFactor),y_temp*scaleFactor,5,5);
+        fill(255);
+        PVector returnVal = transRot(myRobot.location.x, myRobot.location.y, myRobot.heading + PI/2, v.x, -v.z);
+        ellipse(returnVal.x, returnVal.y, 5, 5);
         
-        ellipse(myRobot.location.x + v.x, myRobot.location.y - v.z ,5,5);
-        //updateGravity(robotPos.x + v.x,robotPos.y - v.z );
+        updateGravity(returnVal.x, returnVal.y);
         
         //transRot(robotPos.x, robotPos.y, robotPos.z, sensorX, sensorY);
         //ellipse(x_temp,y_temp,10,10);
      }
    }
  }  
+}
+
+
+
+//Adds 'n gravity value to the occupancy grid based on the amount of pixels inside each cell
+void updateGravity(float _x, float _y)
+{  
+  int x = int(_x/(tileSize*scaleFactor));
+  if (x < 0) x = 0;
+  if (x > maxTilesX) x = maxTilesX-1;
+  
+  int y = int(_y/(tileSize*scaleFactor));
+  if (y < 0) y = 0;
+  if (y > maxTilesY) y = maxTilesY-1;
+  
+  tile[x][y].gravity++;
+  tile[x][y].update();
 }
