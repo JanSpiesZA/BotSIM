@@ -1,5 +1,21 @@
 //All distances are measured and listed in cm's unless specified otherwise
 
+import org.openkinect.freenect.*;
+import org.openkinect.processing.*;
+
+// Kinect Library object
+Kinect kinect;
+
+float maxKinectDetectNormal = 400.0;  //Maximum distance we are going to use the kinect to detect distance, measured in cm's
+float maxKinectDetectTooFar = 800.0;
+float kinectFOW = 60.0;        //Field of View on the horizontal axis
+int skip=10;          //constant used to set the subsample factor fo the kinect data
+// We'll use a lookup table so that we don't have to repeat the math over and over
+float[] depthLookUp = new float[2048];
+
+
+
+
 PImage img;
 
 boolean followPath = true;    //Setting to control if path must be followd or is it a true bug goal locate algorithm
@@ -101,6 +117,16 @@ float oldMillis, newMillis;
 
 void setup()
 {
+  kinect = new Kinect(this);
+  kinect.initDepth();
+  
+  // Lookup table for all possible depth values (0 - 2047)
+  for (int i = 0; i < depthLookUp.length; i++) 
+  {
+    depthLookUp[i] = rawDepthToMeters(i);
+  } 
+  
+  
   //img = loadImage("blank.png");         //Loads image
   //img = loadImage("Floorplan.png");
   img = loadImage("kamer3.png");         //Loads image
@@ -228,6 +254,7 @@ void draw()
     background (img);        //draws map as background
     drawTiles();   
     drawTarget();
+    drawPixels();
     
     oldMillis = newMillis;
     newMillis = millis();
