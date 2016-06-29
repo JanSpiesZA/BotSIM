@@ -73,6 +73,7 @@ void updateGravity(float _x, float _y)
   if (y < 0) y = 0;
   if (y > maxTilesY) y = maxTilesY-1;
   
+  tile[x][y].tileType = 3;
   tile[x][y].gravity++;
   tile[x][y].update();
 }
