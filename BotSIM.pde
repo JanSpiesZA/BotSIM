@@ -12,6 +12,7 @@ float kinectFOW = 60.0;        //Field of View on the horizontal axis
 int skip=10;          //constant used to set the subsample factor fo the kinect data
 // We'll use a lookup table so that we don't have to repeat the math over and over
 float[] depthLookUp = new float[2048];
+PVector kinectPos = new PVector(-20.0, 0.0 ,0.0);    //Position of Kinect sensors on robot. Robot x and y pos is 0,0
 
 
 
@@ -127,6 +128,8 @@ void setup()
   } 
   
   
+  
+  
   //img = loadImage("blank.png");         //Loads image
   //img = loadImage("Floorplan.png");
   img = loadImage("kamer3.png");         //Loads image
@@ -180,6 +183,8 @@ void setup()
     //myRobot.addSensor(0,0,0);
     myRobot.sensors.get(k).sensorMinDetect = minDetectDistance;
   }
+  
+  
   //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   
@@ -254,7 +259,8 @@ void draw()
     background (img);        //draws map as background
     drawTiles();   
     drawTarget();
-    drawPixels();
+    drawPixels();  
+    
     
     oldMillis = newMillis;
     newMillis = millis();
@@ -276,6 +282,11 @@ void draw()
    
     PlotRobot();
     calcProgressPoint();
+    
+    //Draws an ellipse at the centerpoint of the kinect's position on the robot
+    PVector returnVal = transRot(myRobot.location.x, myRobot.location.y, myRobot.heading, kinectPos.x, kinectPos.y);
+    fill(255,255,0);
+    ellipse(returnVal.x, returnVal.y, 10,10);
    
    //Displays the node position on the map
    for (Node n: allNodes)
