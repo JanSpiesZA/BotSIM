@@ -67,11 +67,11 @@ void updateGravity(float _x, float _y)
 {  
   int x = int(_x/(tileSize*scaleFactor));
   if (x < 0) x = 0;
-  if (x > maxTilesX) x = maxTilesX-1;
+  if (x >= maxTilesX) x = maxTilesX-1;
   
   int y = int(_y/(tileSize*scaleFactor));
   if (y < 0) y = 0;
-  if (y > maxTilesY) y = maxTilesY-1;
+  if (y >= maxTilesY) y = maxTilesY-1;
   
   if (tile[x][y].tileType == "UNASSIGNED") tile[x][y].tileType = "KINECT";      //Change tileType to KINECT only when tile is not asigned
   tile[x][y].gravity++;

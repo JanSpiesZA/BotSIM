@@ -277,7 +277,7 @@ void draw()
       tile[x][y].update();
     } 
     
-    //drawPixels();  
+    drawPixels();  
     
     
     oldMillis = newMillis;
