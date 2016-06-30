@@ -55,7 +55,7 @@ boolean findMix(int _topLeftX, int _topLeftY, int _sizeW, int _sizeH)
   {
     for (int y = 0; y < _sizeH; y++)
     {
-      if (tile[x+_topLeftX][y+_topLeftY].gravity == 1)
+      if (tile[x+_topLeftX][y+_topLeftY].tileType == "MAP" || tile[x+_topLeftX][y+_topLeftY].tileType == "USER")
       {        
         return true;
       }      
@@ -83,7 +83,8 @@ void nodeLink()
         {
           //Test for intersect between current box and line
           //  If the tile has gravity and the line crosses the tile then the Intersect flag is set
-          if ((tile[k][l].tileType == "MAP") && (line_box_xywh(n1.nodeXPos,n1.nodeYPos,n2.nodeXPos,n2.nodeYPos,k*tileSize,l*tileSize,tileSize,tileSize)))
+          if ((tile[k][l].tileType == "MAP" || tile[k][l].tileType == "USER") 
+              && (line_box_xywh(n1.nodeXPos,n1.nodeYPos,n2.nodeXPos,n2.nodeYPos,k*tileSize,l*tileSize,tileSize,tileSize)))
           {
             intersect = true;            
           }

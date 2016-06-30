@@ -61,7 +61,7 @@ class Tile
       }
       case "MAP":
       {
-        gravity = 1;        
+        gravity = 10;        
         calcField();
         gravityCol = color(200,150,150);
         break;
