@@ -1,5 +1,22 @@
 //All distances are measured and listed in cm's unless specified otherwise
 
+import org.openkinect.freenect.*;
+import org.openkinect.processing.*;
+
+// Kinect Library object
+Kinect kinect;
+
+float maxKinectDetectNormal = 400.0;  //Maximum distance we are going to use the kinect to detect distance, measured in cm's
+float maxKinectDetectTooFar = 800.0;
+float kinectFOW = 60.0;        //Field of View on the horizontal axis
+int skip=10;          //constant used to set the subsample factor fo the kinect data
+// We'll use a lookup table so that we don't have to repeat the math over and over
+float[] depthLookUp = new float[2048];
+PVector kinectPos = new PVector(-20.0, 0.0 ,0.0);    //Position of Kinect sensors on robot. Robot x and y pos is 0,0
+
+
+
+
 PImage img;
 
 boolean followPath = true;    //Setting to control if path must be followd or is it a true bug goal locate algorithm
@@ -18,7 +35,7 @@ boolean wallDetect = false;
 Robot myRobot;          //Creat a myRobot instance
 float diameter = 45.0;
 
-final int maxParticles = 100;
+final int maxParticles = 00;
 Robot[] particles = new Robot[maxParticles];
 final float noiseForward = 1.0;            //global Noisevalues used to set the noise values in the praticles
 final float noiseTurn = 0.1;
@@ -101,6 +118,33 @@ float oldMillis, newMillis;
 
 void setup()
 {
+  kinect = new Kinect(this);
+  kinect.initDepth();
+  
+  // Lookup table for all possible depth values (0 - 2047)
+  for (int i = 0; i < depthLookUp.length; i++) 
+  {
+    depthLookUp[i] = rawDepthToMeters(i);
+  } 
+  
+//-------------------------------------------------------------------------------
+  //Initialise Robot
+  myRobot = new Robot("ROBOT", diameter);        //Create a new robot object
+  myRobot.set(screenSizeX/2, screenSizeY/2, -PI/2);
+
+  //Add sensors to the robot object
+  for (int k=0; k<numSensors2; k++)
+  {
+    myRobot.addSensor(0, 0, -PI/2 + PI/(numSensors2-1)*k);
+    
+    //myRobot.addSensor(0,0,0);
+    myRobot.sensors.get(k).sensorMinDetect = minDetectDistance;
+  }
+  
+  
+  //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  
+  
+  
   //img = loadImage("blank.png");         //Loads image
   //img = loadImage("Floorplan.png");
   img = loadImage("kamer3.png");         //Loads image
@@ -121,7 +165,8 @@ void setup()
   {
     for (int y = 0; y < maxTilesY; y++)
     {
-      tile[x][y] = new Tile();
+      //tile[x][y] = new Tile();
+      tile[x][y] = new Tile(int(x*tileSize + tileSize/2), int(y*tileSize + tileSize/2));
     }
   }
   
@@ -134,27 +179,15 @@ void setup()
       color c = img.get(x,y);
       if (c == color(0))
       {         
-        tile[x/tileSize][y/tileSize].gravity = 1;  
+        tile[x/tileSize][y/tileSize].gravity = 1;
+        tile[x/tileSize][y/tileSize].tileType = "MAP";      //Set tileType to PERMANENT/MAP OBSTACLE
         tile[x/tileSize][y/tileSize].update();
       }      
     }
   } 
 
   
-  //-------------------------------------------------------------------------------
-  //Initialise Robot
-  myRobot = new Robot("ROBOT", diameter);        //Create a new robot object
-  myRobot.set(screenSizeX/2, screenSizeY/2, -PI/2);
-
-  //Add sensors to the robot object
-  for (int k=0; k<numSensors2; k++)
-  {
-    myRobot.addSensor(0, 0, -PI/2 + PI/(numSensors2-1)*k);
-    
-    //myRobot.addSensor(0,0,0);
-    myRobot.sensors.get(k).sensorMinDetect = minDetectDistance;
-  }
-  //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  
 
   
   //-------------------------------------------------------------------------------
@@ -204,6 +237,8 @@ void setup()
 
 void draw()
 { 
+  frame.setTitle(int(frameRate)+" fps");        //Add framerate into title bar
+  
   if (showVal)
   {
    for (int k=0; k<numSensors2; k++) print(int(myRobot.sensors.get(k).sensorObstacleDist)+"\t");
@@ -229,6 +264,22 @@ void draw()
     drawTiles();   
     drawTarget();
     
+   for(int y = 0; y < maxTilesY; y++)
+    for(int x = 0; x < maxTilesX; x++)
+    {
+      tile[x][y].drawTileForce();      
+    } 
+   
+   for(int y = 0; y < maxTilesY; y++)
+    for(int x = 0; x < maxTilesX; x++)
+    {
+      tile[x][y].clearGravity();
+      tile[x][y].update();
+    } 
+    
+    drawPixels();  
+    
+    
     oldMillis = newMillis;
     newMillis = millis();
     textSize(16);  
@@ -249,6 +300,11 @@ void draw()
    
     PlotRobot();
     calcProgressPoint();
+    
+    //Draws an ellipse at the centerpoint of the kinect's position on the robot
+    PVector returnVal = transRot(myRobot.location.x, myRobot.location.y, myRobot.heading, kinectPos.x, kinectPos.y);
+    fill(255,255,0);
+    ellipse(returnVal.x, returnVal.y, 10,10);
    
    //Displays the node position on the map
    for (Node n: allNodes)
@@ -775,10 +831,24 @@ void keyPressed()
 
   if (key =='s') step = true;
 
-  //Use this key to enable or diable obstacle
+  //Use this key to enable or disable obstacle
   if (key == 'o')
   {
-    tile[int(mouseX/tileSize)][int(mouseY/tileSize)].gravity *= -1;
-    tile[int(mouseX/tileSize)][int(mouseY/tileSize)].update();
+    switch(tile[int(mouseX/tileSize)][int(mouseY/tileSize)].tileType)
+    {
+      case "UNASSIGNED":
+      {    
+        tile[int(mouseX/tileSize)][int(mouseY/tileSize)].tileType = "USER"; //Set tileType to USER obstacle        
+        tile[int(mouseX/tileSize)][int(mouseY/tileSize)].update();
+        break;
+      }
+      
+      case "USER":
+      {
+        tile[int(mouseX/tileSize)][int(mouseY/tileSize)].tileType = "UNASSIGNED"; //Set tileType to UNASSIGNED obstacle        
+        tile[int(mouseX/tileSize)][int(mouseY/tileSize)].update();
+        break;
+      }
+    }
   }
 }

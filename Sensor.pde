@@ -68,17 +68,16 @@ class Sensor
       float dX = cos(heading) * sensorObstacleDist;
       float dY = sin(heading) * sensorObstacleDist;
       
-      //if (tile[int(returnVal.x/tileSize)][int(returnVal.y/tileSize)].gravity == 1)
-      if (tile[int((_refXPos + dX)/tileSize)][int((_refYPos + dY)/tileSize)].gravity == 1)
+      //Tests for USER and MAP tiletypes in order to calculate distance for US sensors to obstacles
+      if ((tile[int((_refXPos + dX)/tileSize)][int((_refYPos + dY)/tileSize)].tileType == "MAP") ||
+          (tile[int((_refXPos + dX)/tileSize)][int((_refYPos + dY)/tileSize)].tileType == "USER"))
       {
        obstacleFlag = true;
       }
-      
-      
       sensorObstacleDist += 1;      
     }
     
-    //Add noise to the sensor distance
+    //Add noise to the measured sensor distance
     sensorObstacleDist += randomGaussian() * sensorNoise;
   }
 }
