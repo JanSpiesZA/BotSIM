@@ -236,6 +236,8 @@ void setup()
 
 void draw()
 { 
+  frame.setTitle(int(frameRate)+" fps");        //Add framerate into title bar
+  
   if (showVal)
   {
    for (int k=0; k<numSensors2; k++) print(int(myRobot.sensors.get(k).sensorObstacleDist)+"\t");
