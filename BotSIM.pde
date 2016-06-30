@@ -150,7 +150,8 @@ void setup()
   {
     for (int y = 0; y < maxTilesY; y++)
     {
-      tile[x][y] = new Tile();
+      //tile[x][y] = new Tile();
+      tile[x][y] = new Tile(int(x*tileSize + tileSize/2), int(y*tileSize + tileSize/2));
     }
   }
   
