@@ -127,7 +127,22 @@ void setup()
     depthLookUp[i] = rawDepthToMeters(i);
   } 
   
+//-------------------------------------------------------------------------------
+  //Initialise Robot
+  myRobot = new Robot("ROBOT", diameter);        //Create a new robot object
+  myRobot.set(screenSizeX/2, screenSizeY/2, -PI/2);
+
+  //Add sensors to the robot object
+  for (int k=0; k<numSensors2; k++)
+  {
+    myRobot.addSensor(0, 0, -PI/2 + PI/(numSensors2-1)*k);
+    
+    //myRobot.addSensor(0,0,0);
+    myRobot.sensors.get(k).sensorMinDetect = minDetectDistance;
+  }
   
+  
+  //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  
   
   
   //img = loadImage("blank.png");         //Loads image
@@ -172,22 +187,7 @@ void setup()
   } 
 
   
-  //-------------------------------------------------------------------------------
-  //Initialise Robot
-  myRobot = new Robot("ROBOT", diameter);        //Create a new robot object
-  myRobot.set(screenSizeX/2, screenSizeY/2, -PI/2);
-
-  //Add sensors to the robot object
-  for (int k=0; k<numSensors2; k++)
-  {
-    myRobot.addSensor(0, 0, -PI/2 + PI/(numSensors2-1)*k);
-    
-    //myRobot.addSensor(0,0,0);
-    myRobot.sensors.get(k).sensorMinDetect = minDetectDistance;
-  }
   
-  
-  //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   
   //-------------------------------------------------------------------------------
