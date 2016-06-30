@@ -2,6 +2,7 @@ class Tile
 {  
   int gravity = 0;                          
   color gravityCol;
+  
   //Tile type variable to distinguish between different types of obstacles in the occupancy grid
   //0 - Unassigned cell
   //1 - Permanent map obstacle
@@ -9,12 +10,27 @@ class Tile
   //3 - kinect obstacle
   int tileType = 0;    
   
+  PVector field;
+  PVector tilePos;
+  float force = 0.0;
+  
   
   
   Tile()
   {
     gravityCol = color(150,200,150);
     tileType = 0;
+    field = new PVector();
+    tilePos = new PVector();
+  }
+  
+  Tile(int _tileX, int _tileY)
+  {
+    gravityCol = color(150,200,150);
+    field = new PVector();
+    tilePos = new PVector();
+    tilePos.x = _tileX;
+    tilePos.y = _tileY;
   }
   
   void clearGravity()
@@ -24,7 +40,8 @@ class Tile
       case 3:
       {
         gravity = -1;
-        //gravityCol = color(150,200,150);
+        force = 0.0;
+        field.mult(0);        
         tileType = 0;
         break;
       }
@@ -62,5 +79,13 @@ class Tile
         break;
       }
     }
+  }
+
+
+void drawTileForce()
+  {
+    //Draws a flowfield indicator
+    stroke(0);
+    line (tilePos.x, tilePos.y, tilePos.x + field.x, tilePos.y + field.y);    
   }
 }

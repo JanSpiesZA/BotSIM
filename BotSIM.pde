@@ -266,11 +266,17 @@ void draw()
    for(int y = 0; y < maxTilesY; y++)
     for(int x = 0; x < maxTilesX; x++)
     {
+      tile[x][y].drawTileForce();      
+    } 
+   
+   for(int y = 0; y < maxTilesY; y++)
+    for(int x = 0; x < maxTilesX; x++)
+    {
       tile[x][y].clearGravity();
       tile[x][y].update();
     } 
     
-    drawPixels();  
+    //drawPixels();  
     
     
     oldMillis = newMillis;
