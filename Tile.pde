@@ -40,7 +40,7 @@ class Tile
       case 3:
       {
         gravity = -1;
-        force = 0.0;
+        //force = 0.0;
         field.mult(0);        
         tileType = 0;
         break;
@@ -60,14 +60,16 @@ class Tile
       }
       case 1:
       {
-        gravity = 1;
+        gravity = 1;        
+        calcField();
         gravityCol = color(200,150,150);
         break;
       }
       
       case 2:
       {
-        gravity = 1;
+        gravity = 1;        
+        calcField();        
         gravityCol = color(70,130,180);    //steelblue for user obstacles
         break;
       }
@@ -82,10 +84,26 @@ class Tile
   }
 
 
-void drawTileForce()
+  void drawTileForce()
   {
     //Draws a flowfield indicator
     stroke(0);
     line (tilePos.x, tilePos.y, tilePos.x + field.x, tilePos.y + field.y);    
   }
+
+
+  //Calculates the force flow vector based on the position and distance of the robot and the gravity of tha specific tile
+  void calcField()
+  {
+    field.x = myRobot.location.x - tilePos.x;
+    field.y = myRobot.location.y - tilePos.y;
+    float distance = PVector.dist(myRobot.location, tilePos);
+    field.normalize();
+      
+    force = 1000 / pow(distance,2); 
+    
+    field.mult(force);
+    field.mult(gravity);         
+  }
+
 }
