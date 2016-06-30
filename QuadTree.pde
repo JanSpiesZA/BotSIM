@@ -82,7 +82,7 @@ void nodeLink()
         for (int l = 0; l < maxTilesY; l++)
         {
           //Test for intersect between current box and line
-          //  If the tile's has gravity and the line crosses the tile then Intersect flag is set
+          //  If the tile has gravity and the line crosses the tile then the Intersect flag is set
           if ((tile[k][l].gravity == 1) && (line_box_xywh(n1.nodeXPos,n1.nodeYPos,n2.nodeXPos,n2.nodeYPos,k*tileSize,l*tileSize,tileSize,tileSize)))
           {
             intersect = true;            

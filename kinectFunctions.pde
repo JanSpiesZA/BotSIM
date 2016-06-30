@@ -73,7 +73,7 @@ void updateGravity(float _x, float _y)
   if (y < 0) y = 0;
   if (y > maxTilesY) y = maxTilesY-1;
   
-  if (tile[x][y].tileType == 0) tile[x][y].tileType = 3;      //Change tileType to KINECT only when tile is not asigned
+  if (tile[x][y].tileType == "UNASSIGNED") tile[x][y].tileType = "KINECT";      //Change tileType to KINECT only when tile is not asigned
   tile[x][y].gravity++;
   tile[x][y].update();
 }

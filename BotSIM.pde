@@ -35,7 +35,7 @@ boolean wallDetect = false;
 Robot myRobot;          //Creat a myRobot instance
 float diameter = 45.0;
 
-final int maxParticles = 100;
+final int maxParticles = 00;
 Robot[] particles = new Robot[maxParticles];
 final float noiseForward = 1.0;            //global Noisevalues used to set the noise values in the praticles
 final float noiseTurn = 0.1;
@@ -180,7 +180,7 @@ void setup()
       if (c == color(0))
       {         
         tile[x/tileSize][y/tileSize].gravity = 1;
-        tile[x/tileSize][y/tileSize].tileType = 1;      //Set tileType to PERMANENT/MAP OBSTACLE
+        tile[x/tileSize][y/tileSize].tileType = "MAP";      //Set tileType to PERMANENT/MAP OBSTACLE
         tile[x/tileSize][y/tileSize].update();
       }      
     }
@@ -831,23 +831,21 @@ void keyPressed()
 
   if (key =='s') step = true;
 
-  //Use this key to enable or diable obstacle
+  //Use this key to enable or disable obstacle
   if (key == 'o')
   {
     switch(tile[int(mouseX/tileSize)][int(mouseY/tileSize)].tileType)
     {
-      case 0:
+      case "UNASSIGNED":
       {    
-        tile[int(mouseX/tileSize)][int(mouseY/tileSize)].tileType = 2; //Set tileType to USER obstacle
-        tile[int(mouseX/tileSize)][int(mouseY/tileSize)].gravity = 1;
+        tile[int(mouseX/tileSize)][int(mouseY/tileSize)].tileType = "USER"; //Set tileType to USER obstacle        
         tile[int(mouseX/tileSize)][int(mouseY/tileSize)].update();
         break;
       }
       
-      case 2:
+      case "USER":
       {
-        tile[int(mouseX/tileSize)][int(mouseY/tileSize)].tileType = 0; //Set tileType to UNASSIGNED obstacle
-        tile[int(mouseX/tileSize)][int(mouseY/tileSize)].gravity = -1;
+        tile[int(mouseX/tileSize)][int(mouseY/tileSize)].tileType = "UNASSIGNED"; //Set tileType to UNASSIGNED obstacle        
         tile[int(mouseX/tileSize)][int(mouseY/tileSize)].update();
         break;
       }

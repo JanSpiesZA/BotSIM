@@ -8,7 +8,7 @@ class Tile
   //1 - Permanent map obstacle
   //2 - user added obstacle
   //3 - kinect obstacle
-  int tileType = 0;    
+  String tileType = "UNASSIGNED";    
   
   PVector field;
   PVector tilePos;
@@ -19,7 +19,7 @@ class Tile
   Tile()
   {
     gravityCol = color(150,200,150);
-    tileType = 0;
+    tileType = "UNASSIGNED";
     field = new PVector();
     tilePos = new PVector();
   }
@@ -27,6 +27,7 @@ class Tile
   Tile(int _tileX, int _tileY)
   {
     gravityCol = color(150,200,150);
+    tileType = "UNASSIGNED";
     field = new PVector();
     tilePos = new PVector();
     tilePos.x = _tileX;
@@ -37,12 +38,12 @@ class Tile
   {
     switch (tileType)
     {
-      case 3:
+      case "KINECT":
       {
         gravity = -1;
-        //force = 0.0;
+        force = 0.0;
         field.mult(0);        
-        tileType = 0;
+        tileType = "UNASSIGNED";
         break;
       }
     }
@@ -52,13 +53,13 @@ class Tile
   {    
     switch(tileType)
     {
-      case 0:
+      case "UNASSIGNED":
       {
         gravity = -1;
         gravityCol = color(150,200,150);
         break;
       }
-      case 1:
+      case "MAP":
       {
         gravity = 1;        
         calcField();
@@ -66,7 +67,7 @@ class Tile
         break;
       }
       
-      case 2:
+      case "USER":
       {
         gravity = 1;        
         calcField();        
@@ -74,7 +75,7 @@ class Tile
         break;
       }
       
-      case 3:
+      case "KINECT":
       {
         gravity = 0;
         gravityCol = color(0,191,255);    //deepskyblue for kinect obstacles
