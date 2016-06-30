@@ -55,13 +55,13 @@ class Tile
     {
       case "UNASSIGNED":
       {
-        gravity = -1;
+        gravity = 0;
         gravityCol = color(150,200,150);
         break;
       }
       case "MAP":
       {
-        gravity = 10;        
+        gravity = 255;        
         calcField();
         gravityCol = color(200,150,150);
         break;
@@ -69,15 +69,14 @@ class Tile
       
       case "USER":
       {
-        gravity = 1;        
+        gravity = 255;        
         calcField();        
         gravityCol = color(70,130,180);    //steelblue for user obstacles
         break;
       }
       
       case "KINECT":
-      {
-        gravity = 0;
+      {        
         gravityCol = color(0,191,255);    //deepskyblue for kinect obstacles
         break;
       }
@@ -101,7 +100,7 @@ class Tile
     float distance = PVector.dist(myRobot.location, tilePos);
     field.normalize();
       
-    force = 1000 / pow(distance,2); 
+    force = 100 / pow(distance,2); 
     
     field.mult(force);
     field.mult(gravity);         
