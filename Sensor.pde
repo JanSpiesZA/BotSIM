@@ -1,3 +1,5 @@
+//This class is used to simulate the ultrasonic sensors
+
 class Sensor
 {
   int sensorXPos = 0;      //x position relative to robot centre point
@@ -24,6 +26,7 @@ class Sensor
     sensorHAngle = _sensorHAngle;
   }
   
+////////////////////////////////////////////////////////////////////////////////////////////  
   //Displays a sensor based on the reference X, Y and heading values on the chassis of the robot
   void display(float _refXPos, float _refYPos, float _refHeading)
   {        
@@ -54,17 +57,7 @@ class Sensor
     float heading = _refHeading + sensorHAngle;
      
     while ((obstacleFlag == false) && (sensorObstacleDist < sensorMaxDetect))
-    {
-      //translates and rotates sensor position and heading onto robot frame
-      //PVector returnVal = transRot(sensorXPos, sensorYPos, sensorHAngle, sensorObstacleDist, 0);    //Converts distance to sensor frame
-      //returnVal = transRot(_refXPos, _refYPos, _refHeading, returnVal.x, returnVal.y);
-      
-      //color col = get (int(returnVal.x), int(returnVal.y));    //Test pixel colour to determine if there is an obstacle
-      //if (col == color(200,150,150))
-      //{
-      // obstacleFlag = true;
-      //}
-      
+    { 
       float dX = cos(heading) * sensorObstacleDist;
       float dY = sin(heading) * sensorObstacleDist;
       
