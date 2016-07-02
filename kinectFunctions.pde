@@ -51,10 +51,7 @@ void drawPixels()
         PVector returnVal = transRot(myRobot.location.x, myRobot.location.y, myRobot.heading + PI/2, v.x, -v.z);
         ellipse(returnVal.x, returnVal.y, 5, 5);
         
-        updateGravity(returnVal.x, returnVal.y);
-        
-        //transRot(robotPos.x, robotPos.y, robotPos.z, sensorX, sensorY);
-        //ellipse(x_temp,y_temp,10,10);
+        if (v.z <= maxKinectPersistantView) updateGravity(returnVal.x, returnVal.y);
      }
    }
  }  

@@ -8,11 +8,16 @@ Kinect kinect;
 
 float maxKinectDetectNormal = 400.0;  //Maximum distance we are going to use the kinect to detect distance, measured in cm's
 float maxKinectDetectTooFar = 800.0;
+float maxKinectDeadZone = 40.0;
+float maxKinectPersistantView = 200.0;    //All kinect obstacles up to this distance will be persistant
 float kinectFOW = 60.0;        //Field of View on the horizontal axis
 int skip=10;          //constant used to set the subsample factor fo the kinect data
 // We'll use a lookup table so that we don't have to repeat the math over and over
 float[] depthLookUp = new float[2048];
 PVector kinectPos = new PVector(-20.0, 0.0 ,0.0);    //Position of Kinect sensors on robot. Robot x and y pos is 0,0
+float deltaX = tan(radians(kinectFOW/2)) * maxKinectPersistantView;
+PVector leftPoint = new PVector(kinectPos.x + maxKinectPersistantView, deltaX, 0);
+PVector rightPoint = new PVector(kinectPos.x + maxKinectPersistantView, -deltaX, 0);
 
 
 
@@ -272,12 +277,14 @@ void draw()
    
    for(int y = 0; y < maxTilesY; y++)
     for(int x = 0; x < maxTilesX; x++)
-    {
-      tile[x][y].clearGravity();
+    {      
       tile[x][y].update();
     } 
     
-    drawPixels();  
+    
+    isInFOW();
+    
+    drawPixels();      //Draws the data from the Kinect sensors on the screen
     
     
     oldMillis = newMillis;
@@ -291,6 +298,7 @@ void draw()
     doQuadTree(0,0, maxTilesX, maxTilesY, QuadTreeLevel);
     allNodes.add( new Node(myRobot.location.x, myRobot.location.y, "START", allNodes.size()));
     allNodes.add( new Node(goalXY.x, goalXY.y, "GOAL", allNodes.size()));  
+    
     float oldMillis = millis();
     nodeLink();
     float time = millis()-oldMillis;
@@ -304,7 +312,9 @@ void draw()
     //Draws an ellipse at the centerpoint of the kinect's position on the robot
     PVector returnVal = transRot(myRobot.location.x, myRobot.location.y, myRobot.heading, kinectPos.x, kinectPos.y);
     fill(255,255,0);
-    ellipse(returnVal.x, returnVal.y, 10,10);
+    ellipse(returnVal.x, returnVal.y, 10,10);    
+    
+    
    
    //Displays the node position on the map
    for (Node n: allNodes)
@@ -362,6 +372,46 @@ void drawTiles()
       strokeWeight(1);  //Stroke weight makes the lines very light
       fill(tile[x][y].gravityCol,200);
       rect(x*tileSize, y*tileSize, tileSize, tileSize);  //Draws a rectangle to indicate the tile
+    }
+  }
+}
+
+//###############################################################################################
+//Checks to see if tile center point is inside kienct Field of View but closer than the maximum Peristant view value.
+//(http://stackoverflow.com/questions/13300904/determine-whether-point-lies-inside-triangle)
+//Kinect data outside of this area will not influence the map.
+//Kinect data inside this area will be overwritten if in the field of view.
+//The purpose is to collect obstacle data in order to 'remeber where obstacles are when the kinect moves and these obstacle go into the deadzone
+
+void isInFOW()
+{
+  float alpha = 0.0;
+  float beta = 0.0;
+  float gamma =0.0;
+  PVector newKinectPos = transRot(myRobot.location.x, myRobot.location.y, myRobot.heading, kinectPos.x, kinectPos.y);
+  PVector newLeftPoint = transRot(myRobot.location.x, myRobot.location.y, myRobot.heading, leftPoint.x, leftPoint.y);
+  PVector newRightPoint = transRot(myRobot.location.x, myRobot.location.y, myRobot.heading, rightPoint.x, rightPoint.y);
+  
+  line (newKinectPos.x, newKinectPos.y, newLeftPoint.x, newLeftPoint.y);
+  line (newKinectPos.x, newKinectPos.y, newRightPoint.x, newRightPoint.y);
+  
+  for(int y = 0; y < maxTilesY; y++)
+  {
+    for(int x = 0; x < maxTilesX; x++)    
+    {      
+      if (tile[x][y].tileType == "UNASSIGNED" || tile[x][y].tileType == "KINECT")
+      {
+        alpha = ((newLeftPoint.y - newRightPoint.y)*(tile[x][y].tilePos.x - newRightPoint.x) + (newRightPoint.x - newLeftPoint.x)*(tile[x][y].tilePos.y - newRightPoint.y)) / 
+                      ((newLeftPoint.y - newRightPoint.y)*(newKinectPos.x - newRightPoint.x) + (newRightPoint.x - newLeftPoint.x)*(newKinectPos.y - newRightPoint.y));
+        beta = ((newRightPoint.y - newKinectPos.y)*(tile[x][y].tilePos.x - newRightPoint.x) + (newKinectPos.x - newRightPoint.x)*(tile[x][y].tilePos.y - newRightPoint.y)) / 
+                     ((newLeftPoint.y - newRightPoint.y)*(newKinectPos.x - newRightPoint.x) + (newRightPoint.x - newLeftPoint.x)*(newKinectPos.y - newRightPoint.y));
+        gamma = 1.0f - alpha - beta;
+        
+        if ((alpha > 0 & beta > 0 & gamma > 0))
+        {
+          tile[x][y].tileType = "UNASSIGNED";
+        }        
+      }
     }
   }
 }
@@ -467,6 +517,8 @@ void PlotRobot()
     { 
       if (followPath)
       {
+        //finalPath is always from the current robot position to the goal. The last element is the robot's current position
+        //  the 2nd last element is the next waypoint
         int nextWayPoint = finalPath.get(finalPath.size()-2);
         float nextWayPointX = allNodes.get(nextWayPoint).nodeXPos;
         float nextWayPointY = allNodes.get(nextWayPoint).nodeYPos;
@@ -650,6 +702,7 @@ void estimateWall()
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
+//This function will calculate the flow field using the MAP and KINECT tiles
 PVector calcVectorAvoidObstacles()
 {
   PVector tempCoords = new PVector();   

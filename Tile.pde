@@ -35,18 +35,7 @@ class Tile
   }
   
   void clearGravity()
-  {
-    switch (tileType)
-    {
-      case "KINECT":
-      {
-        gravity = -1;
-        force = 0.0;
-        field.mult(0);        
-        tileType = "UNASSIGNED";
-        break;
-      }
-    }
+  {    
   }
   
   void update()
