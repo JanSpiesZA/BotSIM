@@ -150,9 +150,9 @@ void setup()
   //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  
   
   
-  //img = loadImage("blank.png");         //Loads image
+  img = loadImage("blank.png");         //Loads image
   //img = loadImage("Floorplan.png");
-  img = loadImage("kamer3.png");         //Loads image
+  //img = loadImage("kamer3.png");         //Loads image
   img.resize(int(screenSizeX), int(screenSizeY));
   
   tileSize *= scaleFactor;        //Aplies scale factor to the tile size
@@ -212,6 +212,7 @@ void setup()
 
   applyScale();    //Applies the scale to all physical quantities
 
+  //size(100,100,P2D);
   surface.setResizable(true);
   surface.setSize(int(screenSizeX), int(screenSizeY));
 
@@ -352,7 +353,7 @@ void draw()
   }
   
   //estimateWall();    //Estimates the distance to the wall using closest sesnors to the wall
-  //dispVectors();      //Displays different vectors, ie: Go-To-Goal, Avoid Obstacle, etc
+  dispVectors();      //Displays different vectors, ie: Go-To-Goal, Avoid Obstacle, etc
   
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -708,23 +709,37 @@ PVector calcVectorAvoidObstacles()
   PVector tempCoords = new PVector();   
   PVector vectorAO = new PVector();
   
-  for (int k = 0; k < myRobot.sensors.size(); k++)
+  for(int y = 0; y < maxTilesY; y++)
   {
-    //TransRotate sensor distance value to robot frame
-    tempCoords = transRot(myRobot.sensors.get(k).sensorXPos, myRobot.sensors.get(k).sensorYPos, myRobot.sensors.get(k).sensorHAngle, myRobot.sensors.get(k).sensorObstacleDist, 0);
-    
-    //Add all the x's and y's together to get combined vector of avoid obstacles        
-    vectorAO.add(tempCoords);
+    for(int x = 0; x < maxTilesX; x++)    
+    {      
+      if (tile[x][y].tileType == "MAP")
+      {
+        if (tile[x][y]. gravity != 0)
+        {
+          vectorAO.add(tile[x][y].field);
+        }
+      }
+    }
   }
-  //vectorAO.normalize();
-  //println(vectorAO.mag());
-  //Transrotate avoidObstacles coords into world frame with a scaling factor
-  tempCoords = transRot(myRobot.location.x, myRobot.location.y, myRobot.heading, vectorAO.x, vectorAO.y);
   
-  tempCoords.x = tempCoords.x - myRobot.location.x;
-  tempCoords.y = tempCoords.y - myRobot.location.y;
+  //for (int k = 0; k < myRobot.sensors.size(); k++)
+  //{
+  //  //TransRotate sensor distance value to robot frame
+  //  tempCoords = transRot(myRobot.sensors.get(k).sensorXPos, myRobot.sensors.get(k).sensorYPos, myRobot.sensors.get(k).sensorHAngle, myRobot.sensors.get(k).sensorObstacleDist, 0);
+    
+  //  //Add all the x's and y's together to get combined vector of avoid obstacles        
+  //  vectorAO.add(tempCoords);
+  //}
+  ////vectorAO.normalize();
+  ////println(vectorAO.mag());
+  ////Transrotate avoidObstacles coords into world frame with a scaling factor
+  //tempCoords = transRot(myRobot.location.x, myRobot.location.y, myRobot.heading, vectorAO.x, vectorAO.y);
   
-  return tempCoords;
+  //tempCoords.x = tempCoords.x - myRobot.location.x;
+  //tempCoords.y = tempCoords.y - myRobot.location.y;
+  
+  return vectorAO;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -779,46 +794,15 @@ void drawTarget()
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 void dispVectors()
-{
-  strokeWeight(3);
-  stroke (255,0,0);  //RED  
-  line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorAvoidObstacles.normalize().x*100, myRobot.location.y + vectorAvoidObstacles.normalize().y*100);
-
-  stroke (0,0,255);  //BLUE
-  line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorGoToGoal.normalize().x*100, myRobot.location.y + vectorGoToGoal.normalize().y*100);
-
-  //stroke (0,255,0);  //GREEN
-  //line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorAOGTG.x*100, myRobot.location.y + vectorAOGTG.y*100);
+{  
+  //Draws a vector pointing away from all the obstacles
+  strokeWeight(4);
+  stroke(255,0,0);
+  line(myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorAvoidObstacles.x, myRobot.location.y + vectorAvoidObstacles.y);
   
-  stroke (0,255,255);
-  line (myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorBlendedAOGTG.normalize().x*100, myRobot.location.y + vectorBlendedAOGTG.normalize().y*100);
-
-
-  //path.x = avoid.x*1000 + vectorGTG[0];
-  //path.y = avoid.y*1000 + vectorGTG[1];
-
-  //stroke(0,255,255);
-  //line (location.x, location.y, location.x + path.x, location.y + path.y);
-
-  //stroke (255,0,0);
-  //line (myRobot.x, myRobot.y, myRobot.x + vectorAO[0], myRobot.y + vectorAO[1]); //draws the Avoid Obstacle vector
-  //stroke (0,255,0);
-  //line (myRobot.x, myRobot.y, myRobot.x + vectorAO_GTG[0], myRobot.y + vectorAO_GTG[1]);  //draws the AO and GTG blended vector
-
-
-  //line (closest1[0], closest1[1], closest1[0] +vectorWall[0], closest1[1] + vectorWall[1]);
-  //line (myRobot.x, myRobot.y, myRobot.x+vectorWallDist[0], myRobot.y+vectorWallDist[1]);
-  //line (myRobot.x, myRobot.y, myRobot.x+vectorAwayFromWall[0], myRobot.y+vectorAwayFromWall[1]);
-  //stroke(255,0,0);
-  //line (myRobot.x, myRobot.y, myRobot.x+vectorFollowWall[0],myRobot.y+vectorFollowWall[1]);
-
-  //stroke(0);
-
-
-
-  //strokeWeight(1);
-  //stroke (0);
 }
+
+
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //Rotates and translates an X and Y coordinate onto a local frame using the local frame's X,Y and HEADING
 //Returns a PVector with new x and y coordinates
