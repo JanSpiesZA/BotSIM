@@ -117,7 +117,7 @@ class Robot{
   }
   
 
-  //Moves the robot  
+  //Moves the robot and particles  
   void move(float turnAngle, float _forward)
   { 
     heading += turnAngle + randomGaussian() * noiseTurn;  //Add the turnAngle value to the current heading
