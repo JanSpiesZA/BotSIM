@@ -22,6 +22,7 @@ PVector rightPoint = new PVector(kinectPos.x + maxKinectPersistantView, -deltaX,
 
 
 
+
 PImage img;
 
 boolean followPath = true;    //Setting to control if path must be followd or is it a true bug goal locate algorithm
@@ -39,6 +40,7 @@ boolean wallDetect = false;
 
 Robot myRobot;          //Creat a myRobot instance
 float diameter = 45.0;
+PVector robotStart = new PVector (worldMapScaleX/3 , worldMapScaleY/2 , -PI/2);
 
 final int maxParticles = 00;
 Robot[] particles = new Robot[maxParticles];
@@ -119,7 +121,8 @@ int maxTilesX = 0;
 int maxTilesY = 0;
 Tile tile[][];
 
-float oldMillis, newMillis;
+float oldMillis, newMillis, time, old_time;
+float delta_t = 1000;
 
 void setup()
 {
@@ -135,7 +138,7 @@ void setup()
 //-------------------------------------------------------------------------------
   //Initialise Robot
   myRobot = new Robot("ROBOT", diameter);        //Create a new robot object
-  myRobot.set(screenSizeX/2, screenSizeY/2, -PI/2);
+  myRobot.set(robotStart.x, robotStart.y, robotStart.z);
 
   //Add sensors to the robot object
   for (int k=0; k<numSensors2; k++)
@@ -239,6 +242,21 @@ void setup()
   ////println("\nNumber of allNodes: "+allNodes.size());        //Print the total number of nodes
   //nodeLink();
   //findPath();
+  
+  printArray(Serial.list());
+  myPort = new Serial(this, Serial.list()[1], 115200);  
+  delay(5000);      //Delay to make sure the Arduino initilaises before data is sent
+  myPort.write("<v00\r");    //Sends a velcoity of 0 to the chassis
+  delay(500);
+  myPort.write("<w0\r");      //sends a turn rate of 0 to the chassis
+  delay(500);  
+  
+  myPort.clear();
+  // Throw out the first reading, in case we started reading 
+  // in the middle of a string from the sender.
+  inData = myPort.readStringUntil(lf);
+  inData = null;
+  myPort.bufferUntil(lf);        //Buffers serial data until Line Feed is detected and then only reads serial data out of buffer  
 }
 
 void draw()
@@ -263,6 +281,8 @@ void draw()
    println();
    showVal = false;
   }
+
+  parseSerialData();
 
   if (step)
   {
@@ -303,7 +323,7 @@ void draw()
     float oldMillis = millis();
     nodeLink();
     float time = millis()-oldMillis;
-    println("Node Link time: "+time);
+    //println("Node Link time: "+time);
   
     findPath();
    
@@ -348,6 +368,17 @@ void draw()
   vectorGoToGoal = calcVectorGoToGoal();  
   
   vectorBlendedAOGTG = calculateVectorBlendedAOGTG();
+  
+  //Routine used to poll driverlayer every delta_t millis in order to get sensor and position data
+  time = millis();  
+  float interval = time - old_time;
+  if (interval > delta_t)
+  {
+    //requestSerialPosition();
+    updateRobot(moveAngle);
+    old_time = time;
+  }
+  
   
 
   }
@@ -556,20 +587,10 @@ void PlotRobot()
     break;
   }
 
-  //calcErrorAngle(phi_FW);
-
-  //Stop the robot when it is close enough to the target area
-  //if (distanceToTarget <= safeZone) distanceToTarget = 0;
-
-  //float errorAngle = difference;
-  //println("Length of vector: ",distanceToTarget, " : ",stateVal);
-  //println (myRobot.heading, "\t", errorAngle,"\t",phi_AO);
-  //println("Collisionflag :",collisionFlag, " Making Progress :", makingProgress);
-
-
   moveAngle = min (myRobot.maxTurnRate, (turnGain * errorAngle));  //P controller to turn towards goal
-  moveSpeed = min (myRobot.maxSpeed, (moveGain * (distanceToTarget)));
-  myRobot.move(moveAngle, moveSpeed);
+  moveSpeed = min (myRobot.maxSpeed, (moveGain * (distanceToTarget)));  
+  
+  //myRobot.move(moveAngle, moveSpeed);
   myRobot.display();
 }
 
@@ -869,7 +890,7 @@ void keyPressed()
 {
   if (key == ' ') showVal = true;
 
-  if (key =='s') step = true;
+  if (key =='s') requestSerialPosition();
 
   //Use this key to enable or disable obstacle
   if (key == 'o')
