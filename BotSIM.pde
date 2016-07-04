@@ -346,9 +346,9 @@ void draw()
 
   vectorAvoidObstacles = calcVectorAvoidObstacles();
   vectorGoToGoal = calcVectorGoToGoal();  
-  //vectorAOGTG = PVector.add(vectorGoToGoal, vectorAvoidObstacles);
+  
   vectorBlendedAOGTG = calculateVectorBlendedAOGTG();
-  //println(vectorGoToGoal+" : "+vectorAvoidObstacles+" : "+vectorAOGTG);
+  
 
   }
   
@@ -800,6 +800,9 @@ void dispVectors()
   stroke(255,0,0);
   line(myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorAvoidObstacles.x, myRobot.location.y + vectorAvoidObstacles.y);
   
+  strokeWeight(5);
+  stroke(0,0, 255);
+  line(myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorBlendedAOGTG.x, myRobot.location.y + vectorBlendedAOGTG.y);
 }
 
 
