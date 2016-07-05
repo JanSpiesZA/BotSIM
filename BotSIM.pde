@@ -321,63 +321,60 @@ void draw()
     fill(255,255,0);
     ellipse(returnVal.x, returnVal.y, 10,10);  
     
-   //Displays the node position on the map
-   for (Node n: allNodes)
-   {
-    n.display();     
-   }
+    //Displays the node position on the map
+    for (Node n: allNodes)
+    {
+       n.display();     
+    }
     
-   int startTime = millis();
-   myRobot.sense();          //Makes use of sensor class to detect obstacles
-
-   for (int k = 0; k < maxParticles; k++)
-   {
-     particles[k].sense();
-     particles[k].measureProb();
-   }
+    int startTime = millis();
+    myRobot.sense();          //Makes use of sensor class to detect obstacles
     
-   int endTime = millis();
-   //println(endTime - startTime);
-
+    for (int k = 0; k < maxParticles; k++)
+    {
+      particles[k].sense();
+      particles[k].measureProb();
+    }
+    
+    int endTime = millis();
+    //println(endTime - startTime);
+    
     if (stateVal != 0)
     {
       updateParticles();
       resample();
     }
+  
+  
+    step = true;
 
-
-   step = true;
-
-  //Calculates the vector to avoid all obstacles
-  vectorAvoidObstacles = calcVectorAvoidObstacles();
-  
-  //Calculates the Go To Goal vector
-  vectorGoToGoal.x = nextWaypoint.x - myRobot.location.x;
-  vectorGoToGoal.y = nextWaypoint.y - myRobot.location.y;
-  
-  //Calculates the vector which blends the Go to Goal and Avoid Obstacles
-  vectorAOFWD = PVector.add(vectorGoToGoal, vectorAvoidObstacles);  
-  
-  //Calcualtes the angle in which the robot needs to travel   
-  float angleToGoal = atan2(vectorAOFWD.y,vectorAOFWD.x) - myRobot.heading;
-  if (angleToGoal < (-PI)) angleToGoal += 2*PI;
-  if (angleToGoal > (PI)) angleToGoal -= 2*PI;
-     
-  //Caclualtes the distance between robot and goal to determine speed    
-  float velocityToGoal = dist (nextWaypoint.x, nextWaypoint.y, myRobot.location.x, myRobot.location.y) /5;
-  
-  //Routine used to poll driverlayer every delta_t millis in order to get sensor and position data
-  time = millis();  
-  int interval = time - old_time;
-  if (interval > delta_t)
-  {
-    println("velocity: "+velocityToGoal+ ", angle: " + angleToGoal);
-    updateRobot(velocityToGoal, angleToGoal);
-    old_time = time;
-  }
-  
-  
-
+    //Calculates the vector to avoid all obstacles
+    vectorAvoidObstacles = calcVectorAvoidObstacles();
+    
+    //Calculates the Go To Goal vector
+    vectorGoToGoal.x = nextWaypoint.x - myRobot.location.x;
+    vectorGoToGoal.y = nextWaypoint.y - myRobot.location.y;
+    
+    //Calculates the vector which blends the Go to Goal and Avoid Obstacles
+    vectorAOFWD = PVector.add(vectorGoToGoal, vectorAvoidObstacles);  
+    
+    //Calcualtes the angle in which the robot needs to travel   
+    float angleToGoal = atan2(vectorAOFWD.y,vectorAOFWD.x) - myRobot.heading;
+    if (angleToGoal < (-PI)) angleToGoal += 2*PI;
+    if (angleToGoal > (PI)) angleToGoal -= 2*PI;
+       
+    //Caclualtes the distance between robot and goal to determine speed    
+    float velocityToGoal = dist (nextWaypoint.x, nextWaypoint.y, myRobot.location.x, myRobot.location.y) /5;
+    
+    //Routine used to poll driverlayer every delta_t millis in order to get sensor and position data
+    time = millis();  
+    int interval = time - old_time;
+    if (interval > delta_t)
+    {
+      println("velocity: "+velocityToGoal+ ", angle: " + angleToGoal);
+      updateRobot(velocityToGoal, angleToGoal);
+      old_time = time;
+    }
   }
   dispVectors();      //Displays different vectors, ie: Go-To-Goal, Avoid Obstacle, etc  
 }
