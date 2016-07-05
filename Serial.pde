@@ -9,14 +9,19 @@ String[] list = null;
 
 void requestSerialPosition()
 {
-  println("TXING!!!");
+  println("REQUESTING!!!");
   myPort.write("<?" + "\r");  
 }
 
-void updateRobot(float _moveAngle)
+void updateRobot(float _velocityToGoal, float _moveAngle)
 {
   println("TXING!!!");
-  myPort.write("<w"+_moveAngle*1000+"\r");  
+  String tempAngle = nf(_moveAngle,1,2);
+  _moveAngle = float(tempAngle);
+  _moveAngle *= 1000;
+  myPort.write("<w"+str(_moveAngle)+"\r");  
+  delay(1);
+  myPort.write("<v"+str(_velocityToGoal)+"\r");  
 }
 
 void parseSerialData()
@@ -28,7 +33,7 @@ void parseSerialData()
       case '?':
       {
         inData = inData.substring(1);
-        println(inData);
+        //println(inData);
         list = split(inData, ",");
         
         //Add robot real world position to inital robot position
@@ -43,6 +48,7 @@ void parseSerialData()
         break;
       }
     }
+   inData = null; 
   }
 }
 
