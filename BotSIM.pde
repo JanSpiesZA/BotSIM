@@ -88,6 +88,7 @@ PVector vectorAvoidObstacles = new PVector();
 PVector coordsAvoidObstacles = new PVector();    //Coords on the world frame, holding the point of the avoid obstacle vector
 PVector vectorGoToGoal = new PVector();
 PVector vectorBlendedAOGTG = new PVector();      //Holds the vector which is blended between AvoidObstacles an GoToGoal
+PVector nextWaypoint = new PVector();
 
 float[] vectorWall = {0.0, 0.0};      //x and y values representing the vector of a piece of wall for follow wall procedure
 float[] vectorWallDist = {0.0, 0.0};  //x and y values for a line perpendicular to the wall vector
@@ -354,16 +355,15 @@ void draw()
   
   //vectorBlendedAOGTG = calculateVectorBlendedAOGTG();
   
-  //println("vector robotPos: "+myRobot.location + "\t goalXY: "+goalXY);
-   float angleToGoal = atan2(goalXY.y - myRobot.location.y, goalXY.x - myRobot.location.x) - myRobot.heading;
+  //println("vector robotPos: "+myRobot.location + "\t goalXY: "+goalXY);   
+  float angleToGoal = atan2(nextWaypoint.y - myRobot.location.y, nextWaypoint.x - myRobot.location.x) - myRobot.heading;
+   
    if (angleToGoal < (-PI)) angleToGoal += 2*PI;
   if (angleToGoal > (PI)) angleToGoal -= 2*PI;
    //println("angle to Goal: "+angleToGoal);
    
-   //Caclualtes the distance between robot and goal to determine speed
-   float velocityToGoal = dist (goalXY.x, goalXY.y, myRobot.location.x, myRobot.location.y) / 10; 
-   
-   
+   //Caclualtes the distance between robot and goal to determine speed    
+   float velocityToGoal = dist (nextWaypoint.x, nextWaypoint.y, myRobot.location.x, myRobot.location.y) / 10;
   
   //Routine used to poll driverlayer every delta_t millis in order to get sensor and position data
   time = millis();  
@@ -556,17 +556,17 @@ void PlotRobot()
       {
         //finalPath is always from the current robot position to the goal. The last element is the robot's current position
         //  the 2nd last element is the next waypoint
-        int nextWayPoint = finalPath.get(finalPath.size()-2);
-        float nextWayPointX = allNodes.get(nextWayPoint).nodeXPos;
-        float nextWayPointY = allNodes.get(nextWayPoint).nodeYPos;
+        int nextWP = finalPath.get(finalPath.size()-2); //index of next waypont in finalPath array
+        nextWaypoint.x = allNodes.get(nextWP).nodeXPos;
+        nextWaypoint.y = allNodes.get(nextWP).nodeYPos;
         
         stroke(0,0,255);
         strokeWeight(0);
         fill(0,0,255);
-        ellipse (nextWayPointX, nextWayPointY, 20,20);      
-        phi_GTG = calcGoalAngle(nextWayPointX - myRobot.location.x, nextWayPointY - myRobot.location.y);
+        ellipse (nextWaypoint.x, nextWaypoint.y, 20,20);      
+        //phi_GTG = calcGoalAngle(nextWayPointX - myRobot.location.x, nextWayPointY - myRobot.location.y);
       }
-      calcErrorAngle(phi_GTG);
+      //calcErrorAngle(phi_GTG);
     }
 
     if ((!myRobot.makingProgress) && (myRobot.collisionFlag))
