@@ -86,6 +86,7 @@ PVector coordsAvoidObstacles = new PVector();    //Coords on the world frame, ho
 PVector vectorGoToGoal = new PVector();
 PVector vectorBlendedAOGTG = new PVector();      //Holds the vector which is blended between AvoidObstacles an GoToGoal
 PVector nextWaypoint = new PVector();
+PVector vectorAOFWD = new PVector();
 
 float[] vectorWall = {0.0, 0.0};      //x and y values representing the vector of a piece of wall for follow wall procedure
 float[] vectorWallDist = {0.0, 0.0};  //x and y values for a line perpendicular to the wall vector
@@ -347,21 +348,23 @@ void draw()
 
    step = true;
 
+  //Calculates the vector to avoid all obstacles
   vectorAvoidObstacles = calcVectorAvoidObstacles();
-  //vectorGoToGoal = calcVectorGoToGoal();  
   
-  vectorBlendedAOGTG = calculateVectorBlendedAOGTG();
+  //Calculates the Go To Goal vector
+  vectorGoToGoal.x = nextWaypoint.x - myRobot.location.x;
+  vectorGoToGoal.y = nextWaypoint.y - myRobot.location.y;
   
-  //println("vector robotPos: "+myRobot.location + "\t goalXY: "+goalXY);   
-  float angleToGoal = atan2(nextWaypoint.y - myRobot.location.y, nextWaypoint.x - myRobot.location.x) - myRobot.heading;
-   
+  //Calculates the vector which blends the Go to Goal and Avoid Obstacles
+  vectorAOFWD = PVector.add(vectorGoToGoal, vectorAvoidObstacles);  
+  
+  //Calcualtes the angle in which the robot needs to travel   
+  float angleToGoal = atan2(vectorAOFWD.y,vectorAOFWD.x) - myRobot.heading;
   if (angleToGoal < (-PI)) angleToGoal += 2*PI;
   if (angleToGoal > (PI)) angleToGoal -= 2*PI;
-  //println("angle to Goal: "+angleToGoal);
-   
+     
   //Caclualtes the distance between robot and goal to determine speed    
-  float velocityToGoal = dist (nextWaypoint.x, nextWaypoint.y, myRobot.location.x, myRobot.location.y) /10;
-  
+  float velocityToGoal = dist (nextWaypoint.x, nextWaypoint.y, myRobot.location.x, myRobot.location.y) /5;
   
   //Routine used to poll driverlayer every delta_t millis in order to get sensor and position data
   time = millis();  
@@ -376,11 +379,9 @@ void draw()
   
 
   }
-  
-  //estimateWall();    //Estimates the distance to the wall using closest sesnors to the wall
-  dispVectors();      //Displays different vectors, ie: Go-To-Goal, Avoid Obstacle, etc
-  
+  dispVectors();      //Displays different vectors, ie: Go-To-Goal, Avoid Obstacle, etc  
 }
+
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -636,10 +637,9 @@ void calcErrorAngle (float goalAngle)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
-//This function will calculate the flow field using the MAP and KINECT tiles
+//This function will calculate the flow field using the MAP and USER tiles
 PVector calcVectorAvoidObstacles()
-{
-  PVector tempCoords = new PVector();   
+{  
   PVector vectorAO = new PVector();
   
   for(int y = 0; y < maxTilesY; y++)
@@ -673,32 +673,6 @@ PVector calcVectorAvoidObstacles()
   //tempCoords.y = tempCoords.y - myRobot.location.y;
   
   return vectorAO;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////
-PVector calcVectorGoToGoal()
-{
-  PVector result = new PVector();
-  result.x = goalXY.x - myRobot.location.x;
-  result.y = goalXY.y - myRobot.location.y;  
-  return result; //.normalize();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////
-PVector calculateVectorBlendedAOGTG()
-{
-  PVector result = new PVector();
-  float dist = vectorAvoidObstacles.mag();
-  float beta = 0.002;          //The smaller this value gets the smaller sigma becomes
-  float sigma = 1 - exp(-beta*dist);
-  PVector gtgBlend = new PVector();
-  PVector aoBlend = new PVector();  
-  
-  PVector.mult(vectorGoToGoal,sigma, gtgBlend);
-  PVector.mult(vectorAvoidObstacles, (1-sigma), aoBlend); 
-
-  result = PVector.add(gtgBlend, aoBlend);
-  return result;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -740,7 +714,8 @@ void dispVectors()
   
   strokeWeight(5);
   stroke(0,0, 255);
-  line(myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorBlendedAOGTG.x * 100, myRobot.location.y + vectorBlendedAOGTG.y * 100);
+  //line(myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorBlendedAOGTG.x * 100, myRobot.location.y + vectorBlendedAOGTG.y * 100);
+  line(myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorAOFWD.x * 10, myRobot.location.y + vectorAOFWD.y * 10);
 }
 
 
