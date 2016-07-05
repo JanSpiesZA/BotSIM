@@ -80,9 +80,6 @@ float goalX = screenSizeX / 2;            //Goal's X and Y coordinates, set up b
 float goalY = screenSizeY / 2;
 //This section must be removed when only the sensor class is used
 
-
-
-
 PVector vectorAOGTG = new PVector();
 PVector vectorAvoidObstacles = new PVector();
 PVector coordsAvoidObstacles = new PVector();    //Coords on the world frame, holding the point of the avoid obstacle vector
@@ -351,19 +348,20 @@ void draw()
    step = true;
 
   vectorAvoidObstacles = calcVectorAvoidObstacles();
-  vectorGoToGoal = calcVectorGoToGoal();  
+  //vectorGoToGoal = calcVectorGoToGoal();  
   
-  //vectorBlendedAOGTG = calculateVectorBlendedAOGTG();
+  vectorBlendedAOGTG = calculateVectorBlendedAOGTG();
   
   //println("vector robotPos: "+myRobot.location + "\t goalXY: "+goalXY);   
   float angleToGoal = atan2(nextWaypoint.y - myRobot.location.y, nextWaypoint.x - myRobot.location.x) - myRobot.heading;
    
-   if (angleToGoal < (-PI)) angleToGoal += 2*PI;
+  if (angleToGoal < (-PI)) angleToGoal += 2*PI;
   if (angleToGoal > (PI)) angleToGoal -= 2*PI;
-   //println("angle to Goal: "+angleToGoal);
+  //println("angle to Goal: "+angleToGoal);
    
-   //Caclualtes the distance between robot and goal to determine speed    
-   float velocityToGoal = dist (nextWaypoint.x, nextWaypoint.y, myRobot.location.x, myRobot.location.y) / 10;
+  //Caclualtes the distance between robot and goal to determine speed    
+  float velocityToGoal = dist (nextWaypoint.x, nextWaypoint.y, myRobot.location.x, myRobot.location.y) /10;
+  
   
   //Routine used to poll driverlayer every delta_t millis in order to get sensor and position data
   time = millis();  
@@ -372,11 +370,6 @@ void draw()
   {
     println("velocity: "+velocityToGoal+ ", angle: " + angleToGoal);
     updateRobot(velocityToGoal, angleToGoal);
-    //delay(10);
-    
-    //requestSerialPosition();
-    //delay(10);
-    
     old_time = time;
   }
   
@@ -643,92 +636,6 @@ void calcErrorAngle (float goalAngle)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
-void estimateWall()
-{
-  int c1 = 0;
-  int c2 = 1;
-
-  //Step 1:
-  //  Determine the two smallest values from the left sensors
-  for (int i = 0; i <= ceil(numSensors/2); i++)
-  {
-    if (sensorObstacleDist[i] < sensorObstacleDist[c1]) c1 = i;
-  }
-
-  for (int i = 0; i <= ceil(numSensors/2); i++)
-  {
-    if ((sensorObstacleDist[i] < sensorObstacleDist[c2]) && (sensorObstacleDist[i] > sensorObstacleDist[c1])) c2 = i;
-  }
-  if (c1 == c2) c2 = c1 + 1;
-
-  int leftC1 = min(c1, c2);
-  int leftC2 = max(c1, c2);
-
-  c1 = leftC1;
-  c2 = leftC2;
-
-  //step 2:
-  //  Convert the distances to points in the global frame
-  //  Create a wall vector and normalise it
-  if ((c1 >= 0) & (c2 >= 0))
-  {
-    PVector returnVal = transRot (sensorX[c1], sensorY[c1], sensorPhi[c1], sensorObstacleDist[c1], 0);    //translates obstacle distance to robot frame
-    returnVal = transRot (myRobot.location.x, myRobot.location.y, myRobot.heading, returnVal.x, returnVal.y);  //translates sensordata in robot frame to global frame
-    closest1[0] = returnVal.x;
-    closest1[1] = returnVal.y;
-
-    returnVal = transRot (sensorX[c2], sensorY[c2], sensorPhi[c2], sensorObstacleDist[c2], 0);    //translates obstacle distance to robot frame
-    returnVal = transRot (myRobot.location.x, myRobot.location.y, myRobot.heading, returnVal.x, returnVal.y);  //translates sensordata in robot frame to global frame
-    closest2[0] = returnVal.x;
-    closest2[1] = returnVal.y;
-
-    ellipse (closest1[0], closest1[1], 20, 20);
-    ellipse (closest2[0], closest2[1], 20, 20);
-    //line (closest1[0], closest1[1], closest2[0], closest2[1]);
-
-    vectorWall[0] = closest2[0] - closest1[0];
-    vectorWall[1] = closest2[1] - closest1[1];
-
-    float n = sqrt(pow(vectorWall[0], 2)+pow(vectorWall[1], 2));    //Calculates the normalisation factor for the AvoidObstacle vector
-    vectorWall[0] = normaliseGain * vectorWall[0]/n;      //Multiply by 100 gain in order to control the length of the unity vectors
-    vectorWall[1] = normaliseGain * vectorWall[1]/n;
-
-    //Step 3
-    //  Compute a vector perpendicular with the wall pointing from the center of the robot to the wall vector
-    //  http://stackoverflow.com/questions/1811549/perpendicular-on-a-line-from-a-given-point
-
-    float k = ((closest2[1] - closest1[1]) * (myRobot.location.x - closest1[0]) - (closest2[0] - closest1[0])*(myRobot.location.y - closest1[1])) / (pow(closest2[1]-closest1[1], 2) + pow(closest2[0]-closest1[0], 2));
-    vectorWallDist[0] = myRobot.location.x - k *(closest2[1] - closest1[1]);
-    vectorWallDist[1] = myRobot.location.y + k *(closest2[0] - closest1[0]);
-
-    vectorWallDist[0] -= myRobot.location.x;
-    vectorWallDist[1] -= myRobot.location.y;
-
-    n = sqrt(pow(vectorWallDist[0], 2)+pow(vectorWallDist[1], 2));    //Calculates the normalisation factor for the AvoidObstacle vector
-    /*
-     vectorWallDist[0] = normaliseGain * vectorWallDist[0]/n;      //Multiply by 100 gain in order to control the length of the unity vectors
-     vectorWallDist[1] = normaliseGain * vectorWallDist[1]/n;
-     */
-    //Step 4
-    //  Determines vector pointing away from the wall and weighted with distanceFromWall
-    for (int i = 0; i < 2; i++)
-    {
-      vectorAwayFromWall[i] =  vectorWallDist[i] - distanceFromWall * vectorWallDist[i]/n;
-    }
-
-
-    //Step 5
-    //  Calculates vectorFollowWall used to point the robot in the right direction when following the wall
-    for (int i=0; i < 2; i++)
-    {
-      vectorFollowWall[i] = vectorWall[i] + vectorAwayFromWall[i];
-    }
-  }
-}
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////
 //This function will calculate the flow field using the MAP and KINECT tiles
 PVector calcVectorAvoidObstacles()
 {
@@ -739,7 +646,7 @@ PVector calcVectorAvoidObstacles()
   {
     for(int x = 0; x < maxTilesX; x++)    
     {      
-      if (tile[x][y].tileType == "MAP")
+      if (tile[x][y].tileType == "MAP" || tile[x][y].tileType == "USER")
       {
         if (tile[x][y]. gravity != 0)
         {
@@ -833,7 +740,7 @@ void dispVectors()
   
   strokeWeight(5);
   stroke(0,0, 255);
-  line(myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorBlendedAOGTG.x * 10, myRobot.location.y + vectorBlendedAOGTG.y);
+  line(myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorBlendedAOGTG.x * 100, myRobot.location.y + vectorBlendedAOGTG.y * 100);
 }
 
 
