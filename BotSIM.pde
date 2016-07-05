@@ -40,7 +40,9 @@ boolean wallDetect = false;
 
 Robot myRobot;          //Creat a myRobot instance
 float diameter = 45.0;
-PVector robotStart = new PVector (worldMapScaleX/3 , worldMapScaleY/2 , -PI/2);
+
+//Negative value for robotStart.z (heading) creates a left turn, positive values creates a right turn
+PVector robotStart = new PVector (worldMapScaleX/3 , worldMapScaleY/2 , 0.0);    //Position of robot in map on the screen
 
 final int maxParticles = 00;
 Robot[] particles = new Robot[maxParticles];
@@ -121,8 +123,8 @@ int maxTilesX = 0;
 int maxTilesY = 0;
 Tile tile[][];
 
-float oldMillis, newMillis, time, old_time;
-float delta_t = 1000;
+int oldMillis, newMillis, time, old_time;
+int delta_t = 500;
 
 void setup()
 {
@@ -261,7 +263,7 @@ void setup()
 
 void draw()
 { 
-  frame.setTitle(int(frameRate)+" fps");        //Add framerate into title bar
+  surface.setTitle(int(frameRate)+" fps");        //Add framerate into title bar
   
   if (showVal)
   {
@@ -290,23 +292,8 @@ void draw()
     drawTiles();   
     drawTarget();
     
-   for(int y = 0; y < maxTilesY; y++)
-    for(int x = 0; x < maxTilesX; x++)
-    {
-      tile[x][y].drawTileForce();      
-    } 
-   
-   for(int y = 0; y < maxTilesY; y++)
-    for(int x = 0; x < maxTilesX; x++)
-    {      
-      tile[x][y].update();
-    } 
-    
-    
-    isInFOW();
-    
-    drawPixels();      //Draws the data from the Kinect sensors on the screen
-    
+    //isInFOW();    
+    //drawPixels();      //Draws the data from the Kinect sensors on the screen    
     
     oldMillis = newMillis;
     newMillis = millis();
@@ -320,9 +307,9 @@ void draw()
     allNodes.add( new Node(myRobot.location.x, myRobot.location.y, "START", allNodes.size()));
     allNodes.add( new Node(goalXY.x, goalXY.y, "GOAL", allNodes.size()));  
     
-    float oldMillis = millis();
+    oldMillis = millis();
     nodeLink();
-    float time = millis()-oldMillis;
+    time = millis() - oldMillis;
     //println("Node Link time: "+time);
   
     findPath();
@@ -333,10 +320,8 @@ void draw()
     //Draws an ellipse at the centerpoint of the kinect's position on the robot
     PVector returnVal = transRot(myRobot.location.x, myRobot.location.y, myRobot.heading, kinectPos.x, kinectPos.y);
     fill(255,255,0);
-    ellipse(returnVal.x, returnVal.y, 10,10);    
+    ellipse(returnVal.x, returnVal.y, 10,10);  
     
-    
-   
    //Displays the node position on the map
    for (Node n: allNodes)
    {
@@ -367,15 +352,31 @@ void draw()
   vectorAvoidObstacles = calcVectorAvoidObstacles();
   vectorGoToGoal = calcVectorGoToGoal();  
   
-  vectorBlendedAOGTG = calculateVectorBlendedAOGTG();
+  //vectorBlendedAOGTG = calculateVectorBlendedAOGTG();
+  
+  //println("vector robotPos: "+myRobot.location + "\t goalXY: "+goalXY);
+   float angleToGoal = atan2(goalXY.y - myRobot.location.y, goalXY.x - myRobot.location.x) - myRobot.heading;
+   if (angleToGoal < (-PI)) angleToGoal += 2*PI;
+  if (angleToGoal > (PI)) angleToGoal -= 2*PI;
+   //println("angle to Goal: "+angleToGoal);
+   
+   //Caclualtes the distance between robot and goal to determine speed
+   float velocityToGoal = dist (goalXY.x, goalXY.y, myRobot.location.x, myRobot.location.y) / 10; 
+   
+   
   
   //Routine used to poll driverlayer every delta_t millis in order to get sensor and position data
   time = millis();  
-  float interval = time - old_time;
+  int interval = time - old_time;
   if (interval > delta_t)
   {
+    println("velocity: "+velocityToGoal+ ", angle: " + angleToGoal);
+    updateRobot(velocityToGoal, angleToGoal);
+    //delay(10);
+    
     //requestSerialPosition();
-    updateRobot(moveAngle);
+    //delay(10);
+    
     old_time = time;
   }
   
@@ -404,6 +405,10 @@ void drawTiles()
       strokeWeight(1);  //Stroke weight makes the lines very light
       fill(tile[x][y].gravityCol,200);
       rect(x*tileSize, y*tileSize, tileSize, tileSize);  //Draws a rectangle to indicate the tile
+      
+      tile[x][y].drawTileForce(); 
+      
+      tile[x][y].update();
     }
   }
 }
@@ -819,11 +824,16 @@ void dispVectors()
   //Draws a vector pointing away from all the obstacles
   strokeWeight(4);
   stroke(255,0,0);
-  line(myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorAvoidObstacles.x, myRobot.location.y + vectorAvoidObstacles.y);
+  line(myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorAvoidObstacles.x*10, myRobot.location.y + vectorAvoidObstacles.y*10);
+  
+  strokeWeight(5);
+  stroke(0,255, 0);
+  
+  line(myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorGoToGoal.x, myRobot.location.y + vectorGoToGoal.y);
   
   strokeWeight(5);
   stroke(0,0, 255);
-  line(myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorBlendedAOGTG.x, myRobot.location.y + vectorBlendedAOGTG.y);
+  line(myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorBlendedAOGTG.x * 10, myRobot.location.y + vectorBlendedAOGTG.y);
 }
 
 
@@ -844,8 +854,11 @@ void mousePressed()
   if (mousePressed && (mouseButton == LEFT)) changeGoal();
   if (mousePressed && (mouseButton == RIGHT))
   {
-    myRobot.location.x = mouseX;
-    myRobot.location.y = mouseY;   
+    //myRobot.location.x = mouseX;
+    //myRobot.location.y = mouseY;
+    
+    robotStart.x = mouseX;
+    robotStart.y = mouseY;
 
     //Resets progress point when target is moved to the current mouse position    
     myRobot.progressPoint.x = mouseX;
