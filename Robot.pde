@@ -113,6 +113,7 @@ class Robot{
     stroke(0);    
     float noseX = location.x + noseLength * cos(heading);
     float noseY = location.y + noseLength * sin(heading);
+    strokeWeight(2);
     line (location.x, location.y, noseX, noseY);
   }
   
