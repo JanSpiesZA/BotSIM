@@ -1,5 +1,6 @@
 //All distances are measured and listed in cm's unless specified otherwise
 
+import processing.opengl.*;
 import org.openkinect.freenect.*;
 import org.openkinect.processing.*;
 
@@ -216,7 +217,7 @@ void setup()
 
   applyScale();    //Applies the scale to all physical quantities
 
-  //size(100,100,P2D);
+  //size(100,100,OPENGL);
   surface.setResizable(true);
   surface.setSize(int(screenSizeX), int(screenSizeY));
 
@@ -360,8 +361,12 @@ void draw()
     
     //Calcualtes the angle in which the robot needs to travel   
     float angleToGoal = atan2(vectorAOFWD.y,vectorAOFWD.x) - myRobot.heading;
+        
     if (angleToGoal < (-PI)) angleToGoal += 2*PI;
     if (angleToGoal > (PI)) angleToGoal -= 2*PI;
+    
+    fill(0);
+    text (angleToGoal, 55,700);
        
     //Caclualtes the distance between robot and goal to determine speed    
     float velocityToGoal = dist (nextWaypoint.x, nextWaypoint.y, myRobot.location.x, myRobot.location.y) /5;
