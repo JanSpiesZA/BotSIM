@@ -113,11 +113,12 @@ class Robot{
     stroke(0);    
     float noseX = location.x + noseLength * cos(heading);
     float noseY = location.y + noseLength * sin(heading);
+    strokeWeight(2);
     line (location.x, location.y, noseX, noseY);
   }
   
 
-  //Moves the robot  
+  //Moves the robot and particles  
   void move(float turnAngle, float _forward)
   { 
     heading += turnAngle + randomGaussian() * noiseTurn;  //Add the turnAngle value to the current heading
