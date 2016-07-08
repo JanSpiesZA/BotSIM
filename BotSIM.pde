@@ -37,6 +37,17 @@ float screenSizeY = screenSizeX * (worldMapScaleY/worldMapScaleX);  //Scale the 
 
 float scaleFactor = screenSizeX / worldMapScaleX;
 
+int viewPortWidth = 800;    //Area that will be displayed on the screen using the same units as worldWidth
+int viewPortHeight = 800;
+
+int graphicBoxWidth = 800;    //Pixel size of actual screen real estate which will display the viewPort data
+int graphicBoxHeight = 800;
+
+int vpX = 0;      //The x-coord of the top left corner of the viewPort
+int vpY = 800;      ///The y-coord of the top left corner of the viewPort
+
+
+
 boolean wallDetect = false;
 
 Robot myRobot;          //Creat a myRobot instance
@@ -93,6 +104,8 @@ float[] vectorWall = {0.0, 0.0};      //x and y values representing the vector o
 float[] vectorWallDist = {0.0, 0.0};  //x and y values for a line perpendicular to the wall vector
 float[] vectorAwayFromWall = {0.0, 0.0};  //x and y values for vector pointing away from the wall
 float[] vectorFollowWall = {0.0, 0.0};    //Vector pointing in the direction the robot must move when following the wall
+
+
 
 
 int numSensors2 = 7;          //Number of sensors used by the new code
@@ -246,7 +259,7 @@ void setup()
   //findPath();
   
   printArray(Serial.list());
-  myPort = new Serial(this, Serial.list()[1], 115200);  
+  myPort = new Serial(this, Serial.list()[0], 115200);  
   delay(5000);      //Delay to make sure the Arduino initilaises before data is sent
   myPort.write("<v00\r");    //Sends a velcoity of 0 to the chassis
   delay(500);
@@ -260,6 +273,13 @@ void setup()
   inData = null;
   myPort.bufferUntil(lf);        //Buffers serial data until Line Feed is detected and then only reads serial data out of buffer  
 }
+
+
+
+
+
+
+
 
 void draw()
 { 
@@ -284,104 +304,107 @@ void draw()
    showVal = false;
   }
 
-  parseSerialData();
+  
+  
+  //parseSerialData();
 
   if (step)
   {
     background (img);        //draws map as background
-    drawTiles();   
+    //drawTiles();   
     drawTarget();
+    myRobot.display();
     
     //isInFOW();    
     //drawPixels();      //Draws the data from the Kinect sensors on the screen    
     
-    oldMillis = newMillis;
-    newMillis = millis();
-    textSize(16);  
-    textAlign(LEFT, TOP);
-    fill(0);
-    text("frame rate (ms): "+(newMillis - oldMillis),5,5);
+    //oldMillis = newMillis;
+    //newMillis = millis();
+    //textSize(16);  
+    //textAlign(LEFT, TOP);
+    //fill(0);
+    //text("frame rate (ms): "+(newMillis - oldMillis),5,5);
    
-    allNodes.clear();
-    doQuadTree(0,0, maxTilesX, maxTilesY, QuadTreeLevel);
-    allNodes.add( new Node(myRobot.location.x, myRobot.location.y, "START", allNodes.size()));
-    allNodes.add( new Node(goalXY.x, goalXY.y, "GOAL", allNodes.size()));  
+    //allNodes.clear();
+    //doQuadTree(0,0, maxTilesX, maxTilesY, QuadTreeLevel);
+    //allNodes.add( new Node(myRobot.location.x, myRobot.location.y, "START", allNodes.size()));
+    //allNodes.add( new Node(goalXY.x, goalXY.y, "GOAL", allNodes.size()));  
     
-    oldMillis = millis();
-    nodeLink();
-    time = millis() - oldMillis;
+    //oldMillis = millis();
+    ////nodeLink();
+    //time = millis() - oldMillis;
     //println("Node Link time: "+time);
   
-    findPath();
+    //findPath();
    
-    PlotRobot();
-    calcProgressPoint();
+    //PlotRobot();
+    //calcProgressPoint();
     
     //Draws an ellipse at the centerpoint of the kinect's position on the robot
-    PVector returnVal = transRot(myRobot.location.x, myRobot.location.y, myRobot.heading, kinectPos.x, kinectPos.y);
-    fill(255,255,0);
-    ellipse(returnVal.x, returnVal.y, 10,10);  
+    //PVector returnVal = transRot(myRobot.location.x, myRobot.location.y, myRobot.heading, kinectPos.x, kinectPos.y);
+    //fill(255,255,0);
+    //ellipse(returnVal.x, returnVal.y, 10,10);  
     
     //Displays the node position on the map
-    for (Node n: allNodes)
-    {
-       n.display();     
-    }
+    //for (Node n: allNodes)
+    //{
+    //   n.display();     
+    //}
     
-    int startTime = millis();
-    myRobot.sense();          //Makes use of sensor class to detect obstacles
+    //int startTime = millis();
+    //myRobot.sense();          //Makes use of sensor class to detect obstacles
     
-    for (int k = 0; k < maxParticles; k++)
-    {
-      particles[k].sense();
-      particles[k].measureProb();
-    }
+    //for (int k = 0; k < maxParticles; k++)
+    //{
+    //  particles[k].sense();
+    //  particles[k].measureProb();
+    //}
     
-    int endTime = millis();
+    //int endTime = millis();
     //println(endTime - startTime);
     
-    if (stateVal != 0)
-    {
-      updateParticles();
-      resample();
-    }
+    //if (stateVal != 0)
+    //{
+    //  updateParticles();
+    //  resample();
+    //}
   
   
     step = true;
 
     //Calculates the vector to avoid all obstacles
-    vectorAvoidObstacles = calcVectorAvoidObstacles();
+    //vectorAvoidObstacles = calcVectorAvoidObstacles();
     
     //Calculates the Go To Goal vector
-    vectorGoToGoal.x = nextWaypoint.x - myRobot.location.x;
-    vectorGoToGoal.y = nextWaypoint.y - myRobot.location.y;
+    //vectorGoToGoal.x = nextWaypoint.x - myRobot.location.x;
+    //vectorGoToGoal.y = nextWaypoint.y - myRobot.location.y;
     
-    //Calculates the vector which blends the Go to Goal and Avoid Obstacles
-    vectorAOFWD = PVector.add(vectorGoToGoal, vectorAvoidObstacles);  
+    ////Calculates the vector which blends the Go to Goal and Avoid Obstacles
+    //vectorAOFWD = PVector.add(vectorGoToGoal, vectorAvoidObstacles);  
     
-    //Calcualtes the angle in which the robot needs to travel   
-    float angleToGoal = atan2(vectorAOFWD.y,vectorAOFWD.x) - myRobot.heading;
+    ////Calcualtes the angle in which the robot needs to travel   
+    //float angleToGoal = atan2(vectorAOFWD.y,vectorAOFWD.x) - myRobot.heading;
         
-    if (angleToGoal < (-PI)) angleToGoal += 2*PI;
-    if (angleToGoal > (PI)) angleToGoal -= 2*PI;
+    //if (angleToGoal < (-PI)) angleToGoal += 2*PI;
+    //if (angleToGoal > (PI)) angleToGoal -= 2*PI;
     
-    fill(0);
-    text (angleToGoal, 55,700);
+    //fill(0);
+    //text (angleToGoal, 55,700);
        
-    //Caclualtes the distance between robot and goal to determine speed    
-    float velocityToGoal = dist (nextWaypoint.x, nextWaypoint.y, myRobot.location.x, myRobot.location.y) /5;
+    ////Caclualtes the distance between robot and goal to determine speed    
+    //float velocityToGoal = dist (nextWaypoint.x, nextWaypoint.y, myRobot.location.x, myRobot.location.y) /5;
     
     //Routine used to poll driverlayer every delta_t millis in order to get sensor and position data
     time = millis();  
     int interval = time - old_time;
     if (interval > delta_t)
     {
-      println("velocity: "+velocityToGoal+ ", angle: " + angleToGoal);
-      updateRobot(velocityToGoal, angleToGoal);
+      //println("velocity: "+velocityToGoal+ ", angle: " + angleToGoal);
+      //updateRobot(velocityToGoal, angleToGoal);
       old_time = time;
     }
   }
-  dispVectors();      //Displays different vectors, ie: Go-To-Goal, Avoid Obstacle, etc  
+  //dispVectors();      //Displays different vectors, ie: Go-To-Goal, Avoid Obstacle, etc  
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -692,13 +715,13 @@ void drawTarget()
   stroke(0);
   fill(255, 0, 0);
   strokeWeight(1);
-  ellipse (goalXY.x, goalXY.y, safeZone*3, safeZone*3);
+  ellipse (toScreenX(int(goalXY.x)), toScreenY(int(goalXY.y)), safeZone*3, safeZone*3);
   stroke(0);
   fill(255);
-  ellipse (goalXY.x, goalXY.y, safeZone*2, safeZone*2);
+  ellipse (toScreenX(int(goalXY.x)), toScreenY(int(goalXY.y)), safeZone*2, safeZone*2);
   stroke(0);
   fill(0);
-  ellipse (goalXY.x, goalXY.y, safeZone, safeZone);
+  ellipse (toScreenX(int(goalXY.x)), toScreenY(int(goalXY.y)), safeZone, safeZone);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -736,28 +759,27 @@ PVector transRot (float x_frame, float y_frame, float phi_frame, float x_point, 
 void mousePressed()
 {
   if (mousePressed && (mouseButton == LEFT)) changeGoal();
+  
   if (mousePressed && (mouseButton == RIGHT))
-  {
-    //myRobot.location.x = mouseX;
-    //myRobot.location.y = mouseY;
+  { 
+    //robotStart.x = toWorldX(int(mouseX));
+    //robotStart.y = toWorldY(int(mouseY));
     
-    robotStart.x = mouseX;
-    robotStart.y = mouseY;
+    myRobot.location.x = toWorldX(int(mouseX));
+    myRobot.location.y = toWorldY(int(mouseY));
 
     //Resets progress point when target is moved to the current mouse position    
-    myRobot.progressPoint.x = mouseX;
-    myRobot.progressPoint.y = mouseY;
+    myRobot.progressPoint.x = toWorldX(int(mouseX));
+    myRobot.progressPoint.y = toWorldY(int(mouseY));
     myRobot.makingProgress = true;
   }
 }
 
 //Change the goal location everytime the mouse is clicked
 void changeGoal()
-{
-  //goalX = mouseX;
-  //goalY = mouseY;
-  goalXY.x = mouseX;
-  goalXY.y = mouseY;
+{  
+  goalXY.x = toWorldX(int(mouseX));
+  goalXY.y = toWorldY(int(mouseY));
 
   startX = myRobot.location.x;
   startY = myRobot.location.y;
@@ -809,4 +831,32 @@ void keyPressed()
       }
     }
   }
+}
+
+
+
+//Implementation of the following website
+//http://www.libertybasicuniversity.com/lbnews/nl112/mapcoor.htm
+
+//Creates a viewport which is used to view only a specific area of the world map
+//It also plots world coordinates onto the screen i.e: Inverting the y-axis
+int toScreenX(int _x)
+{
+  return ((graphicBoxWidth / viewPortWidth) * (_x - vpX));
+}
+
+int toScreenY(int _y)
+{
+  return ((graphicBoxHeight / viewPortHeight) * (vpY - _y));
+}
+
+
+int toWorldX (int _x)
+{
+  return int((float(_x) / float(graphicBoxWidth) * float(viewPortWidth) + vpX));  
+}
+
+int toWorldY (int _y)
+{
+  return int((vpY - float(_y) / float(graphicBoxHeight) * float(viewPortHeight)));
 }

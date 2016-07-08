@@ -69,7 +69,7 @@ class Robot{
         stroke(0);
         strokeWeight(1);
         fill(0,255,0);    
-        ellipse(location.x, location.y, robotDiameter, robotDiameter);         
+        ellipse(toScreenX(int(location.x)), toScreenY(int(location.y)), robotDiameter, robotDiameter);         
         textAlign(CENTER, CENTER);
         textSize(10);
         
@@ -98,7 +98,7 @@ class Robot{
         //Displays safeDistance in which a 'collision' occurs
         noFill();
         stroke(255,0,0);
-        ellipse(location.x, location.y, safeDistance*2, safeDistance*2);    //Value *2 to convert from radius to diameter
+        ellipse(toScreenX(int(location.x)), toScreenY(int(location.y)), safeDistance*2, safeDistance*2);    //Value *2 to convert from radius to diameter
         
         break;
       
@@ -114,7 +114,7 @@ class Robot{
     float noseX = location.x + noseLength * cos(heading);
     float noseY = location.y + noseLength * sin(heading);
     strokeWeight(2);
-    line (location.x, location.y, noseX, noseY);
+    line (toScreenX(int(location.x)), toScreenY(int(location.y)), toScreenX(int(noseX)), toScreenY(int(noseY)));
   }
   
 
