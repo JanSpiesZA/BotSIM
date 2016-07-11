@@ -32,12 +32,15 @@ boolean followPath = true;    //Setting to control if path must be followd or is
 float worldMapScaleX = 800; //3737;      //To be used as the actual distance of the world map x axis, measured in cm
 float worldMapScaleY = 800; //1137;
 
+float worldWidthReal = worldMapScaleX;    //New variable that should replace worldMapScaleX
+float worldHeightReal = worldMapScaleY;    //New variable for world height that should replace woldMapScaleY
+
 float screenSizeX = 800;
 float screenSizeY = screenSizeX * (worldMapScaleY/worldMapScaleX);  //Scale the y size according to ratio between worldMapScaleX an Y
 
 float scaleFactor = screenSizeX / worldMapScaleX;
 
-int viewPortWidth = 800;    //Area that will be displayed on the screen using the same units as worldWidth
+int viewPortWidth = 800;    //Area that will be displayed on the screen using the same units as worldWidthReal
 int viewPortHeight = 800;
 
 int graphicBoxWidth = 800;    //Pixel size of actual screen real estate which will display the viewPort data
@@ -168,9 +171,9 @@ void setup()
   //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  
   
   
-  img = loadImage("blank.png");         //Loads image
+  //img = loadImage("blank.png");         //Loads image
   //img = loadImage("Floorplan.png");
-  //img = loadImage("kamer3.png");         //Loads image
+  img = loadImage("kamer3.png");         //Loads image
   img.resize(int(screenSizeX), int(screenSizeY));
   
   tileSize *= scaleFactor;        //Aplies scale factor to the tile size
@@ -189,7 +192,7 @@ void setup()
     for (int y = 0; y < maxTilesY; y++)
     {
       //tile[x][y] = new Tile();
-      tile[x][y] = new Tile(int(x*tileSize + tileSize/2), int(y*tileSize + tileSize/2));
+      tile[x][y] = new Tile(toWorldX(int(x*tileSize + tileSize/2)), toWorldY(int(y*tileSize + tileSize/2)));
     }
   }
   
@@ -202,9 +205,13 @@ void setup()
       color c = img.get(x,y);
       if (c == color(0))
       {         
-        tile[x/tileSize][y/tileSize].gravity = 1;
-        tile[x/tileSize][y/tileSize].tileType = "MAP";      //Set tileType to PERMANENT/MAP OBSTACLE
-        tile[x/tileSize][y/tileSize].update();
+        //tile[x/tileSize][y/tileSize].gravity = 1;
+        //tile[x/tileSize][y/tileSize].tileType = "MAP";      //Set tileType to PERMANENT/MAP OBSTACLE
+        //tile[x/tileSize][y/tileSize].update();
+        
+        tile[toWorldX(x)/tileSize][toWorldY(y)/tileSize].gravity = 1;
+        tile[toWorldX(x)/tileSize][toWorldY(y)/tileSize].tileType = "MAP";      //Set tileType to PERMANENT/MAP OBSTACLE
+        tile[toWorldX(x)/tileSize][toWorldY(y)/tileSize].update();
       }      
     }
   } 
@@ -311,7 +318,7 @@ void draw()
   if (step)
   {
     background (img);        //draws map as background
-    //drawTiles();   
+    drawTiles();   
     drawTarget();
     myRobot.display();
     
@@ -423,9 +430,22 @@ void drawTiles()
       stroke(150);        //Lines between tiles are black
       strokeWeight(1);  //Stroke weight makes the lines very light
       fill(tile[x][y].gravityCol,200);
-      rect(x*tileSize, y*tileSize, tileSize, tileSize);  //Draws a rectangle to indicate the tile
+      //rect(toScreenX(int(x*tileSize)), toScreenY(int(y*tileSize)), tileSize, tileSize);  //Draws a rectangle to indicate the tile
       
-      tile[x][y].drawTileForce(); 
+      rectMode(CENTER);      //Use the first two coords as centerpoint and next two as width and height of rectangle
+      rect(tile[x][y].tilePos.x, tile[x][y].tilePos.y, tileSize, tileSize);  
+      
+      //tile[x][y].drawTileForce(); 
+      
+      textAlign(CENTER,BOTTOM);
+      textSize(10);
+      fill(0);
+      
+      text(x+":"+y, tile[x][y].tilePos.x, tile[x][y].tilePos.y);
+      
+      //text(int(tile[x][y].tilePos.x), tile[x][y].tilePos.x, tile[x][y].tilePos.y);
+      //textAlign(CENTER,TOP);
+      //text(int(tile[x][y].tilePos.y), tile[x][y].tilePos.x, tile[x][y].tilePos.y);
       
       tile[x][y].update();
     }
@@ -858,5 +878,5 @@ int toWorldX (int _x)
 
 int toWorldY (int _y)
 {
-  return int((vpY - float(_y) / float(graphicBoxHeight) * float(viewPortHeight)));
+  return int((vpY - float(_y) / float(graphicBoxHeight) * float(viewPortHeight))-1);
 }
