@@ -437,7 +437,7 @@ void drawTiles()
       //rect(tile[x][y].tilePos.x, tile[x][y].tilePos.y, tileSize, tileSize);
       ////rect(toScreenX(int(x*tileSize)), toScreenY(int(y*tileSize)), tileSize, tileSize);  //Draws a rectangle to indicate the tile      
       
-      //tile[x][y].drawTileForce(); 
+      tile[x][y].drawTileForce(); 
       
       //textAlign(CENTER,BOTTOM);
       //textSize(10);
