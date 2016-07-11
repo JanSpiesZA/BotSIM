@@ -190,8 +190,7 @@ void setup()
   for (int x = 0; x < maxTilesX; x++)
   {
     for (int y = 0; y < maxTilesY; y++)
-    {
-      //tile[x][y] = new Tile();
+    {      
       tile[x][y] = new Tile(toWorldX(int(x*tileSize + tileSize/2)), toWorldY(int(y*tileSize + tileSize/2)));
     }
   }
@@ -204,11 +203,7 @@ void setup()
     {
       color c = img.get(x,y);
       if (c == color(0))
-      {         
-        //tile[x/tileSize][y/tileSize].gravity = 1;
-        //tile[x/tileSize][y/tileSize].tileType = "MAP";      //Set tileType to PERMANENT/MAP OBSTACLE
-        //tile[x/tileSize][y/tileSize].update();
-        
+      { 
         tile[toWorldX(x)/tileSize][toWorldY(y)/tileSize].gravity = 1;
         tile[toWorldX(x)/tileSize][toWorldY(y)/tileSize].tileType = "MAP";      //Set tileType to PERMANENT/MAP OBSTACLE
         tile[toWorldX(x)/tileSize][toWorldY(y)/tileSize].update();
@@ -429,23 +424,12 @@ void drawTiles()
     {
       stroke(150);        //Lines between tiles are black
       strokeWeight(1);  //Stroke weight makes the lines very light
-      fill(tile[x][y].gravityCol,200);
-      //rect(toScreenX(int(x*tileSize)), toScreenY(int(y*tileSize)), tileSize, tileSize);  //Draws a rectangle to indicate the tile
+      fill(tile[x][y].gravityCol,200);      
       
       rectMode(CENTER);      //Use the first two coords as centerpoint and next two as width and height of rectangle
       rect(tile[x][y].tilePos.x, tile[x][y].tilePos.y, tileSize, tileSize);  
       
-      //tile[x][y].drawTileForce(); 
-      
-      textAlign(CENTER,BOTTOM);
-      textSize(10);
-      fill(0);
-      
-      text(x+":"+y, tile[x][y].tilePos.x, tile[x][y].tilePos.y);
-      
-      //text(int(tile[x][y].tilePos.x), tile[x][y].tilePos.x, tile[x][y].tilePos.y);
-      //textAlign(CENTER,TOP);
-      //text(int(tile[x][y].tilePos.y), tile[x][y].tilePos.x, tile[x][y].tilePos.y);
+      tile[x][y].drawTileForce();
       
       tile[x][y].update();
     }
