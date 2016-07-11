@@ -46,6 +46,7 @@ class Tile
       {
         gravity = 0;
         gravityCol = color(150,200,150);
+        calcField();
         break;
       }
       case "MAP":
@@ -71,13 +72,28 @@ class Tile
       }
     }
   }
+  
+  void tileDraw()
+  {
+    stroke(150);        //Lines between tiles are black
+    strokeWeight(1);  //Stroke weight makes the lines very light
+    rectMode(CENTER);
+    fill(gravityCol,200);
+    rect(toScreenX(int(tilePos.x)), toScreenY(int(tilePos.y)), tileSize, tileSize);
+    
+    //####Text to display the real world coords of the tile on the screen
+    //textAlign(CENTER,BOTTOM);
+    //textSize(10);
+    //fill(0);      
+    //text(int(tilePos.x)+":"+int(tilePos.y), toScreenX(int(tilePos.x)), toScreenY(int(tilePos.y)));
+  }
 
 
   void drawTileForce()
   {
     //Draws a flowfield indicator
-    stroke(0);
-    line (tilePos.x, tilePos.y, tilePos.x + field.x, tilePos.y + field.y);    
+    stroke(0);    
+    line (toScreenX(int(tilePos.x)), toScreenY(int(tilePos.y)), toScreenX(int(tilePos.x + field.x)), toScreenY(int(tilePos.y + field.y)));    
   }
 
 
