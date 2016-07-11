@@ -46,6 +46,7 @@ class Tile
       {
         gravity = 0;
         gravityCol = color(150,200,150);
+        calcField();
         break;
       }
       case "MAP":
@@ -91,8 +92,7 @@ class Tile
   void drawTileForce()
   {
     //Draws a flowfield indicator
-    stroke(0);
-    //line(tilePos.x, tilePos.y, tilePos.x + field.x, tilePos.y + field.y);
+    stroke(0);    
     line (toScreenX(int(tilePos.x)), toScreenY(int(tilePos.y)), toScreenX(int(tilePos.x + field.x)), toScreenY(int(tilePos.y + field.y)));    
   }
 

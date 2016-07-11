@@ -836,19 +836,22 @@ void keyPressed()
   //Use this key to enable or disable obstacle
   if (key == 'o')
   {
-    switch(tile[int(mouseX/tileSize)][int(mouseY/tileSize)].tileType)
+    int worldMouseX = toWorldX(mouseX)/tileSize;
+    int worldMouseY = toWorldY(mouseY)/tileSize;
+    switch(tile[worldMouseX][worldMouseY].tileType)
     {
       case "UNASSIGNED":
-      {    
-        tile[int(mouseX/tileSize)][int(mouseY/tileSize)].tileType = "USER"; //Set tileType to USER obstacle        
-        tile[int(mouseX/tileSize)][int(mouseY/tileSize)].update();
+      {            
+        tile[worldMouseX][worldMouseY].tileType = "USER"; //Set tileType to USER obstacle
+        //tile[int(mouseX/tileSize)][int(mouseY/tileSize)].tileType = "USER"; //Set tileType to USER obstacle        
+        tile[worldMouseX][worldMouseY].update();
         break;
       }
       
       case "USER":
-      {
-        tile[int(mouseX/tileSize)][int(mouseY/tileSize)].tileType = "UNASSIGNED"; //Set tileType to UNASSIGNED obstacle        
-        tile[int(mouseX/tileSize)][int(mouseY/tileSize)].update();
+      {        
+        tile[worldMouseX][worldMouseY].tileType = "UNASSIGNED"; //Set tileType to UNASSIGNED obstacle        
+        tile[worldMouseX][worldMouseY].update();
         break;
       }
     }
