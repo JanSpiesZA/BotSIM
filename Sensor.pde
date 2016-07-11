@@ -43,7 +43,7 @@ class Sensor
     fill(255);
     stroke(0);
     strokeWeight(1);
-    ellipse(returnVal.x, returnVal.y, 10*scaleFactor,10*scaleFactor);
+    ellipse(toScreenX(int(returnVal.x)), toScreenY(int(returnVal.y)), 10*scaleFactor,10*scaleFactor);
   }
   
 ////////////////////////////////////////////////////////////////////////////////////////////  

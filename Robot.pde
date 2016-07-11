@@ -105,7 +105,7 @@ class Robot{
       case "PARTICLE":
         stroke(255,0,0);
         fill(255,0,0);
-        ellipse(location.x, location.y, max(1,prob*10), max(1,prob*10));  //Shows a small red dot where the head of the particle is else proportionate to the probability        
+        ellipse(toScreenX(int(location.x)), toScreenY(int(location.y)), max(1,prob*10), max(1,prob*10));  //Shows a small red dot where the head of the particle is else proportionate to the probability        
         textAlign(CENTER, CENTER);
         fill(0);        
         break;
