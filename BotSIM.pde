@@ -134,7 +134,7 @@ boolean showVal = false;
 boolean step = true;
 
 //Measurement of tiles to be used for occupancy grid in cm's scaled to represented size in real world
-int tileSize = 25;
+int tileSize = 50;
 int maxTilesX = 0;
 int maxTilesY = 0;
 Tile tile[][];
@@ -187,12 +187,12 @@ void setup()
   tile = new Tile[int(maxTilesX)][int(maxTilesY)];
   
   //Sets up a 2D array which will hold the world Tiles
-  for (int x = 0; x < maxTilesX; x++)
+  for (int x = 0; x < maxTilesX; x++) //<>//
   {
     for (int y = 0; y < maxTilesY; y++)
     {
-      //tile[x][y] = new Tile();
-      tile[x][y] = new Tile(toWorldX(int(x*tileSize + tileSize/2)), toWorldY(int(y*tileSize + tileSize/2)));
+      tile[x][y] = new Tile(int(x*tileSize + tileSize/2), int(y*tileSize + tileSize/2));
+      //tile[x][y] = new Tile(toWorldX(int(x*tileSize + tileSize/2)), toWorldY(int(y*tileSize + tileSize/2)));
     }
   }
   
@@ -317,7 +317,7 @@ void draw()
 
   if (step)
   {
-    background (img);        //draws map as background
+    background (img);        //draws map as background //<>//
     drawTiles();   
     drawTarget();
     myRobot.display();
@@ -427,25 +427,27 @@ void drawTiles()
   {
     for (int y = 0; y < maxTilesY; y++)
     {
-      stroke(150);        //Lines between tiles are black
-      strokeWeight(1);  //Stroke weight makes the lines very light
-      fill(tile[x][y].gravityCol,200);
-      //rect(toScreenX(int(x*tileSize)), toScreenY(int(y*tileSize)), tileSize, tileSize);  //Draws a rectangle to indicate the tile
+      tile[x][y].tileDraw();
+      //stroke(150);        //Lines between tiles are black
+      //strokeWeight(1);  //Stroke weight makes the lines very light
+      //fill(tile[x][y].gravityCol,200);
       
-      rectMode(CENTER);      //Use the first two coords as centerpoint and next two as width and height of rectangle
-      rect(tile[x][y].tilePos.x, tile[x][y].tilePos.y, tileSize, tileSize);  
+      
+      //rectMode(CENTER);      //Use the first two coords as centerpoint and next two as width and height of rectangle
+      //rect(tile[x][y].tilePos.x, tile[x][y].tilePos.y, tileSize, tileSize);
+      ////rect(toScreenX(int(x*tileSize)), toScreenY(int(y*tileSize)), tileSize, tileSize);  //Draws a rectangle to indicate the tile      
       
       //tile[x][y].drawTileForce(); 
       
-      textAlign(CENTER,BOTTOM);
-      textSize(10);
-      fill(0);
+      //textAlign(CENTER,BOTTOM);
+      //textSize(10);
+      //fill(0);
       
-      text(x+":"+y, tile[x][y].tilePos.x, tile[x][y].tilePos.y);
+      //text(x+":"+y, tile[x][y].tilePos.x, tile[x][y].tilePos.y);
       
-      //text(int(tile[x][y].tilePos.x), tile[x][y].tilePos.x, tile[x][y].tilePos.y);
-      //textAlign(CENTER,TOP);
-      //text(int(tile[x][y].tilePos.y), tile[x][y].tilePos.x, tile[x][y].tilePos.y);
+      ////text(int(tile[x][y].tilePos.x), tile[x][y].tilePos.x, tile[x][y].tilePos.y);
+      ////textAlign(CENTER,TOP);
+      ////text(int(tile[x][y].tilePos.y), tile[x][y].tilePos.x, tile[x][y].tilePos.y);
       
       tile[x][y].update();
     }

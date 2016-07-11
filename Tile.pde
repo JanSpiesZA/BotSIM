@@ -71,13 +71,28 @@ class Tile
       }
     }
   }
+  
+  void tileDraw()
+  {
+    stroke(150);        //Lines between tiles are black
+    strokeWeight(1);  //Stroke weight makes the lines very light
+    rectMode(CENTER);
+    fill(gravityCol,200);
+    rect(toScreenX(int(tilePos.x)), toScreenY(int(tilePos.y)), tileSize, tileSize);
+    
+    textAlign(CENTER,BOTTOM);
+    textSize(10);
+    fill(0);      
+    text(int(tilePos.x)+":"+int(tilePos.y), toScreenX(int(tilePos.x)), toScreenY(int(tilePos.y)));
+  }
 
 
   void drawTileForce()
   {
     //Draws a flowfield indicator
     stroke(0);
-    line (tilePos.x, tilePos.y, tilePos.x + field.x, tilePos.y + field.y);    
+    line(tilePos.x, tilePos.y, tilePos.x + field.x, tilePos.y + field.y);
+    //line (toScreenX(int(tilePos.x)), toScreenY(int(tilePos.y)), toScreenX(int(tilePos.x + field.x)), toScreenY(int(tilePos.y + field.y)));    
   }
 
 
@@ -89,7 +104,7 @@ class Tile
     float distance = PVector.dist(myRobot.location, tilePos);
     field.normalize();
       
-    force = 100 / pow(distance,2); 
+    force = 1000 / pow(distance,2); 
     
     field.mult(force);
     field.mult(gravity);         
