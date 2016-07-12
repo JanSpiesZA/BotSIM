@@ -48,8 +48,9 @@ void drawPixels()
      if (v.z > 0 && v.z < maxKinectDetectNormal*scaleFactor)    //Test for any invalid depth values      
      {
         fill(255);
-        PVector returnVal = transRot(myRobot.location.x, myRobot.location.y, myRobot.heading + PI/2, v.x, -v.z);
-        ellipse(returnVal.x, returnVal.y, 5, 5);
+        PVector returnVal = transRot(myRobot.location.x, myRobot.location.y, myRobot.heading - PI/2, v.x, v.z);
+        strokeWeight(0);
+        ellipse(toScreenX(int(returnVal.x)), toScreenY(int(returnVal.y)), 5, 5);
         
         if (v.z <= maxKinectPersistantView) updateGravity(returnVal.x, returnVal.y);
      }
