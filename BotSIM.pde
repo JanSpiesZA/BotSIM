@@ -350,11 +350,11 @@ void draw()
     //fill(255,255,0);
     //ellipse(returnVal.x, returnVal.y, 10,10);  
     
-    //Displays the node position on the map
-    //for (Node n: allNodes)
-    //{
-    //   n.display();     
-    //}
+    //###Displays the node position on the map
+    for (Node n: allNodes)
+    {
+       n.display();     
+    }
     
     //int startTime = millis();
     //myRobot.sense();          //Makes use of sensor class to detect obstacles
