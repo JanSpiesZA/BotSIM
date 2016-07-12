@@ -298,7 +298,7 @@ void draw()
 
   
   //###Gets serial data from robot driver layer = x,y,heading
-  parseSerialData();
+  //parseSerialData();
 
   if (step)
   {
@@ -367,8 +367,8 @@ void draw()
     step = true;
 
     //###Calculates the vector to avoid all obstacles
-    //vectorAvoidObstacles = calcVectorAvoidObstacles();
-    vectorAvoidObstacles.set(0,0,0); //Vector set to zero until sensor data is incorporated
+    vectorAvoidObstacles = calcVectorAvoidObstacles();
+    //vectorAvoidObstacles.set(0,0,0); //Vector set to zero until sensor data is incorporated
     
     //###Calculates the vector to the next waypoint / Go To Goal vector
     vectorGoToGoal.x = nextWaypoint.x - myRobot.location.x;
@@ -395,7 +395,7 @@ void draw()
       old_time = time;
     }
   }
-  //dispVectors();      //Displays different vectors, ie: Go-To-Goal, Avoid Obstacle, etc  
+  dispVectors();      //Displays different vectors, ie: Go-To-Goal, Avoid Obstacle, etc  
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -717,17 +717,21 @@ void dispVectors()
   //Draws a vector pointing away from all the obstacles
   strokeWeight(4);
   stroke(255,0,0);
-  line(myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorAvoidObstacles.x*10, myRobot.location.y + vectorAvoidObstacles.y*10);
+  line(toScreenX(int(myRobot.location.x)), toScreenY(int(myRobot.location.y)), 
+       toScreenX(int(myRobot.location.x + vectorAvoidObstacles.x*10)), toScreenY(int(myRobot.location.y + vectorAvoidObstacles.y*10)));
   
+  //###Draws a vector straight towards the goal
   strokeWeight(5);
-  stroke(0,255, 0);
+  stroke(0,255, 0);  
+  line(toScreenX(int(myRobot.location.x)), toScreenY(int(myRobot.location.y)), 
+       toScreenX(int(myRobot.location.x + vectorGoToGoal.x)), toScreenY(int(myRobot.location.y + vectorGoToGoal.y)));
   
-  line(myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorGoToGoal.x, myRobot.location.y + vectorGoToGoal.y);
-  
+  //###Draws a vector which is a blend between the goal and avoid obstacles
   strokeWeight(5);
   stroke(0,0, 255);
   //line(myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorBlendedAOGTG.x * 100, myRobot.location.y + vectorBlendedAOGTG.y * 100);
-  line(myRobot.location.x, myRobot.location.y, myRobot.location.x + vectorAOFWD.x * 10, myRobot.location.y + vectorAOFWD.y * 10);
+  line(toScreenX(int(myRobot.location.x)), toScreenY(int(myRobot.location.y)), 
+       toScreenX(int(myRobot.location.x + vectorAOFWD.x * 10)), toScreenY(int(myRobot.location.y + vectorAOFWD.y * 10)));
 }
 
 
