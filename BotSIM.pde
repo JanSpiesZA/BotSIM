@@ -169,9 +169,9 @@ void setup()
   //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  
   
   
-  //img = loadImage("blank.png");         //Loads image
+  img = loadImage("blank.png");         //Loads image
   //img = loadImage("Floorplan.png");
-  img = loadImage("kamer3.png");         //Loads image
+  //img = loadImage("kamer3.png");         //Loads image
   img.resize(int(screenSizeX), int(screenSizeY));
   
   tileSize *= scaleFactor;        //Aplies scale factor to the tile size
@@ -307,8 +307,8 @@ void draw()
     drawTarget();
     myRobot.display();
     
-    //isInFOW();    
-    //drawPixels();      //Draws the data from the Kinect sensors on the screen    
+    isInFOW();    
+    drawPixels();      //Draws the data from the Kinect sensors on the screen    
     
     //oldMillis = newMillis;
     //newMillis = millis();
@@ -391,7 +391,7 @@ void draw()
     if (interval > delta_t)
     {
       println("velocity: "+velocityToGoal+ ", angle: " + angleToGoal);
-      updateRobot(velocityToGoal, angleToGoal);
+      //updateRobot(velocityToGoal, angleToGoal);
       old_time = time;
     }
   }
@@ -412,8 +412,7 @@ void drawTiles()
     for (int y = 0; y < maxTilesY; y++)
     {
       tile[x][y].tileDraw();
-      tile[x][y].drawTileForce();
-      
+      tile[x][y].drawTileForce();      
       tile[x][y].update();
     }
   }
@@ -435,8 +434,8 @@ void isInFOW()
   PVector newLeftPoint = transRot(myRobot.location.x, myRobot.location.y, myRobot.heading, leftPoint.x, leftPoint.y);
   PVector newRightPoint = transRot(myRobot.location.x, myRobot.location.y, myRobot.heading, rightPoint.x, rightPoint.y);
   
-  line (newKinectPos.x, newKinectPos.y, newLeftPoint.x, newLeftPoint.y);
-  line (newKinectPos.x, newKinectPos.y, newRightPoint.x, newRightPoint.y);
+  line (toScreenX(int(newKinectPos.x)), toScreenY(int(newKinectPos.y)), toScreenX(int(newLeftPoint.x)), toScreenY(int(newLeftPoint.y)));
+  line (toScreenX(int(newKinectPos.x)), toScreenY(int(newKinectPos.y)), toScreenX(int(newRightPoint.x)), toScreenY(int(newRightPoint.y)));
   
   for(int y = 0; y < maxTilesY; y++)
   {
