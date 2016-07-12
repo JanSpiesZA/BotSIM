@@ -340,7 +340,7 @@ void draw()
     //time = millis() - oldMillis;
     //println("Node Link time: "+time);
   
-    //findPath();
+    findPath();
    
     //PlotRobot();
     //calcProgressPoint();

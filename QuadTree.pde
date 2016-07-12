@@ -268,8 +268,8 @@ void findPath()
     {
       strokeWeight(finalPathStrokeWeight);
       stroke(finalPathColor);
-      line(allNodes.get(finalPath.get(k)).nodeXPos, allNodes.get(finalPath.get(k)).nodeYPos,
-            allNodes.get(finalPath.get(k+1)).nodeXPos, allNodes.get(finalPath.get(k+1)).nodeYPos);
+      line(toScreenX(int(allNodes.get(finalPath.get(k)).nodeXPos)), toScreenY(int(allNodes.get(finalPath.get(k)).nodeYPos)),
+           toScreenX(int(allNodes.get(finalPath.get(k+1)).nodeXPos)), toScreenY(int(allNodes.get(finalPath.get(k+1)).nodeYPos)));
     }
   }
 }
