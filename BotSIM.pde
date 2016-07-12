@@ -336,7 +336,7 @@ void draw()
     allNodes.add( new Node(goalXY.x, goalXY.y, "GOAL", allNodes.size()));  
     
     //oldMillis = millis();
-    ////nodeLink();
+    nodeLink();
     //time = millis() - oldMillis;
     //println("Node Link time: "+time);
   

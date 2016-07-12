@@ -108,9 +108,10 @@ void nodeLink()
       }
       else
       {        
+        //###Draws links to connect nodes together
         //stroke(allNodesColor);   
         //strokeWeight(allNodesStrokeWeight);
-        //line(n1.nodeXPos,n1.nodeYPos,n2.nodeXPos,n2.nodeYPos);        
+        //line(toScreenX(int(n1.nodeXPos)),toScreenY(int(n1.nodeYPos)),toScreenX(int(n2.nodeXPos)),toScreenY(int(n2.nodeYPos)));        
         if(!(n1.nodeXPos == n2.nodeXPos && n1.nodeYPos == n2.nodeYPos))      //Does not link to itself
         {
           n1.nodeConnectedTo.add(j);
