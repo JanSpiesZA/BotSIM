@@ -32,10 +32,24 @@ boolean followPath = true;    //Setting to control if path must be followd or is
 float worldMapScaleX = 800; //3737;      //To be used as the actual distance of the world map x axis, measured in cm
 float worldMapScaleY = 800; //1137;
 
+float worldWidthReal = worldMapScaleX;    //New variable that should replace worldMapScaleX
+float worldHeightReal = worldMapScaleY;    //New variable for world height that should replace woldMapScaleY
+
 float screenSizeX = 800;
 float screenSizeY = screenSizeX * (worldMapScaleY/worldMapScaleX);  //Scale the y size according to ratio between worldMapScaleX an Y
 
 float scaleFactor = screenSizeX / worldMapScaleX;
+
+int viewPortWidth = 800;    //Area that will be displayed on the screen using the same units as worldWidthReal
+int viewPortHeight = 800;
+
+int graphicBoxWidth = 800;    //Pixel size of actual screen real estate which will display the viewPort data
+int graphicBoxHeight = 800;
+
+int vpX = 0;      //The x-coord of the top left corner of the viewPort
+int vpY = 800;      ///The y-coord of the top left corner of the viewPort
+
+
 
 boolean wallDetect = false;
 
@@ -93,6 +107,8 @@ float[] vectorWall = {0.0, 0.0};      //x and y values representing the vector o
 float[] vectorWallDist = {0.0, 0.0};  //x and y values for a line perpendicular to the wall vector
 float[] vectorAwayFromWall = {0.0, 0.0};  //x and y values for vector pointing away from the wall
 float[] vectorFollowWall = {0.0, 0.0};    //Vector pointing in the direction the robot must move when following the wall
+
+
 
 
 int numSensors2 = 7;          //Number of sensors used by the new code
@@ -155,9 +171,9 @@ void setup()
   //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  
   
   
-  img = loadImage("blank.png");         //Loads image
+  //img = loadImage("blank.png");         //Loads image
   //img = loadImage("Floorplan.png");
-  //img = loadImage("kamer3.png");         //Loads image
+  img = loadImage("kamer3.png");         //Loads image
   img.resize(int(screenSizeX), int(screenSizeY));
   
   tileSize *= scaleFactor;        //Aplies scale factor to the tile size
@@ -171,12 +187,12 @@ void setup()
   tile = new Tile[int(maxTilesX)][int(maxTilesY)];
   
   //Sets up a 2D array which will hold the world Tiles
-  for (int x = 0; x < maxTilesX; x++)
+  for (int x = 0; x < maxTilesX; x++) //<>//
   {
     for (int y = 0; y < maxTilesY; y++)
     {
-      //tile[x][y] = new Tile();
       tile[x][y] = new Tile(int(x*tileSize + tileSize/2), int(y*tileSize + tileSize/2));
+      //tile[x][y] = new Tile(toWorldX(int(x*tileSize + tileSize/2)), toWorldY(int(y*tileSize + tileSize/2)));
     }
   }
   
@@ -188,10 +204,10 @@ void setup()
     {
       color c = img.get(x,y);
       if (c == color(0))
-      {         
-        tile[x/tileSize][y/tileSize].gravity = 1;
-        tile[x/tileSize][y/tileSize].tileType = "MAP";      //Set tileType to PERMANENT/MAP OBSTACLE
-        tile[x/tileSize][y/tileSize].update();
+      { 
+        tile[toWorldX(x)/tileSize][toWorldY(y)/tileSize].gravity = 1;
+        tile[toWorldX(x)/tileSize][toWorldY(y)/tileSize].tileType = "MAP";      //Set tileType to PERMANENT/MAP OBSTACLE
+        tile[toWorldX(x)/tileSize][toWorldY(y)/tileSize].update();
       }      
     }
   } 
@@ -246,7 +262,7 @@ void setup()
   //findPath();
   
   printArray(Serial.list());
-  myPort = new Serial(this, Serial.list()[1], 115200);  
+  myPort = new Serial(this, Serial.list()[0], 115200);  
   delay(5000);      //Delay to make sure the Arduino initilaises before data is sent
   myPort.write("<v00\r");    //Sends a velcoity of 0 to the chassis
   delay(500);
@@ -260,6 +276,13 @@ void setup()
   inData = null;
   myPort.bufferUntil(lf);        //Buffers serial data until Line Feed is detected and then only reads serial data out of buffer  
 }
+
+
+
+
+
+
+
 
 void draw()
 { 
@@ -284,104 +307,109 @@ void draw()
    showVal = false;
   }
 
-  parseSerialData();
+  
+  
+  //parseSerialData();
 
   if (step)
   {
     background (img);        //draws map as background
     drawTiles();   
     drawTarget();
+    myRobot.display();
     
     //isInFOW();    
     //drawPixels();      //Draws the data from the Kinect sensors on the screen    
     
-    oldMillis = newMillis;
-    newMillis = millis();
-    textSize(16);  
-    textAlign(LEFT, TOP);
-    fill(0);
-    text("frame rate (ms): "+(newMillis - oldMillis),5,5);
+    //oldMillis = newMillis;
+    //newMillis = millis();
+    //textSize(16);  
+    //textAlign(LEFT, TOP);
+    //fill(0);
+    //text("frame rate (ms): "+(newMillis - oldMillis),5,5);
    
     allNodes.clear();
-    doQuadTree(0,0, maxTilesX, maxTilesY, QuadTreeLevel);
+    //###Quadtree values must be changed form 0,0 to world's min x and y values else negative coords 
+    //###  will not be used in path planning
+    doQuadTree(0,0, maxTilesX, maxTilesY, QuadTreeLevel); //<>//
     allNodes.add( new Node(myRobot.location.x, myRobot.location.y, "START", allNodes.size()));
     allNodes.add( new Node(goalXY.x, goalXY.y, "GOAL", allNodes.size()));  
     
-    oldMillis = millis();
+    //oldMillis = millis();
     nodeLink();
-    time = millis() - oldMillis;
+    //time = millis() - oldMillis;
     //println("Node Link time: "+time);
   
     findPath();
    
-    PlotRobot();
-    calcProgressPoint();
+    //PlotRobot();
+    //calcProgressPoint();
     
     //Draws an ellipse at the centerpoint of the kinect's position on the robot
-    PVector returnVal = transRot(myRobot.location.x, myRobot.location.y, myRobot.heading, kinectPos.x, kinectPos.y);
-    fill(255,255,0);
-    ellipse(returnVal.x, returnVal.y, 10,10);  
+    //PVector returnVal = transRot(myRobot.location.x, myRobot.location.y, myRobot.heading, kinectPos.x, kinectPos.y);
+    //fill(255,255,0);
+    //ellipse(returnVal.x, returnVal.y, 10,10);  
     
-    //Displays the node position on the map
+    //###Displays the node position on the map
     for (Node n: allNodes)
     {
        n.display();     
     }
     
-    int startTime = millis();
-    myRobot.sense();          //Makes use of sensor class to detect obstacles
+    //int startTime = millis();
+    //myRobot.sense();          //Makes use of sensor class to detect obstacles
     
-    for (int k = 0; k < maxParticles; k++)
-    {
-      particles[k].sense();
-      particles[k].measureProb();
-    }
+    //for (int k = 0; k < maxParticles; k++)
+    //{
+    //  particles[k].sense();
+    //  particles[k].measureProb();
+    //}
     
-    int endTime = millis();
+    //int endTime = millis();
     //println(endTime - startTime);
     
-    if (stateVal != 0)
-    {
-      updateParticles();
-      resample();
-    }
+    //if (stateVal != 0)
+    //{
+    //  updateParticles();
+    //  resample();
+    //}
   
   
     step = true;
 
     //Calculates the vector to avoid all obstacles
-    vectorAvoidObstacles = calcVectorAvoidObstacles();
+    //vectorAvoidObstacles = calcVectorAvoidObstacles();
     
     //Calculates the Go To Goal vector
-    vectorGoToGoal.x = nextWaypoint.x - myRobot.location.x;
-    vectorGoToGoal.y = nextWaypoint.y - myRobot.location.y;
+    //vectorGoToGoal.x = nextWaypoint.x - myRobot.location.x;
+    //vectorGoToGoal.y = nextWaypoint.y - myRobot.location.y;
     
-    //Calculates the vector which blends the Go to Goal and Avoid Obstacles
-    vectorAOFWD = PVector.add(vectorGoToGoal, vectorAvoidObstacles);  
+    ////Calculates the vector which blends the Go to Goal and Avoid Obstacles
+    //vectorAOFWD = PVector.add(vectorGoToGoal, vectorAvoidObstacles);  
     
-    //Calcualtes the angle in which the robot needs to travel   
-    float angleToGoal = atan2(vectorAOFWD.y,vectorAOFWD.x) - myRobot.heading;
+    ////Calcualtes the angle in which the robot needs to travel   
+    //float angleToGoal = atan2(vectorAOFWD.y,vectorAOFWD.x) - myRobot.heading;
         
-    if (angleToGoal < (-PI)) angleToGoal += 2*PI;
-    if (angleToGoal > (PI)) angleToGoal -= 2*PI;
+    //if (angleToGoal < (-PI)) angleToGoal += 2*PI;
+    //if (angleToGoal > (PI)) angleToGoal -= 2*PI;
     
-    fill(0);
-    text (angleToGoal, 55,700);
+    //fill(0);
+    //text (angleToGoal, 55,700);
        
-    //Caclualtes the distance between robot and goal to determine speed    
-    float velocityToGoal = dist (nextWaypoint.x, nextWaypoint.y, myRobot.location.x, myRobot.location.y) /5;
+    ////Caclualtes the distance between robot and goal to determine speed    
+    //float velocityToGoal = dist (nextWaypoint.x, nextWaypoint.y, myRobot.location.x, myRobot.location.y) /5;
     
     //Routine used to poll driverlayer every delta_t millis in order to get sensor and position data
     time = millis();  
     int interval = time - old_time;
     if (interval > delta_t)
     {
-      println("velocity: "+velocityToGoal+ ", angle: " + angleToGoal);
-      updateRobot(velocityToGoal, angleToGoal);
+      //println("velocity: "+velocityToGoal+ ", angle: " + angleToGoal);
+      //updateRobot(velocityToGoal, angleToGoal);
       old_time = time;
     }
   }
-  dispVectors();      //Displays different vectors, ie: Go-To-Goal, Avoid Obstacle, etc  
+  //dispVectors();      //Displays different vectors, ie: Go-To-Goal, Avoid Obstacle, etc  
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -397,12 +425,28 @@ void drawTiles()
   {
     for (int y = 0; y < maxTilesY; y++)
     {
-      stroke(150);        //Lines between tiles are black
-      strokeWeight(1);  //Stroke weight makes the lines very light
-      fill(tile[x][y].gravityCol,200);
-      rect(x*tileSize, y*tileSize, tileSize, tileSize);  //Draws a rectangle to indicate the tile
+      tile[x][y].tileDraw();
+      //stroke(150);        //Lines between tiles are black
+      //strokeWeight(1);  //Stroke weight makes the lines very light
+      //fill(tile[x][y].gravityCol,200);
       
+      //rectMode(CENTER);      //Use the first two coords as centerpoint and next two as width and height of rectangle
+      //rect(tile[x][y].tilePos.x, tile[x][y].tilePos.y, tileSize, tileSize);
+      ////rect(toScreenX(int(x*tileSize)), toScreenY(int(y*tileSize)), tileSize, tileSize);  //Draws a rectangle to indicate the tile     
+      
+
       tile[x][y].drawTileForce(); 
+      
+      //textAlign(CENTER,BOTTOM);
+      //textSize(10);
+      //fill(0);
+      
+      //text(x+":"+y, tile[x][y].tilePos.x, tile[x][y].tilePos.y);
+      
+      ////text(int(tile[x][y].tilePos.x), tile[x][y].tilePos.x, tile[x][y].tilePos.y);
+      ////textAlign(CENTER,TOP);
+      ////text(int(tile[x][y].tilePos.y), tile[x][y].tilePos.x, tile[x][y].tilePos.y);
+
       
       tile[x][y].update();
     }
@@ -692,13 +736,13 @@ void drawTarget()
   stroke(0);
   fill(255, 0, 0);
   strokeWeight(1);
-  ellipse (goalXY.x, goalXY.y, safeZone*3, safeZone*3);
+  ellipse (toScreenX(int(goalXY.x)), toScreenY(int(goalXY.y)), safeZone*3, safeZone*3);
   stroke(0);
   fill(255);
-  ellipse (goalXY.x, goalXY.y, safeZone*2, safeZone*2);
+  ellipse (toScreenX(int(goalXY.x)), toScreenY(int(goalXY.y)), safeZone*2, safeZone*2);
   stroke(0);
   fill(0);
-  ellipse (goalXY.x, goalXY.y, safeZone, safeZone);
+  ellipse (toScreenX(int(goalXY.x)), toScreenY(int(goalXY.y)), safeZone, safeZone);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -736,28 +780,27 @@ PVector transRot (float x_frame, float y_frame, float phi_frame, float x_point, 
 void mousePressed()
 {
   if (mousePressed && (mouseButton == LEFT)) changeGoal();
+  
   if (mousePressed && (mouseButton == RIGHT))
-  {
-    //myRobot.location.x = mouseX;
-    //myRobot.location.y = mouseY;
+  { 
+    //robotStart.x = toWorldX(int(mouseX));
+    //robotStart.y = toWorldY(int(mouseY));
     
-    robotStart.x = mouseX;
-    robotStart.y = mouseY;
+    myRobot.location.x = toWorldX(int(mouseX));
+    myRobot.location.y = toWorldY(int(mouseY));
 
     //Resets progress point when target is moved to the current mouse position    
-    myRobot.progressPoint.x = mouseX;
-    myRobot.progressPoint.y = mouseY;
+    myRobot.progressPoint.x = toWorldX(int(mouseX));
+    myRobot.progressPoint.y = toWorldY(int(mouseY));
     myRobot.makingProgress = true;
   }
 }
 
 //Change the goal location everytime the mouse is clicked
 void changeGoal()
-{
-  //goalX = mouseX;
-  //goalY = mouseY;
-  goalXY.x = mouseX;
-  goalXY.y = mouseY;
+{  
+  goalXY.x = toWorldX(int(mouseX));
+  goalXY.y = toWorldY(int(mouseY));
 
   startX = myRobot.location.x;
   startY = myRobot.location.y;
@@ -792,21 +835,52 @@ void keyPressed()
   //Use this key to enable or disable obstacle
   if (key == 'o')
   {
-    switch(tile[int(mouseX/tileSize)][int(mouseY/tileSize)].tileType)
+    int worldMouseX = toWorldX(mouseX)/tileSize;
+    int worldMouseY = toWorldY(mouseY)/tileSize;
+    switch(tile[worldMouseX][worldMouseY].tileType)
     {
       case "UNASSIGNED":
-      {    
-        tile[int(mouseX/tileSize)][int(mouseY/tileSize)].tileType = "USER"; //Set tileType to USER obstacle        
-        tile[int(mouseX/tileSize)][int(mouseY/tileSize)].update();
+      {            
+        tile[worldMouseX][worldMouseY].tileType = "USER"; //Set tileType to USER obstacle
+        //tile[int(mouseX/tileSize)][int(mouseY/tileSize)].tileType = "USER"; //Set tileType to USER obstacle        
+        tile[worldMouseX][worldMouseY].update();
         break;
       }
       
       case "USER":
-      {
-        tile[int(mouseX/tileSize)][int(mouseY/tileSize)].tileType = "UNASSIGNED"; //Set tileType to UNASSIGNED obstacle        
-        tile[int(mouseX/tileSize)][int(mouseY/tileSize)].update();
+      {        
+        tile[worldMouseX][worldMouseY].tileType = "UNASSIGNED"; //Set tileType to UNASSIGNED obstacle        
+        tile[worldMouseX][worldMouseY].update();
         break;
       }
     }
   }
+}
+
+
+
+//Implementation of the following website
+//http://www.libertybasicuniversity.com/lbnews/nl112/mapcoor.htm
+
+//Creates a viewport which is used to view only a specific area of the world map
+//It also plots world coordinates onto the screen i.e: Inverting the y-axis
+int toScreenX(int _x)
+{
+  return ((graphicBoxWidth / viewPortWidth) * (_x - vpX));
+}
+
+int toScreenY(int _y)
+{
+  return ((graphicBoxHeight / viewPortHeight) * (vpY - _y));
+}
+
+
+int toWorldX (int _x)
+{
+  return int((float(_x) / float(graphicBoxWidth) * float(viewPortWidth) + vpX));  
+}
+
+int toWorldY (int _y)
+{
+  return int((vpY - float(_y) / float(graphicBoxHeight) * float(viewPortHeight))-1);
 }
