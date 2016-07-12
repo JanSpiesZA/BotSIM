@@ -33,16 +33,16 @@ void doQuadTree(int _btmLeftX, int _btmLeftY, int _sizeW, int _sizeH, int _level
   else
   {
     //If a mixed quad is found: Divide the quad into four new quads   
-    //Top left quad    
+    //Btm left quad    
     doQuadTree(_btmLeftX, _btmLeftY, _sizeW/2, _sizeH/2, _level-1);
     
-    //Top right quad
+    //Btm right quad
     doQuadTree(_btmLeftX + _sizeW/2, _btmLeftY, _sizeW/2, _sizeH/2, _level-1);
     
-    //Btm left quad    
+    //Top left quad    
     doQuadTree(_btmLeftX, _btmLeftY + _sizeH/2, _sizeW/2, _sizeH/2, _level-1);
     
-    //Btm right quad    
+    //Top right quad    
     doQuadTree(_btmLeftX + _sizeW/2, _btmLeftY + _sizeH/2, _sizeW/2, _sizeH/2, _level-1);
   }  
 }
@@ -52,9 +52,9 @@ boolean findMix(int _btmLeftX, int _btmLeftY, int _sizeW, int _sizeH)
 {
   noFill();
   stroke (0);
-  strokeWeight(1);
+  strokeWeight(0);
   
-  //Draws the quad tree divisions on the screen
+  //###Draws the quad tree divisions on the screen
   rectMode(CORNERS);  
   rect (toScreenX(int(_btmLeftX * tileSize)), toScreenY(int(_btmLeftY * tileSize)), 
         toScreenX(int(_btmLeftX * tileSize + _sizeW * tileSize)), toScreenY(int(_btmLeftY * tileSize + _sizeH * tileSize)));
@@ -261,6 +261,7 @@ void findPath()
   }
   
   
+  //###Draws the best path from robot to goal
   if (foundPath)
   {
     //println("Shortest Path: "+finalPath);
