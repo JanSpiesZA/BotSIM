@@ -55,8 +55,6 @@ boolean wallDetect = false;
 
 Robot myRobot;          //Creat a myRobot instance
 float diameter = 45.0;
-
-//Negative value for robotStart.z (heading) creates a left turn, positive values creates a right turn
 PVector robotStart = new PVector (worldMapScaleX/3 , worldMapScaleY/2 , 0.0);    //Position of robot in map on the screen
 
 final int maxParticles = 00;
@@ -252,15 +250,6 @@ void setup()
   //  }
   //}
   
-  //allNodes.clear();
-  //doQuadTree(0,0, maxTilesX, maxTilesY, QuadTreeLevel);
-  //allNodes.add( new Node(myRobot.location.x, myRobot.location.y, "START", allNodes.size()));
-  //allNodes.add( new Node(goalXY.x, goalXY.y, "GOAL", allNodes.size()));
-     
-  ////println("\nNumber of allNodes: "+allNodes.size());        //Print the total number of nodes
-  //nodeLink();
-  //findPath();
-  
   printArray(Serial.list());
   myPort = new Serial(this, Serial.list()[1], 115200);  
   delay(5000);      //Delay to make sure the Arduino initilaises before data is sent
@@ -423,27 +412,7 @@ void drawTiles()
     for (int y = 0; y < maxTilesY; y++)
     {
       tile[x][y].tileDraw();
-      //stroke(150);        //Lines between tiles are black
-      //strokeWeight(1);  //Stroke weight makes the lines very light
-      //fill(tile[x][y].gravityCol,200);
-      
-      //rectMode(CENTER);      //Use the first two coords as centerpoint and next two as width and height of rectangle
-      //rect(tile[x][y].tilePos.x, tile[x][y].tilePos.y, tileSize, tileSize);
-      ////rect(toScreenX(int(x*tileSize)), toScreenY(int(y*tileSize)), tileSize, tileSize);  //Draws a rectangle to indicate the tile     
-      
-
-      tile[x][y].drawTileForce(); 
-      
-      //textAlign(CENTER,BOTTOM);
-      //textSize(10);
-      //fill(0);
-      
-      //text(x+":"+y, tile[x][y].tilePos.x, tile[x][y].tilePos.y);
-      
-      ////text(int(tile[x][y].tilePos.x), tile[x][y].tilePos.x, tile[x][y].tilePos.y);
-      ////textAlign(CENTER,TOP);
-      ////text(int(tile[x][y].tilePos.y), tile[x][y].tilePos.x, tile[x][y].tilePos.y);
-
+      tile[x][y].drawTileForce();
       
       tile[x][y].update();
     }
@@ -644,9 +613,7 @@ void PlotRobot()
 //      the robot progresses, else do Wall Following
 
 void calcProgressPoint()
-{
-  // float oldDist = sqrt(pow(goalX - progressPoint[0], 2) + pow(goalY - progressPoint[1], 2));    //Calculates the straight line distance to the goal
-  // float newDist = sqrt(pow(goalX - myRobot.state[0], 2) + pow(goalY - myRobot.state[1], 2));
+{  
   float oldDist = PVector.dist(goalXY, myRobot.progressPoint);
   float newDist = PVector.dist(goalXY, myRobot.location);
   
