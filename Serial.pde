@@ -13,6 +13,8 @@ void requestSerialPosition()
   myPort.write("<?" + "\r");  
 }
 
+
+//###Sends new velocity and heading data to driver layer
 void updateRobot(float _velocityToGoal, float _moveAngle)
 {
   println("TXING!!!");

@@ -262,7 +262,7 @@ void setup()
   //findPath();
   
   printArray(Serial.list());
-  myPort = new Serial(this, Serial.list()[0], 115200);  
+  myPort = new Serial(this, Serial.list()[1], 115200);  
   delay(5000);      //Delay to make sure the Arduino initilaises before data is sent
   myPort.write("<v00\r");    //Sends a velcoity of 0 to the chassis
   delay(500);
@@ -308,8 +308,8 @@ void draw()
   }
 
   
-  
-  //parseSerialData();
+  //###Gets serial data from robot driver layer = x,y,heading
+  parseSerialData();
 
   if (step)
   {
@@ -342,7 +342,7 @@ void draw()
   
     findPath();
    
-    //PlotRobot();
+    PlotRobot();
     //calcProgressPoint();
     
     //Draws an ellipse at the centerpoint of the kinect's position on the robot
@@ -350,7 +350,7 @@ void draw()
     //fill(255,255,0);
     //ellipse(returnVal.x, returnVal.y, 10,10);  
     
-    //###Displays the node position on the map
+    //###Displays the node positions on the map
     for (Node n: allNodes)
     {
        n.display();     
@@ -377,35 +377,32 @@ void draw()
   
     step = true;
 
-    //Calculates the vector to avoid all obstacles
+    //###Calculates the vector to avoid all obstacles
     //vectorAvoidObstacles = calcVectorAvoidObstacles();
+    vectorAvoidObstacles.set(0,0,0); //Vector set to zero until sensor data is incorporated
     
-    //Calculates the Go To Goal vector
-    //vectorGoToGoal.x = nextWaypoint.x - myRobot.location.x;
-    //vectorGoToGoal.y = nextWaypoint.y - myRobot.location.y;
+    //###Calculates the vector to the next waypoint / Go To Goal vector
+    vectorGoToGoal.x = nextWaypoint.x - myRobot.location.x;
+    vectorGoToGoal.y = nextWaypoint.y - myRobot.location.y;    
     
-    ////Calculates the vector which blends the Go to Goal and Avoid Obstacles
-    //vectorAOFWD = PVector.add(vectorGoToGoal, vectorAvoidObstacles);  
+    //###Calculates the vector which blends the Go to Goal and Avoid Obstacles
+    vectorAOFWD = PVector.add(vectorGoToGoal, vectorAvoidObstacles);  
     
-    ////Calcualtes the angle in which the robot needs to travel   
-    //float angleToGoal = atan2(vectorAOFWD.y,vectorAOFWD.x) - myRobot.heading;
-        
-    //if (angleToGoal < (-PI)) angleToGoal += 2*PI;
-    //if (angleToGoal > (PI)) angleToGoal -= 2*PI;
-    
-    //fill(0);
-    //text (angleToGoal, 55,700);
+    //###Calcualtes the angle in which the robot needs to travel   
+    float angleToGoal = atan2(vectorAOFWD.y,vectorAOFWD.x) - myRobot.heading;        
+    if (angleToGoal < (-PI)) angleToGoal += 2*PI;
+    if (angleToGoal > (PI)) angleToGoal -= 2*PI;
        
-    ////Caclualtes the distance between robot and goal to determine speed    
-    //float velocityToGoal = dist (nextWaypoint.x, nextWaypoint.y, myRobot.location.x, myRobot.location.y) /5;
+    //###Caclualtes the distance between robot and goal to determine speed    
+    float velocityToGoal = dist (nextWaypoint.x, nextWaypoint.y, myRobot.location.x, myRobot.location.y) /5;
     
-    //Routine used to poll driverlayer every delta_t millis in order to get sensor and position data
+    //###Routine sends new instructions to driverlayer every delta_t millis
     time = millis();  
     int interval = time - old_time;
     if (interval > delta_t)
     {
-      //println("velocity: "+velocityToGoal+ ", angle: " + angleToGoal);
-      //updateRobot(velocityToGoal, angleToGoal);
+      println("velocity: "+velocityToGoal+ ", angle: " + angleToGoal);
+      updateRobot(velocityToGoal, angleToGoal);
       old_time = time;
     }
   }
@@ -600,10 +597,12 @@ void PlotRobot()
         nextWaypoint.x = allNodes.get(nextWP).nodeXPos;
         nextWaypoint.y = allNodes.get(nextWP).nodeYPos;
         
+        
+        //###Draws an ellipse over the next waypoint that must be reached
         stroke(0,0,255);
         strokeWeight(0);
         fill(0,0,255);
-        ellipse (nextWaypoint.x, nextWaypoint.y, 20,20);      
+        ellipse (toScreenX(int(nextWaypoint.x)), toScreenY(int(nextWaypoint.y)), 20,20);      
         //phi_GTG = calcGoalAngle(nextWayPointX - myRobot.location.x, nextWayPointY - myRobot.location.y);
       }
       //calcErrorAngle(phi_GTG);
