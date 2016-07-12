@@ -134,7 +134,7 @@ boolean showVal = false;
 boolean step = true;
 
 //Measurement of tiles to be used for occupancy grid in cm's scaled to represented size in real world
-int tileSize = 50;
+int tileSize = 25;
 int maxTilesX = 0;
 int maxTilesY = 0;
 Tile tile[][];
@@ -187,7 +187,7 @@ void setup()
   tile = new Tile[int(maxTilesX)][int(maxTilesY)];
   
   //Sets up a 2D array which will hold the world Tiles
-  for (int x = 0; x < maxTilesX; x++) //<>// //<>//
+  for (int x = 0; x < maxTilesX; x++) //<>//
   {
     for (int y = 0; y < maxTilesY; y++)
     {
@@ -313,11 +313,11 @@ void draw()
 
   if (step)
   {
-    background (img);        //draws map as background //<>//
+    background (img);        //draws map as background
     drawTiles();   
     drawTarget();
     myRobot.display();
-     //<>//
+    
     //isInFOW();    
     //drawPixels();      //Draws the data from the Kinect sensors on the screen    
     
@@ -328,10 +328,12 @@ void draw()
     //fill(0);
     //text("frame rate (ms): "+(newMillis - oldMillis),5,5);
    
-    //allNodes.clear();
-    //doQuadTree(0,0, maxTilesX, maxTilesY, QuadTreeLevel);
-    //allNodes.add( new Node(myRobot.location.x, myRobot.location.y, "START", allNodes.size()));
-    //allNodes.add( new Node(goalXY.x, goalXY.y, "GOAL", allNodes.size()));  
+    allNodes.clear();
+    //###Quadtree values must be changed form 0,0 to world's min x and y values else negative coords 
+    //###  will not be used in path planning
+    doQuadTree(0,0, maxTilesX, maxTilesY, QuadTreeLevel); //<>//
+    allNodes.add( new Node(myRobot.location.x, myRobot.location.y, "START", allNodes.size()));
+    allNodes.add( new Node(goalXY.x, goalXY.y, "GOAL", allNodes.size()));  
     
     //oldMillis = millis();
     ////nodeLink();

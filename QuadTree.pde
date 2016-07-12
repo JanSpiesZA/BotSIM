@@ -5,24 +5,28 @@ ArrayList<Integer> openList = new ArrayList<Integer>();
 ArrayList<Integer> finalPath = new ArrayList<Integer>();
 
 //Recursively generates the quad tree nodes
-void doQuadTree(int _topLeftX, int _topLeftY, int _sizeW, int _sizeH, int _level)
+void doQuadTree(int _btmLeftX, int _btmLeftY, int _sizeW, int _sizeH, int _level)
 { 
   //If no mix is found in a quad - draw a node
-  if (!findMix(_topLeftX, _topLeftY, _sizeW, _sizeH))
+  if (!findMix(_btmLeftX, _btmLeftY, _sizeW, _sizeH))
   { 
-   float nodeX = (_topLeftX + float(_sizeW)/2)*tileSize;  //cast _sizeW as float in order to do math
-   float nodeY = (_topLeftY + float(_sizeH)/2)*tileSize;  //cast _sizeH as float in order to do math   
+   float nodeX = (_btmLeftX + float(_sizeW)/2)*tileSize;  //cast _sizeW as float in order to do math
+   float nodeY = (_btmLeftY + float(_sizeH)/2)*tileSize;  //cast _sizeH as float in order to do math   
       
    allNodes.add(new Node(nodeX,nodeY,allNodes.size()));    //Add new node to allNodes arrayList
    
-   //ellipse(nodeX,nodeY, 10,10);   //Draws an ellipse to indicate node x,y 
-   //textSize(50);
+   //### Draws the nodes and node numbers on the screen
+   //stroke(0);
+   //fill(0,255,0);
+   //ellipse(toScreenX(int(nodeX)),toScreenY(int(nodeY)), 5,5);   //Draws an ellipse to indicate node x,y
    //fill(0);
-   //text(allNodes.size()-1,nodeX-8,nodeY-8);
+   //textSize(10);
+   //fill(0);
+   //text(allNodes.size()-1,toScreenX(int(nodeX-8)),toScreenY(int(nodeY-8)));
    return;
   }
   //If a mixed quad is found and it is the last level DO NOT draw a node, just return
-  else if (findMix(_topLeftX, _topLeftY, _sizeW, _sizeH) && _level == 0)
+  else if (findMix(_btmLeftX, _btmLeftY, _sizeW, _sizeH) && _level == 0)
   {
     return;
   }
@@ -30,32 +34,37 @@ void doQuadTree(int _topLeftX, int _topLeftY, int _sizeW, int _sizeH, int _level
   {
     //If a mixed quad is found: Divide the quad into four new quads   
     //Top left quad    
-    doQuadTree(_topLeftX, _topLeftY, _sizeW/2, _sizeH/2, _level-1);
+    doQuadTree(_btmLeftX, _btmLeftY, _sizeW/2, _sizeH/2, _level-1);
     
     //Top right quad
-    doQuadTree(_topLeftX + _sizeW/2, _topLeftY, _sizeW/2, _sizeH/2, _level-1);
+    doQuadTree(_btmLeftX + _sizeW/2, _btmLeftY, _sizeW/2, _sizeH/2, _level-1);
     
     //Btm left quad    
-    doQuadTree(_topLeftX, _topLeftY + _sizeH/2, _sizeW/2, _sizeH/2, _level-1);
+    doQuadTree(_btmLeftX, _btmLeftY + _sizeH/2, _sizeW/2, _sizeH/2, _level-1);
     
     //Btm right quad    
-    doQuadTree(_topLeftX + _sizeW/2, _topLeftY + _sizeH/2, _sizeW/2, _sizeH/2, _level-1);
+    doQuadTree(_btmLeftX + _sizeW/2, _btmLeftY + _sizeH/2, _sizeW/2, _sizeH/2, _level-1);
   }  
 }
 
 //Function returns TRUE if an occupied tile is found within a certain square of tiles
-boolean findMix(int _topLeftX, int _topLeftY, int _sizeW, int _sizeH)
+boolean findMix(int _btmLeftX, int _btmLeftY, int _sizeW, int _sizeH)
 {
   noFill();
   stroke (0);
   strokeWeight(1);
-  rect (_topLeftX * tileSize, _topLeftY * tileSize, _sizeW * tileSize, _sizeH * tileSize);
+  
+  //Draws the quad tree divisions on the screen
+  rectMode(CORNERS);  
+  rect (toScreenX(int(_btmLeftX * tileSize)), toScreenY(int(_btmLeftY * tileSize)), 
+        toScreenX(int(_btmLeftX * tileSize + _sizeW * tileSize)), toScreenY(int(_btmLeftY * tileSize + _sizeH * tileSize)));
+  
   
   for (int x = 0; x < _sizeW; x++)
   {
     for (int y = 0; y < _sizeH; y++)
     {
-      if (tile[x+_topLeftX][y+_topLeftY].tileType == "MAP" || tile[x+_topLeftX][y+_topLeftY].tileType == "USER")
+      if (tile[x+_btmLeftX][y+_btmLeftY].tileType == "MAP" || tile[x+_btmLeftX][y+_btmLeftY].tileType == "USER")
       {        
         return true;
       }      
