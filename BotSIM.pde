@@ -412,7 +412,10 @@ void drawTiles()
     for (int y = 0; y < maxTilesY; y++)
     {
       tile[x][y].tileDraw();
-      tile[x][y].drawTileForce();      
+      if (tile[x][y].tileType == "MAP" || tile[x][y].tileType == "USER" || tile[x][y].tileType == "KINECT")
+      {
+        tile[x][y].drawTileForce();
+      }
       tile[x][y].update();
     }
   }
@@ -657,7 +660,7 @@ PVector calcVectorAvoidObstacles()
   {
     for(int x = 0; x < maxTilesX; x++)    
     {      
-      if (tile[x][y].tileType == "MAP" || tile[x][y].tileType == "USER")
+      if (tile[x][y].tileType == "MAP" || tile[x][y].tileType == "USER" || tile[x][y].tileType == "KINECT")
       {
         if (tile[x][y]. gravity != 0)
         {
